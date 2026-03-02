@@ -1,0 +1,13 @@
+@startuml teacher_reporting_sequence
+actor Teacher
+participant App
+participant "Report Service" as Report
+participant DB
+
+Teacher -> App : Request reports
+App -> Report : generateReport()
+Report -> DB : fetch analytics
+DB --> Report : data
+Report --> App : report
+App --> Teacher : Display report
+@enduml

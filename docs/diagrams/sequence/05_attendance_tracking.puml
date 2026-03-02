@@ -1,0 +1,12 @@
+@startuml attendance_tracking_sequence
+actor Student
+participant App
+participant "Attendance Service" as Attendance
+participant DB
+
+Student -> App : Join lecture
+App -> Attendance : markAttendance()
+Attendance -> DB : save attendance
+DB --> Attendance : saved
+Attendance --> App : confirmed
+@enduml

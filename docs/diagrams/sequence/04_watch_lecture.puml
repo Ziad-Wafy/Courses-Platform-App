@@ -1,0 +1,13 @@
+@startuml watch_lecture_sequence
+actor Student
+participant App
+participant "Content Service" as Content
+participant DB
+
+Student -> App : Play lecture
+App -> Content : requestLecture()
+Content -> DB : verify access
+DB --> Content : allowed
+Content --> App : video stream
+App --> Student : Play video
+@enduml

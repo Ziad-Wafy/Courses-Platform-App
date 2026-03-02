@@ -1,0 +1,54 @@
+@startuml ER_diagram
+entity User {
+  user_id : UUID
+  name : String
+  email : String
+  role : ENUM
+}
+
+entity Student {
+  student_id : UUID
+  attendance_rate : Float
+}
+
+entity Teacher {
+  teacher_id : UUID
+}
+
+entity Course {
+  course_id : UUID
+  title : String
+  description : Text
+}
+
+entity Lecture {
+  lecture_id : UUID
+  video_url : String
+  duration : Int
+}
+
+entity Quiz {
+  quiz_id : UUID
+  total_marks : Int
+}
+
+entity Assignment {
+  assignment_id : UUID
+  deadline : Date
+}
+
+entity Enrollment {
+  enrollment_id : UUID
+  progress : Float
+}
+
+User ||--o{ Student
+User ||--o{ Teacher
+Teacher ||--o{ Course
+Course ||--o{ Lecture
+Course ||--o{ Quiz
+Course ||--o{ Assignment
+Student ||--o{ Enrollment
+Course ||--o{ Enrollment
+
+@enduml

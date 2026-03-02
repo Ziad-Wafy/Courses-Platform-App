@@ -1,0 +1,11 @@
+@startuml teacher_state_diagram
+
+[*] --> LoggedOut
+LoggedOut --> LoggedIn
+LoggedIn --> CreatingCourse
+CreatingCourse --> UploadingContent
+UploadingContent --> EvaluatingStudents
+EvaluatingStudents --> GeneratingReports
+GeneratingReports --> LoggedOut
+
+@enduml

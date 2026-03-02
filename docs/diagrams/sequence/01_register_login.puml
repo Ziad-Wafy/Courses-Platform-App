@@ -1,0 +1,13 @@
+@startuml register_login_sequence
+actor User
+participant "Flutter App" as App
+participant "Auth Service" as Auth
+participant "Database" as DB
+
+User -> App : Enter credentials
+App -> Auth : register()/login()
+Auth -> DB : validate & store user
+DB --> Auth : success / failure
+Auth --> App : auth result
+App --> User : Navigate to dashboard
+@enduml

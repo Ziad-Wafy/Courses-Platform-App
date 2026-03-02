@@ -1,0 +1,18 @@
+@startuml quiz_flow_sequence
+actor Student
+participant App
+participant "Quiz Service" as Quiz
+participant DB
+
+Student -> App : Start quiz
+App -> Quiz : getQuestions()
+Quiz -> DB : fetch questions
+DB --> Quiz : questions
+Quiz --> App : questions
+
+Student -> App : Submit answers
+App -> Quiz : evaluate()
+Quiz -> DB : save result
+Quiz --> App : score
+App --> Student : Show result
+@enduml

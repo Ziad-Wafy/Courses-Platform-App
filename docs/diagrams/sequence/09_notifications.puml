@@ -1,0 +1,10 @@
+@startuml notifications_sequence
+participant "System Event" as Event
+participant "Notification Service" as Notify
+participant App
+actor User
+
+Event -> Notify : trigger event
+Notify -> App : push notification
+App --> User : Show notification
+@enduml

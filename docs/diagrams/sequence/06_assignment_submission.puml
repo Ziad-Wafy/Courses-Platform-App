@@ -1,0 +1,13 @@
+@startuml assignment_submission_sequence
+actor Student
+participant App
+participant "Assignment Service" as Assign
+participant DB
+
+Student -> App : Submit assignment
+App -> Assign : uploadSubmission()
+Assign -> DB : store submission
+DB --> Assign : stored
+Assign --> App : success
+App --> Student : Submission confirmed
+@enduml

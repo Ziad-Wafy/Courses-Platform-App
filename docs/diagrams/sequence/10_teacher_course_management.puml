@@ -1,0 +1,12 @@
+@startuml teacher_course_management_sequence
+actor Teacher
+participant App
+participant "Course Service" as Course
+participant DB
+
+Teacher -> App : Create / Edit course
+App -> Course : saveCourse()
+Course -> DB : persist data
+DB --> Course : saved
+Course --> App : success
+@enduml
