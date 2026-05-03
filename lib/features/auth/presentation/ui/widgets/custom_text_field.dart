@@ -9,6 +9,8 @@ class CustomTextField extends StatelessWidget {
   final IconData? suffixIcon;
   final bool isPassword;
   final int maxLines;
+  final TextEditingController? controller;
+  final VoidCallback? onSuffixTap; // ✅ مضاف: للتحكم في إظهار/إخفاء الباسورد
 
   const CustomTextField({
     Key? key,
@@ -18,6 +20,8 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.isPassword = false,
     this.maxLines = 1,
+    this.controller,
+    this.onSuffixTap,
   }) : super(key: key);
 
   @override
@@ -35,8 +39,9 @@ class CustomTextField extends StatelessWidget {
         ),
         SizedBox(height: 6.h),
         TextField(
+          controller: controller,
           obscureText: isPassword,
-          maxLines: maxLines,
+          maxLines: isPassword ? 1 : maxLines, // ✅ maxLines=1 دايمًا مع Password
           style: TextStyle(
             color: AppColors.chatOtherMessageTextColor,
             fontSize: 13.sp,
@@ -50,8 +55,16 @@ class CustomTextField extends StatelessWidget {
             prefixIcon: prefixIcon != null
                 ? Icon(prefixIcon, color: AppColors.primary, size: 18.sp)
                 : null,
+            // ✅ السفكس أيقونة قابلة للضغط
             suffixIcon: suffixIcon != null
-                ? Icon(suffixIcon, color: AppColors.primary, size: 18.sp)
+                ? GestureDetector(
+                    onTap: onSuffixTap,
+                    child: Icon(
+                      suffixIcon,
+                      color: AppColors.primary,
+                      size: 18.sp,
+                    ),
+                  )
                 : null,
             filled: true,
             fillColor: AppColors.chatMyMessageTextColor,

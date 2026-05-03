@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/theme/app_color.dart';
 
-class RoleSelector extends StatefulWidget {
-  const RoleSelector({Key? key}) : super(key: key);
+class RoleSelector extends StatelessWidget {
+  final String selectedRole;
+  final ValueChanged<String> onRoleSelected;
 
-  @override
-  State<RoleSelector> createState() => _RoleSelectorState();
-}
-
-class _RoleSelectorState extends State<RoleSelector> {
-  bool isStudentSelected = true;
+  const RoleSelector({
+    Key? key,
+    required this.selectedRole,
+    required this.onRoleSelected,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final isStudentSelected = selectedRole == 'Student';
+
     return Container(
       padding: EdgeInsets.all(3.r),
       decoration: BoxDecoration(
@@ -24,7 +26,7 @@ class _RoleSelectorState extends State<RoleSelector> {
         children: [
           Expanded(
             child: GestureDetector(
-              onTap: () => setState(() => isStudentSelected = true),
+              onTap: () => onRoleSelected('Student'),
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 10.h),
                 decoration: BoxDecoration(
@@ -49,7 +51,7 @@ class _RoleSelectorState extends State<RoleSelector> {
           ),
           Expanded(
             child: GestureDetector(
-              onTap: () => setState(() => isStudentSelected = false),
+              onTap: () => onRoleSelected('Teacher'),
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 10.h),
                 decoration: BoxDecoration(

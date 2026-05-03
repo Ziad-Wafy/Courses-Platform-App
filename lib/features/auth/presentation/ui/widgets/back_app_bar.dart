@@ -7,7 +7,7 @@ class BackAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isWhiteContent;
 
   const BackAppBar({Key? key, required this.title, this.isWhiteContent = false})
-    : super(key: key);
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

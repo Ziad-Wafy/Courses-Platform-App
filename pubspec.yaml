@@ -7,12 +7,17 @@ environment:
   sdk: ^3.9.2
 
 dependencies:
+  dartz: ^0.10.1
   file_picker: ^11.0.2
+  firebase_auth: ^6.4.0
   firebase_core: ^4.7.0
   firebase_storage: ^13.3.0
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
   flutter_screenutil: ^5.9.3
+  get_it: ^9.2.1
+  google_sign_in: ^6.2.1   # ✅ رجعنا لـ v6 اللي شغالة
 
 dev_dependencies:
   flutter_lints: ^5.0.0

@@ -5,7 +5,10 @@ import '../widgets/back_app_bar.dart';
 import '../widgets/primary_button.dart';
 
 class ResetLinkSentScreen extends StatelessWidget {
-  const ResetLinkSentScreen({Key? key}) : super(key: key);
+  // ✅ الإيميل بيجي dynamic من شاشة ForgotPassword
+  final String email;
+
+  const ResetLinkSentScreen({Key? key, required this.email}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +37,7 @@ class ResetLinkSentScreen extends StatelessWidget {
               ),
               SizedBox(height: 32.h),
               Text(
-                "Forgot Password?",
+                "Check Your Email",
                 style: TextStyle(
                   fontSize: 28.sp,
                   fontWeight: FontWeight.bold,
@@ -69,8 +72,9 @@ class ResetLinkSentScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 4.h),
+                    // ✅ بيعرض الإيميل الحقيقي اللي بعت عليه
                     Text(
-                      "user@example.com",
+                      email,
                       style: TextStyle(
                         fontSize: 14.sp,
                         color: AppColors.primary,
@@ -81,9 +85,12 @@ class ResetLinkSentScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 40.h),
+              // ✅ بيرجع لشاشة Login وبيمسح كل الشاشات اللي فوق
               PrimaryButton(
                 text: "Back to Login",
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
               ),
             ],
           ),
