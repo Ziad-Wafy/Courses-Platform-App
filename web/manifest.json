@@ -1,6 +1,6 @@
 {
-    "name": "courses_platform_app",
-    "short_name": "courses_platform_app",
+    "name": "learning_management_system",
+    "short_name": "learning_management_system",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
