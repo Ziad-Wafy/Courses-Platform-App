@@ -13,7 +13,7 @@ class CustomTextField extends StatelessWidget {
   final VoidCallback? onSuffixTap; // ✅ مضاف: للتحكم في إظهار/إخفاء الباسورد
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.label,
     required this.hint,
     this.prefixIcon,
@@ -22,7 +22,7 @@ class CustomTextField extends StatelessWidget {
     this.maxLines = 1,
     this.controller,
     this.onSuffixTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

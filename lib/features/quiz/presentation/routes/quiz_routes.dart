@@ -29,7 +29,7 @@ class QuizRoutes {
           totalQuestions: args['totalQuestions'] as int,
           scorePercentage: args['scorePercentage'] as double,
           quizId: args['quizId'] as String,
-          courseid: args['courseId'] as String,
+          courseId: args['courseId'] as String,
         );
       },
       createQuiz: (context) {

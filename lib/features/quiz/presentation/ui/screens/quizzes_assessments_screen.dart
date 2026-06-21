@@ -1,18 +1,20 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/utils/service_locator.dart';
 import '../../cubit/quiz_cubit.dart';
+import '../../domain/entities/quiz_entity.dart';
 import '../widgets/common_widgets.dart';
 
 class QuizzesAndAssessmentsScreen extends StatefulWidget {
   final String courseId;
 
   const QuizzesAndAssessmentsScreen({
-    Key? key,
+    super.key,
     required this.courseId,
-  }) : super(key: key);
+  });
 
   @override
   State<QuizzesAndAssessmentsScreen> createState() =>
@@ -28,6 +30,10 @@ class _QuizzesAndAssessmentsScreenState
     super.initState();
     quizCubit = sl<QuizCubit>();
     quizCubit.getQuizzesByCourse(widget.courseId);
+    final studentId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    if (studentId.isNotEmpty) {
+      quizCubit.getStudentResults(studentId);
+    }
   }
 
   @override
@@ -90,39 +96,64 @@ class _QuizzesAndAssessmentsScreenState
                         );
                       }
 
-                      // Calculate average score
-                      double averageScore = 0;
-                      final quizzesWithScores = state.quizzes
-                          .where((quiz) => false) // Filter completed quizzes
-                          .toList();
-
-                      if (quizzesWithScores.isNotEmpty) {
-                        // This is a placeholder - you'd get actual scores from quiz results
-                        averageScore = 87.5;
-                      }
-
                       return SingleChildScrollView(
                         child: Column(
                           children: [
-                            if (averageScore > 0)
-                              AverageScoreCard(averageScore: averageScore),
+                            if (state.averageScore > 0)
+                              AverageScoreCard(averageScore: state.averageScore),
                             ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: state.quizzes.length,
                               itemBuilder: (context, index) {
                                 final quiz = state.quizzes[index];
+                                // Find result for this quiz if any
+                                final result = state.studentResults
+                                    .where((r) => r.quizId == quiz.id)
+                                    .toList();
+
+                                QuizResult? latestResult;
+                                if (result.isNotEmpty) {
+                                  result.sort((a, b) => b.completedAt.compareTo(a.completedAt));
+                                  latestResult = result.first;
+                                }
+
                                 return QuizCard(
                                   title: quiz.title,
                                   questionsCount: quiz.totalQuestions,
                                   timeLimit: quiz.timeLimitMinutes,
+                                  score: latestResult?.scorePercentage,
                                   isLocked: quiz.isLocked,
-                                  onStartQuiz: !quiz.isLocked
+                                  onStartQuiz: !quiz.isLocked && latestResult == null
                                       ? () {
                                           Navigator.pushNamed(
                                             context,
                                             '/quiz/question',
                                             arguments: quiz.id,
+                                          );
+                                        }
+                                      : null,
+                                  onRetakeQuiz: latestResult != null
+                                      ? () {
+                                          Navigator.pushNamed(
+                                            context,
+                                            '/quiz/question',
+                                            arguments: quiz.id,
+                                          );
+                                        }
+                                      : null,
+                                  onViewResults: latestResult != null
+                                      ? () {
+                                          Navigator.pushNamed(
+                                            context,
+                                            '/quiz/completion',
+                                            arguments: {
+                                              'correctAnswers': latestResult!.correctAnswers,
+                                              'totalQuestions': latestResult.totalQuestions,
+                                              'scorePercentage': latestResult.scorePercentage,
+                                              'quizId': latestResult.quizId,
+                                              'courseId': widget.courseId,
+                                            },
                                           );
                                         }
                                       : null,

@@ -13,10 +13,10 @@ class CreateQuizScreen extends StatefulWidget {
   final String instructorId;
 
   const CreateQuizScreen({
-    Key? key,
+    super.key,
     required this.courseId,
     required this.instructorId,
-  }) : super(key: key);
+  });
 
   @override
   State<CreateQuizScreen> createState() => _CreateQuizScreenState();
@@ -470,6 +470,12 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
 
       final options = <Answer>[];
       for (int i = 0; i < q.options.length; i++) {
+        if (q.options[i].text.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Please fill all options for Question ${questions.indexOf(q) + 1}')),
+          );
+          return;
+        }
         options.add(
           Answer(
             id: const Uuid().v4(),

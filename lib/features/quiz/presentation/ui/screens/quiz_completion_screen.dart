@@ -8,16 +8,16 @@ class QuizCompletionScreen extends StatelessWidget {
   final int totalQuestions;
   final double scorePercentage;
   final String quizId;
-  final String courseid;
+  final String courseId;
 
   const QuizCompletionScreen({
-    Key? key,
+    super.key,
     required this.correctAnswers,
     required this.totalQuestions,
     required this.scorePercentage,
     required this.quizId,
-    required this.courseid,
-  }) : super(key: key);
+    required this.courseId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +161,7 @@ class QuizCompletionScreen extends StatelessWidget {
                       Navigator.pushReplacementNamed(
                         context,
                         '/quiz/list',
-                        arguments: courseid,
+                        arguments: courseId,
                       );
                     },
                     icon: const Icon(Icons.home),

@@ -7,11 +7,11 @@ class QuizHeader extends StatelessWidget {
   final VoidCallback? onBackPressed;
 
   const QuizHeader({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     this.onBackPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +90,7 @@ class QuizCard extends StatelessWidget {
   final VoidCallback? onStartQuiz;
 
   const QuizCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.questionsCount,
     required this.timeLimit,
@@ -99,7 +99,7 @@ class QuizCard extends StatelessWidget {
     this.onViewResults,
     this.onRetakeQuiz,
     this.onStartQuiz,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -265,9 +265,9 @@ class AverageScoreCard extends StatelessWidget {
   final double averageScore;
 
   const AverageScoreCard({
-    Key? key,
+    super.key,
     required this.averageScore,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -328,11 +328,11 @@ class ProgressBar extends StatelessWidget {
   final int remainingSeconds;
 
   const ProgressBar({
-    Key? key,
+    super.key,
     required this.currentQuestion,
     required this.totalQuestions,
     required this.remainingSeconds,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -398,12 +398,12 @@ class ResultCard extends StatelessWidget {
   final bool passed;
 
   const ResultCard({
-    Key? key,
+    super.key,
     required this.correctAnswers,
     required this.totalQuestions,
     required this.scorePercentage,
     required this.passed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

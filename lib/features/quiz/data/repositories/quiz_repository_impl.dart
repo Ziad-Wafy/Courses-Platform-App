@@ -60,7 +60,7 @@ class QuizRepositoryImpl implements QuizRepository {
 
   @override
   Future<void> submitQuizAnswers(
-      String quizId, String studentId, List<StudentAnswer> answers) async {
+      String quizId, String studentId, List<StudentAnswer> answers, int timeSpentSeconds) async {
     try {
       final quiz = await getQuizById(quizId);
 
@@ -95,21 +95,18 @@ class QuizRepositoryImpl implements QuizRepository {
         totalQuestions: quiz.totalQuestions,
         scorePercentage: scorePercentage,
         completedAt: DateTime.now(),
-        timeSpentSeconds: 0,
+        timeSpentSeconds: timeSpentSeconds,
         answers: studentAnswerModels,
         passed: scorePercentage >= 60,
       );
 
-      final docRef =
-          await firebaseFirestore.collection(_resultsCollection).add({
-        ...result.toJson(),
-        'id': '',
-      });
+      final resultData = result.toJson();
+      final docRef = firebaseFirestore.collection(_resultsCollection).doc();
 
-      await firebaseFirestore
-          .collection(_resultsCollection)
-          .doc(docRef.id)
-          .update({'id': docRef.id});
+      await docRef.set({
+        ...resultData,
+        'id': docRef.id,
+      });
     } catch (e) {
       throw Exception('Failed to submit answers: $e');
     }

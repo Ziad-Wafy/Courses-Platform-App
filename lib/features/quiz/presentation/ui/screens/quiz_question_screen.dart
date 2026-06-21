@@ -1,20 +1,22 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/utils/service_locator.dart';
 import '../../cubit/quiz_cubit.dart';
+import '../../domain/entities/quiz_entity.dart';
 import '../widgets/common_widgets.dart';
 
 class QuizQuestionScreen extends StatefulWidget {
   final String quizId;
 
   const QuizQuestionScreen({
-    Key? key,
+    super.key,
     required this.quizId,
-  }) : super(key: key);
+  });
 
   @override
   State<QuizQuestionScreen> createState() => _QuizQuestionScreenState();
@@ -26,6 +28,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
   int remainingSeconds = 0;
   int currentQuestionIndex = 0;
   late Map<int, String> answers; // Maps question index to selected answer ID
+  late DateTime startTime;
 
   @override
   void initState() {
@@ -33,15 +36,17 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
     quizCubit = sl<QuizCubit>();
     quizCubit.getQuizById(widget.quizId);
     answers = {};
-    _startTimer();
+    startTime = DateTime.now();
   }
 
   void _startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (remainingSeconds > 0) {
-        setState(() {
-          remainingSeconds--;
-        });
+        if (mounted) {
+          setState(() {
+            remainingSeconds--;
+          });
+        }
       } else {
         timer.cancel();
         _submitQuiz();
@@ -50,14 +55,46 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
   }
 
   void _submitQuiz() {
-    timer.cancel();
-    // TODO: Submit answers and navigate to results
-    Navigator.pushNamed(context, '/quiz/completion');
+    if (timer.isActive) {
+      timer.cancel();
+    }
+
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User session expired. Please log in again.')),
+      );
+      Navigator.of(context).popUntil((route) => route.isFirst);
+      return;
+    }
+
+    final studentId = currentUser.uid;
+    final quizState = quizCubit.state;
+    final timeSpentSeconds = DateTime.now().difference(startTime).inSeconds;
+
+    if (quizState is QuizLoaded) {
+      final quiz = quizState.quiz;
+      final studentAnswers = <StudentAnswer>[];
+
+      for (int i = 0; i < quiz.questions.length; i++) {
+        studentAnswers.add(
+          StudentAnswer(
+            questionId: quiz.questions[i].id,
+            selectedAnswerId: answers[i] ?? '',
+            isCorrect: false, // Calculated in repository
+          ),
+        );
+      }
+
+      quizCubit.submitAnswers(quiz.id, studentId, studentAnswers, timeSpentSeconds);
+    }
   }
 
   @override
   void dispose() {
-    timer.cancel();
+    if (this.timer.isActive) {
+      timer.cancel();
+    }
     super.dispose();
   }
 
@@ -69,7 +106,19 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
         value: quizCubit,
         child: BlocListener<QuizCubit, QuizState>(
           listener: (context, state) {
-            if (state is QuizError) {
+            if (state is QuizAnswersSubmitted) {
+              Navigator.pushReplacementNamed(
+                context,
+                '/quiz/completion',
+                arguments: {
+                  'correctAnswers': state.result.correctAnswers,
+                  'totalQuestions': state.result.totalQuestions,
+                  'scorePercentage': state.result.scorePercentage,
+                  'quizId': state.result.quizId,
+                  'courseId': (quizCubit.state as QuizLoaded).quiz.courseId,
+                },
+              );
+            } else if (state is QuizError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
@@ -93,9 +142,28 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
               if (state is QuizLoaded) {
                 final quiz = state.quiz;
 
+                if (quiz.questions.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.quiz, size: 64.sp, color: Colors.grey),
+                        SizedBox(height: 16.h),
+                        const Text("This quiz has no questions."),
+                        SizedBox(height: 16.h),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("Go Back"),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
                 // Initialize timer on first load
                 if (remainingSeconds == 0) {
                   remainingSeconds = quiz.timeLimitMinutes * 60;
+                  _startTimer();
                 }
 
                 if (currentQuestionIndex >= quiz.questions.length) {

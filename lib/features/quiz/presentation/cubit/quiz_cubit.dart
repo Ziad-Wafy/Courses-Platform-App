@@ -22,10 +22,29 @@ class QuizLoading extends QuizState {
 
 class QuizzesLoaded extends QuizState {
   final List<Quiz> quizzes;
-  const QuizzesLoaded(this.quizzes);
+  final List<QuizResult> studentResults;
+  final double averageScore;
+
+  const QuizzesLoaded({
+    required this.quizzes,
+    this.studentResults = const [],
+    this.averageScore = 0.0,
+  });
 
   @override
-  List<Object?> get props => [quizzes];
+  List<Object?> get props => [quizzes, studentResults, averageScore];
+
+  QuizzesLoaded copyWith({
+    List<Quiz>? quizzes,
+    List<QuizResult>? studentResults,
+    double? averageScore,
+  }) {
+    return QuizzesLoaded(
+      quizzes: quizzes ?? this.quizzes,
+      studentResults: studentResults ?? this.studentResults,
+      averageScore: averageScore ?? this.averageScore,
+    );
+  }
 }
 
 class QuizLoaded extends QuizState {
@@ -58,15 +77,6 @@ class QuizResultLoaded extends QuizState {
 
   @override
   List<Object?> get props => [result];
-}
-
-class StudentQuizResultsLoaded extends QuizState {
-  final List<QuizResult> results;
-  final double averageScore;
-  const StudentQuizResultsLoaded(this.results, this.averageScore);
-
-  @override
-  List<Object?> get props => [results, averageScore];
 }
 
 class QuizError extends QuizState {
@@ -103,13 +113,15 @@ class QuizCubit extends Cubit<QuizState> {
     emit(const QuizLoading());
     try {
       final quizzes = await getQuizzesUseCase(courseId);
-      emit(QuizzesLoaded(quizzes));
+      emit(QuizzesLoaded(quizzes: quizzes));
     } catch (e) {
       emit(QuizError(e.toString()));
     }
   }
 
   Future<void> getQuizById(String quizId) async {
+    // Keep current quizzes if any
+    final currentState = state;
     emit(const QuizLoading());
     try {
       final quiz = await getQuizByIdUseCase(quizId);
@@ -133,13 +145,16 @@ class QuizCubit extends Cubit<QuizState> {
     String quizId,
     String studentId,
     List<StudentAnswer> answers,
+    int timeSpentSeconds,
   ) async {
     emit(const QuizLoading());
     try {
-      await submitQuizAnswersUseCase(quizId, studentId, answers);
+      await submitQuizAnswersUseCase(quizId, studentId, answers, timeSpentSeconds);
       // Get the results after submission
       final results = await getStudentQuizResultsUseCase(studentId);
       if (results.isNotEmpty) {
+        // Sort results by date to get the latest one
+        results.sort((a, b) => b.completedAt.compareTo(a.completedAt));
         final latestResult = results.first;
         emit(QuizAnswersSubmitted(latestResult));
       }
@@ -159,7 +174,7 @@ class QuizCubit extends Cubit<QuizState> {
   }
 
   Future<void> getStudentResults(String studentId) async {
-    emit(const QuizLoading());
+    final currentState = state;
     try {
       final results = await getStudentQuizResultsUseCase(studentId);
       double averageScore = 0;
@@ -168,7 +183,19 @@ class QuizCubit extends Cubit<QuizState> {
                 .fold(0.0, (sum, result) => sum + result.scorePercentage) /
             results.length;
       }
-      emit(StudentQuizResultsLoaded(results, averageScore));
+
+      if (currentState is QuizzesLoaded) {
+        emit(currentState.copyWith(
+          studentResults: results,
+          averageScore: averageScore,
+        ));
+      } else {
+        emit(QuizzesLoaded(
+          quizzes: const [],
+          studentResults: results,
+          averageScore: averageScore,
+        ));
+      }
     } catch (e) {
       emit(QuizError(e.toString()));
     }

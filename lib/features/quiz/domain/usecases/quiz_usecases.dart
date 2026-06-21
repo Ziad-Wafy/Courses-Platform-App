@@ -40,8 +40,9 @@ class SubmitQuizAnswersUseCase {
     String quizId,
     String studentId,
     List<StudentAnswer> answers,
+    int timeSpentSeconds,
   ) async {
-    return repository.submitQuizAnswers(quizId, studentId, answers);
+    return repository.submitQuizAnswers(quizId, studentId, answers, timeSpentSeconds);
   }
 }
 
