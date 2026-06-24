@@ -3,19 +3,26 @@ import 'package:flutter/material.dart';
 class LessonTileWidget extends StatelessWidget {
   final String title;
   final String duration;
+  final VoidCallback? onTap;
 
   const LessonTileWidget({
     super.key,
-    this.title = "Lesson Name",
-    this.duration = "",
+    required this.title,
+    required this.duration,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: const CircleAvatar(child: Icon(Icons.play_arrow)),
+      onTap: onTap,
+      leading: const CircleAvatar(
+        child: Icon(Icons.play_arrow),
+      ),
       title: Text(title),
-      trailing: duration.isEmpty ? null : Text(duration),
+      trailing: duration.isEmpty
+          ? null
+          : Text(duration),
     );
   }
 }
