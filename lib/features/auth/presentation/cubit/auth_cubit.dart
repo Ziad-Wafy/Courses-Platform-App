@@ -45,8 +45,9 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> login(String email, String password) async {
     emit(AuthLoading());
     try {
-      final user = await loginUseCase.call(email, password);
-      emit(AuthSuccess(userCredential: user));
+      final credential = await loginUseCase.call(email, password);
+      // ✅ نجيب الـ user من الـ credential
+      emit(AuthSuccess(user: credential.user));
     } catch (e) {
       emit(AuthError(message: _handleFirebaseError(e)));
     }
@@ -60,8 +61,14 @@ class AuthCubit extends Cubit<AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      final user = await signUpUseCase.call(email, password, fullName, role);
-      emit(AuthSuccess(userCredential: user));
+      final credential = await signUpUseCase.call(
+        email,
+        password,
+        fullName,
+        role,
+      );
+      // ✅ SignUp يبعت AuthSignUpSuccess مش AuthSuccess عشان نفرق بينهم
+      emit(AuthSignUpSuccess(user: credential.user));
     } catch (e) {
       emit(AuthError(message: _handleFirebaseError(e)));
     }
@@ -70,8 +77,8 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> signInWithGoogle() async {
     emit(AuthLoading());
     try {
-      final user = await signInWithGoogleUseCase.call();
-      emit(AuthSuccess(userCredential: user));
+      final credential = await signInWithGoogleUseCase.call();
+      emit(AuthSuccess(user: credential.user));
     } catch (e) {
       emit(AuthError(message: _handleFirebaseError(e)));
     }
@@ -85,5 +92,11 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       emit(AuthError(message: _handleFirebaseError(e)));
     }
+  }
+
+  // ✅ AuthWrapper سيرصد authStateChanges تلقائياً وينقل لـ LoginScreen
+  Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
+    emit(AuthUnauthenticated());
   }
 }

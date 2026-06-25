@@ -6,16 +6,25 @@ class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
-class AuthResetPasswordSuccess extends AuthState {}
-
+// ✅ حالة نجاح تسجيل الدخول - تحمل كائن الـ User وليس الـ Credential بالكامل
 class AuthSuccess extends AuthState {
-  final UserCredential userCredential;
-  AuthSuccess({required this.userCredential});
+  final User? user;
+  AuthSuccess({this.user});
 }
+
+// ✅ حالة نجاح إنشاء الحساب
+class AuthSignUpSuccess extends AuthState {
+  final User? user;
+  AuthSignUpSuccess({this.user});
+}
+
+// ✅ حالة نجاح إرسال رابط إعادة تعيين كلمة المرور (تم دمج الحالتين)
+class PasswordResetEmailSent extends AuthState {}
+
+// ✅ حالة تسجيل الخروج بنجاح
+class AuthUnauthenticated extends AuthState {}
 
 class AuthError extends AuthState {
   final String message;
   AuthError({required this.message});
 }
-
-class PasswordResetEmailSent extends AuthState {}
