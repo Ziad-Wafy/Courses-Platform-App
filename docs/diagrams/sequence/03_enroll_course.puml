@@ -1,0 +1,13 @@
+@startuml enroll_course_sequence
+actor Student
+participant App
+participant "Enrollment Service" as Enroll
+participant DB
+
+Student -> App : Enroll in course
+App -> Enroll : enroll(courseId)
+Enroll -> DB : create enrollment
+DB --> Enroll : confirmation
+Enroll --> App : enrollment success
+App --> Student : Access granted
+@enduml

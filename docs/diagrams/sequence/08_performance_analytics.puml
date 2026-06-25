@@ -1,0 +1,13 @@
+@startuml performance_analytics_sequence
+actor Student
+participant App
+participant "Analytics Service" as Analytics
+participant DB
+
+Student -> App : View performance
+App -> Analytics : getStats()
+Analytics -> DB : calculate metrics
+DB --> Analytics : data
+Analytics --> App : charts data
+App --> Student : Display graphs
+@enduml

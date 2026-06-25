@@ -1,0 +1,13 @@
+@startuml browse_courses_sequence
+actor Student
+participant App
+participant "Course Service" as Course
+participant DB
+
+Student -> App : Open courses page
+App -> Course : fetchCourses()
+Course -> DB : getCourses()
+DB --> Course : course list
+Course --> App : courses
+App --> Student : Display courses
+@enduml

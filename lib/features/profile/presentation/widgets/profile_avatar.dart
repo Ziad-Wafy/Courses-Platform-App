@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_color.dart';
 
 class ProfileAvatar extends StatelessWidget {
-  const ProfileAvatar({Key? key}) : super(key: key);
+  const ProfileAvatar({super.key});
 
   @override
   Widget build(BuildContext context) {

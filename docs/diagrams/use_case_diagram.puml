@@ -1,0 +1,32 @@
+@startuml usecase_diagram
+left to right direction
+
+actor Student
+actor Teacher
+actor Admin
+
+rectangle "Courses Platform System" {
+
+  Student -- (Register / Login)
+  Student -- (Browse Courses)
+  Student -- (Enroll in Course)
+  Student -- (Watch Lecture)
+  Student -- (Submit Assignment)
+  Student -- (Take Quiz)
+  Student -- (View Attendance)
+  Student -- (View Performance Graphs)
+  Student -- (Receive Notifications)
+
+  Teacher -- (Register / Login)
+  Teacher -- (Create Course)
+  Teacher -- (Upload Videos & Docs)
+  Teacher -- (Create Quiz & Tasks)
+  Teacher -- (Track Attendance)
+  Teacher -- (Generate Reports)
+  Teacher -- (Chat with Students)
+
+  Admin -- (Manage Users)
+  Admin -- (Manage Courses)
+}
+
+@enduml
