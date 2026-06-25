@@ -12,12 +12,17 @@ dependencies:
   firebase_auth: ^6.4.0
   firebase_core: ^4.7.0
   firebase_storage: ^13.3.0
+  cloud_firestore: ^6.0.0
+  youtube_player_iframe: ^5.2.1
+
   flutter:
     sdk: flutter
+
   flutter_bloc: ^9.1.1
   flutter_screenutil: ^5.9.3
   get_it: ^9.2.1
-  google_sign_in: ^6.2.1   # ✅ رجعنا لـ v6 اللي شغالة
+  google_sign_in: ^6.2.1
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_lints: ^5.0.0
