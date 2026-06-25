@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/theme/app_color.dart';
-import '../../../../home_screen.dart';
+// import '../../../../home_screen.dart';
 import '../../cubit/auth_cubit.dart';
 import '../../cubit/auth_state.dart';
 import '../widgets/custom_text_field.dart';
@@ -30,23 +30,15 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // ✅ Validation
   String? _validate() {
     final email = emailController.text.trim();
     final password = passwordController.text;
-
-    if (email.isEmpty) {
-      return 'Please enter your email.';
-    }
+    if (email.isEmpty) return 'Please enter your email.';
     if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
       return 'Please enter a valid email address.';
     }
-    if (password.isEmpty) {
-      return 'Please enter your password.';
-    }
-    if (password.length < 6) {
-      return 'Password must be at least 6 characters.';
-    }
+    if (password.isEmpty) return 'Please enter your password.';
+    if (password.length < 6) return 'Password must be at least 6 characters.';
     return null;
   }
 
@@ -69,10 +61,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-          );
+          // Navigator.pushReplacement(
+          //   context,
+          //   MaterialPageRoute(builder: (_) => const HomeScreen()),
+          // );
         } else if (state is AuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message), backgroundColor: Colors.red),
@@ -131,6 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     hint: "Enter your email",
                     controller: emailController,
                     prefixIcon: Icons.email_outlined,
+                    keyboardType: TextInputType.emailAddress,
                   ),
                   SizedBox(height: 20.h),
                   CustomTextField(
@@ -141,22 +134,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     suffixIcon: _obscurePassword
                         ? Icons.visibility_off
                         : Icons.visibility,
-                    onSuffixTap: () {
-                      setState(() => _obscurePassword = !_obscurePassword);
-                    },
+                    onSuffixTap: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                   ),
                   SizedBox(height: 12.h),
                   Align(
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ForgotPasswordScreen(),
-                          ),
-                        );
-                      },
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ForgotPasswordScreen(),
+                        ),
+                      ),
                       child: Text(
                         "Forgot Password?",
                         style: TextStyle(
@@ -205,9 +195,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 24.h),
                   SocialButton(
                     text: "Sign in with Google",
-                    onPressed: () {
-                      context.read<AuthCubit>().signInWithGoogle();
-                    },
+                    onPressed: () =>
+                        context.read<AuthCubit>().signInWithGoogle(),
                   ),
                   SizedBox(height: 40.h),
                   Row(
@@ -222,14 +211,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SignupScreen(),
-                            ),
-                          );
-                        },
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SignupScreen(),
+                          ),
+                        ),
                         child: Text(
                           "Sign Up",
                           style: TextStyle(

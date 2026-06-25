@@ -10,7 +10,9 @@ class CustomTextField extends StatelessWidget {
   final bool isPassword;
   final int maxLines;
   final TextEditingController? controller;
-  final VoidCallback? onSuffixTap; // ✅ مضاف: للتحكم في إظهار/إخفاء الباسورد
+  final VoidCallback? onSuffixTap;
+  final TextInputType? keyboardType; 
+  final ValueChanged<String>? onChanged;
 
   const CustomTextField({
     Key? key,
@@ -22,6 +24,8 @@ class CustomTextField extends StatelessWidget {
     this.maxLines = 1,
     this.controller,
     this.onSuffixTap,
+    this.keyboardType,
+    this.onChanged,
   }) : super(key: key);
 
   @override
@@ -41,7 +45,9 @@ class CustomTextField extends StatelessWidget {
         TextField(
           controller: controller,
           obscureText: isPassword,
-          maxLines: isPassword ? 1 : maxLines, // ✅ maxLines=1 دايمًا مع Password
+          maxLines: isPassword ? 1 : maxLines,
+          keyboardType: keyboardType,
+          onChanged: onChanged,
           style: TextStyle(
             color: AppColors.chatOtherMessageTextColor,
             fontSize: 13.sp,
@@ -55,7 +61,6 @@ class CustomTextField extends StatelessWidget {
             prefixIcon: prefixIcon != null
                 ? Icon(prefixIcon, color: AppColors.primary, size: 18.sp)
                 : null,
-            // ✅ السفكس أيقونة قابلة للضغط
             suffixIcon: suffixIcon != null
                 ? GestureDetector(
                     onTap: onSuffixTap,
@@ -68,22 +73,30 @@ class CustomTextField extends StatelessWidget {
                 : null,
             filled: true,
             fillColor: AppColors.chatMyMessageTextColor,
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 14.w,
+              vertical: 12.h,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.r),
-              borderSide:
-                  const BorderSide(color: AppColors.secondary, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.secondary,
+                width: 1.5,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.r),
-              borderSide:
-                  const BorderSide(color: AppColors.secondary, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.secondary,
+                width: 1.5,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.r),
-              borderSide:
-                  const BorderSide(color: AppColors.primary, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.primary,
+                width: 1.5,
+              ),
             ),
           ),
         ),

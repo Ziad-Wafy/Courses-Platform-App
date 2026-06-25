@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 abstract class AuthRemoteDataSource {
@@ -11,10 +12,12 @@ abstract class AuthRemoteDataSource {
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth firebaseAuth;
+  final FirebaseFirestore firestore;
   final GoogleSignIn googleSignIn;
 
   AuthRemoteDataSourceImpl({
     required this.firebaseAuth,
+    required this.firestore,
     required this.googleSignIn,
   });
 
@@ -33,8 +36,21 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       email: email,
       password: password,
     );
+
+    final uid = userCredential.user!.uid;
+
+    // ✅ حفظ displayName في Firebase Auth
     await userCredential.user?.updateDisplayName(fullName);
-    // TODO: حفظ الـ role في Firestore في الخطوة الجاية
+
+    // ✅ حفظ بيانات المستخدم في Firestore
+    await firestore.collection('users').doc(uid).set({
+      'uid': uid,
+      'fullName': fullName,
+      'email': email,
+      'role': role, // 'Student' أو 'Teacher'
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+
     return userCredential;
   }
 
@@ -63,6 +79,21 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       idToken: googleAuth.idToken,
     );
 
-    return await firebaseAuth.signInWithCredential(credential);
+    final userCredential =
+        await firebaseAuth.signInWithCredential(credential);
+
+    // ✅ لو مستخدم جديد بـ Google، احفظ بياناته في Firestore
+    if (userCredential.additionalUserInfo?.isNewUser == true) {
+      final uid = userCredential.user!.uid;
+      await firestore.collection('users').doc(uid).set({
+        'uid': uid,
+        'fullName': userCredential.user?.displayName ?? '',
+        'email': userCredential.user?.email ?? '',
+        'role': 'Student', // Default role for Google Sign-In
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    }
+
+    return userCredential;
   }
 }
