@@ -7,7 +7,7 @@ import '../../../auth/presentation/ui/widgets/primary_button.dart';
 import '../widgets/profile_avatar.dart';
 
 class EditProfileScreen extends StatelessWidget {
-  const EditProfileScreen({Key? key}) : super(key: key);
+  const EditProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

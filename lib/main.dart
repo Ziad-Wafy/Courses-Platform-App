@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'firebase_options.dart';
 import 'core/utils/service_locator.dart' as di;
 import 'features/auth/presentation/ui/screens/login_screen.dart';
-import 'features/auth/presentation/cubit/auth_cubit.dart';
+import 'features/quiz/presentation/routes/quiz_routes.dart';
 
 void main() async {
   // 1. تأمين ربط الفريمورك
@@ -46,6 +46,7 @@ class MainApp extends StatelessWidget {
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Learning Management System',
+            routes: QuizRoutes.getRoutes(),
             home: const LoginScreen(),
           ),
         );
