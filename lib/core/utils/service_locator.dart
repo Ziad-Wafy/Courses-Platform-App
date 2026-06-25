@@ -3,23 +3,36 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/usecases/auth_usecases.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
+
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
+
+import '../../features/quiz/data/repositories/quiz_repository_impl.dart';
+import '../../features/quiz/domain/repositories/quiz_repository.dart';
+import '../../features/quiz/domain/usecases/quiz_usecases.dart';
+import '../../features/quiz/presentation/cubit/quiz_cubit.dart';
 
 final sl = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
-  // ── 1. External ─────────────────────────────────────────────
+  // =========================
+  // External
+  // =========================
+
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton(() => FirebaseStorage.instance);
   sl.registerLazySingleton(() => GoogleSignIn(scopes: ['email']));
 
-  // ── 2. Data Sources ──────────────────────────────────────────
+  // =========================
+  // Auth - Data Source
+  // =========================
+
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(
       firebaseAuth: sl(),
@@ -28,21 +41,27 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
-  // ── 3. Repositories ──────────────────────────────────────────
+  // =========================
+  // Auth - Repository
+  // =========================
+
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(remoteDataSource: sl()),
   );
 
-  // ── 4. Use Cases ─────────────────────────────────────────────
+  // =========================
+  // Auth - UseCases
+  // =========================
+
   sl.registerLazySingleton(() => LoginUseCase(sl()));
   sl.registerLazySingleton(() => SignUpUseCase(sl()));
   sl.registerLazySingleton(() => ResetPasswordUseCase(sl()));
   sl.registerLazySingleton(() => SignInWithGoogleUseCase(sl()));
 
-  // ── 5. Cubits ────────────────────────────────────────────────
+  // =========================
+  // Auth Cubit
+  // =========================
 
-  // ✅ LazySingleton — instance واحد طول عمر التطبيق
-  // عشان signOut() من أي مكان تشتغل على نفس الـ instance
   sl.registerLazySingleton(
     () => AuthCubit(
       loginUseCase: sl(),
@@ -52,9 +71,53 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
-  // ✅ Factory — instance جديد كل مرة بيفتح ProfileScreen
-  // عشان يعمل loadProfile() نظيف من Firestore
+  // =========================
+  // Profile Cubit
+  // =========================
+
   sl.registerFactory(
-    () => ProfileCubit(firestore: sl(), firebaseAuth: sl(), storage: sl()),
+    () => ProfileCubit(
+      firestore: sl(),
+      firebaseAuth: sl(),
+      storage: sl(),
+    ),
+  );
+
+  // =========================
+  // Quiz Repository
+  // =========================
+
+  sl.registerLazySingleton<QuizRepository>(
+    () => QuizRepositoryImpl(firebaseFirestore: sl()),
+  );
+
+  // =========================
+  // Quiz UseCases
+  // =========================
+
+  sl.registerLazySingleton(() => GetQuizzesUseCase(sl()));
+  sl.registerLazySingleton(() => GetQuizByIdUseCase(sl()));
+  sl.registerLazySingleton(() => CreateQuizUseCase(sl()));
+  sl.registerLazySingleton(() => SubmitQuizAnswersUseCase(sl()));
+  sl.registerLazySingleton(() => GetQuizResultUseCase(sl()));
+  sl.registerLazySingleton(() => GetStudentQuizResultsUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateQuizUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteQuizUseCase(sl()));
+
+  // =========================
+  // Quiz Cubit
+  // =========================
+
+  sl.registerFactory(
+    () => QuizCubit(
+      getQuizzesUseCase: sl(),
+      getQuizByIdUseCase: sl(),
+      createQuizUseCase: sl(),
+      submitQuizAnswersUseCase: sl(),
+      getQuizResultUseCase: sl(),
+      getStudentQuizResultsUseCase: sl(),
+      updateQuizUseCase: sl(),
+      deleteQuizUseCase: sl(),
+    ),
   );
 }

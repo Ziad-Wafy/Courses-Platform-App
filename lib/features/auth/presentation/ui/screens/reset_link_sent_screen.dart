@@ -8,7 +8,7 @@ class ResetLinkSentScreen extends StatelessWidget {
   // ✅ الإيميل بيجي dynamic من شاشة ForgotPassword
   final String email;
 
-  const ResetLinkSentScreen({Key? key, required this.email}) : super(key: key);
+  const ResetLinkSentScreen({super.key, required this.email});
 
   @override
   Widget build(BuildContext context) {

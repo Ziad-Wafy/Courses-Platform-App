@@ -11,11 +11,11 @@ class CustomTextField extends StatelessWidget {
   final int maxLines;
   final TextEditingController? controller;
   final VoidCallback? onSuffixTap;
-  final TextInputType? keyboardType; 
+  final TextInputType? keyboardType;
   final ValueChanged<String>? onChanged;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.label,
     required this.hint,
     this.prefixIcon,
@@ -26,7 +26,7 @@ class CustomTextField extends StatelessWidget {
     this.onSuffixTap,
     this.keyboardType,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

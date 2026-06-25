@@ -1,10 +1,42 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/courses/courses_header_widget.dart';
-import '../widgets/courses/course_tabs_widget.dart';
+import '../../../data/data_sources/courses_remote_data_source.dart';
+import '../../../data/repositories/course_repository_impl.dart';
+import '../../../domain/use_cases/get_courses_use_case.dart';
 
-class StudentCoursesScreen extends StatelessWidget {
+import '../widgets/courses/course_card_widget.dart';
+import '../widgets/courses/course_tabs_widget.dart';
+import '../widgets/courses/courses_header_widget.dart';
+
+import 'course_details_screen.dart';
+
+class StudentCoursesScreen extends StatefulWidget {
   const StudentCoursesScreen({super.key});
+
+  @override
+  State<StudentCoursesScreen> createState() => _StudentCoursesScreenState();
+}
+
+class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
+  late Future<dynamic> coursesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+
+    print('StudentCoursesScreen Opened');
+
+    final remoteDataSource = FirebaseCoursesRemoteDataSource(
+      FirebaseFirestore.instance,
+    );
+
+    final repository = CourseRepositoryImpl(remoteDataSource);
+
+    final getCoursesUseCase = GetCoursesUseCase(repository);
+
+    coursesFuture = getCoursesUseCase();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +48,6 @@ class StudentCoursesScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              /// Header + Search
               CoursesHeaderWidget(
                 controller: searchController,
                 onChanged: (value) {},
@@ -24,16 +55,83 @@ class StudentCoursesScreen extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              /// Tabs
-              CourseTabsWidget(
-                enrolledCount: 0,
-                availableCount: 0,
-                isEnrolledSelected: true,
-                onEnrolledTap: () {},
-                onAvailableTap: () {},
-              ),
+              FutureBuilder(
+                future: coursesFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
 
-              const SizedBox(height: 30),
+                  if (snapshot.hasError) {
+                    print('ERROR: ${snapshot.error}');
+
+                    return Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text(snapshot.error.toString()),
+                    );
+                  }
+
+                  final courses = snapshot.data as List? ?? [];
+
+                  print(
+                    'COURSES RECEIVED: ${courses.length}',
+                  );
+
+                  if (courses.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text('No Courses Found'),
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      CourseTabsWidget(
+                        enrolledCount: 0,
+                        availableCount: courses.length,
+                        isEnrolledSelected: true,
+                        onEnrolledTap: () {},
+                        onAvailableTap: () {},
+                      ),
+
+                      const SizedBox(height: 30),
+
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics:
+                            const NeverScrollableScrollPhysics(),
+                        itemCount: courses.length,
+                        itemBuilder: (context, index) {
+                          final course = courses[index];
+
+                          return CourseCardWidget(
+                            title: course.title,
+                            instructor: course.instructor,
+                            image: course.image,
+                            studentsCount:
+                                course.studentsCount,
+                            rating: course.rating,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      CourseDetailsScreen(
+                                    course: course,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
             ],
           ),
         ),
