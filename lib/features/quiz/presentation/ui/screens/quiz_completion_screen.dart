@@ -36,7 +36,7 @@ class QuizCompletionScreen extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: [
                     AppColors.primary,
-                    AppColors.primary.withOpacity(0.8),
+                    AppColors.primary.withValues(alpha: 0.8),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -53,7 +53,7 @@ class QuizCompletionScreen extends StatelessWidget {
                     height: 80.w,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                     ),
                     child: Center(
                       child: Icon(
@@ -78,7 +78,7 @@ class QuizCompletionScreen extends StatelessWidget {
                         ? 'You passed the quiz'
                         : 'You did not pass this quiz',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       fontSize: 14.sp,
                     ),
                   ),
@@ -97,13 +97,13 @@ class QuizCompletionScreen extends StatelessWidget {
               padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
                 color: passed
-                    ? const Color(0xFF4CAF50).withOpacity(0.1)
-                    : const Color(0xFFFFC107).withOpacity(0.1),
+                    ? const Color(0xFF4CAF50).withValues(alpha: 0.1)
+                    : const Color(0xFFFFC107).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8.r),
                 border: Border.all(
                   color: passed
-                      ? const Color(0xFF4CAF50).withOpacity(0.3)
-                      : const Color(0xFFFFC107).withOpacity(0.3),
+                      ? const Color(0xFF4CAF50).withValues(alpha: 0.3)
+                      : const Color(0xFFFFC107).withValues(alpha: 0.3),
                 ),
               ),
               child: Row(

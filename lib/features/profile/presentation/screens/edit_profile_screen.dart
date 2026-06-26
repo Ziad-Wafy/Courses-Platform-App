@@ -14,7 +14,7 @@ import '../cubit/profile_state.dart';
 class EditProfileScreen extends StatefulWidget {
   final ProfileEntity profile;
 
-  const EditProfileScreen({Key? key, required this.profile}) : super(key: key);
+  const EditProfileScreen({super.key, required this.profile});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -335,7 +335,7 @@ class _ReadOnlyEmailField extends StatelessWidget {
                 child: Text(
                   email,
                   style: TextStyle(
-                    color: AppColors.chatOtherMessageTextColor.withOpacity(0.5),
+                    color: AppColors.chatOtherMessageTextColor.withValues(alpha: 0.5),
                     fontSize: 13.sp,
                   ),
                 ),

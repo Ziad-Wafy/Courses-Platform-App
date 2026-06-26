@@ -94,7 +94,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
 
   @override
   void dispose() {
-    if (this.timer.isActive) {
+    if (timer.isActive) {
       timer.cancel();
     }
     super.dispose();
@@ -239,7 +239,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
                                           decoration: BoxDecoration(
                                             color: isSelected
                                                 ? AppColors.primary
-                                                    .withOpacity(0.1)
+                                                    .withValues(alpha: 0.1)
                                                 : Colors.white,
                                             border: Border.all(
                                               color: isSelected
