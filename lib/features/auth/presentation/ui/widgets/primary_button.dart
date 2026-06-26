@@ -4,7 +4,7 @@ import '../../../../../core/theme/app_color.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;   // ✅ nullable — بيدي disabled state تلقائي
   final IconData? icon;
 
   const PrimaryButton({
@@ -21,7 +21,9 @@ class PrimaryButton extends StatelessWidget {
       height: 52.h,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          // ✅ لو onPressed == null يظهر بلون أفتح تلقائياً
+          backgroundColor:
+              onPressed != null ? AppColors.primary : AppColors.primary.withOpacity(0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
           ),
@@ -32,7 +34,8 @@ class PrimaryButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
-              Icon(icon, color: AppColors.chatMyMessageTextColor, size: 18.sp),
+              Icon(icon,
+                  color: AppColors.chatMyMessageTextColor, size: 18.sp),
               SizedBox(width: 8.w),
             ],
             Text(

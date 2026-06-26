@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,7 +21,7 @@ void main() async {
       );
     }
   } catch (e) {
-    debugPrint("Firebase already initialized: $e");
+    debugPrint("Firebase initialization failed: $e");
   }
 
   await di.setupServiceLocator();
@@ -38,8 +39,10 @@ class MainApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return BlocProvider(
-          create: (context) => di.sl<AuthCubit>(),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider<AuthCubit>(create: (context) => di.sl<AuthCubit>()),
+          ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Learning Management System',
@@ -47,6 +50,33 @@ class MainApp extends StatelessWidget {
             home: const LoginScreen(),
           ),
         );
+      },
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (snapshot.hasData && snapshot.data != null) {
+          // TODO: استبدلها بشاشة الـ Home عند توفرها
+          return const LoginScreen();
+          // مثال:
+          // return const HomeScreen();
+        }
+
+        return const LoginScreen();
       },
     );
   }

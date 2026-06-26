@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/theme/app_color.dart';
-import '../../../../home_screen.dart';
 import '../../cubit/auth_cubit.dart';
 import '../../cubit/auth_state.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/role_selector.dart';
+import 'account_created_screen.dart'; // ✅ استبدلنا HomeScreen بـ AccountCreatedScreen
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -35,37 +35,22 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  // ✅ Validation كاملة
   String? _validate() {
     final name = fullNameController.text.trim();
     final email = emailController.text.trim();
     final password = passwordController.text;
     final confirmPassword = confirmPasswordController.text;
 
-    if (name.isEmpty) {
-      return 'Please enter your full name.';
-    }
-    if (name.length < 3) {
-      return 'Name must be at least 3 characters.';
-    }
-    if (email.isEmpty) {
-      return 'Please enter your email.';
-    }
+    if (name.isEmpty) return 'Please enter your full name.';
+    if (name.length < 3) return 'Name must be at least 3 characters.';
+    if (email.isEmpty) return 'Please enter your email.';
     if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
       return 'Please enter a valid email address.';
     }
-    if (password.isEmpty) {
-      return 'Please enter your password.';
-    }
-    if (password.length < 6) {
-      return 'Password must be at least 6 characters.';
-    }
-    if (confirmPassword.isEmpty) {
-      return 'Please confirm your password.';
-    }
-    if (password != confirmPassword) {
-      return 'Passwords do not match.';
-    }
+    if (password.isEmpty) return 'Please enter your password.';
+    if (password.length < 6) return 'Password must be at least 6 characters.';
+    if (confirmPassword.isEmpty) return 'Please confirm your password.';
+    if (password != confirmPassword) return 'Passwords do not match.';
     return null;
   }
 
@@ -78,28 +63,27 @@ class _SignupScreenState extends State<SignupScreen> {
       return;
     }
     context.read<AuthCubit>().signUp(
-          emailController.text.trim(),
-          passwordController.text,
-          fullNameController.text.trim(),
-          _selectedRole,
-        );
+      emailController.text.trim(),
+      passwordController.text,
+      fullNameController.text.trim(),
+      _selectedRole,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state is AuthSuccess) {
+        if (state is AuthSignUpSuccess) {
+          // ✅ بعد إنشاء الحساب → AccountCreatedScreen
+          // pushReplacement عشان مايقدرش يرجع لـ Signup بالـ back button
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(builder: (_) => const AccountCreatedScreen()),
           );
         } else if (state is AuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
           );
         }
       },
@@ -144,7 +128,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     "Join us and start learning today",
                     style: TextStyle(
                       fontSize: 14.sp,
-                      color: AppColors.chatOtherMessageTextColor.withOpacity(0.5),
+                      color: AppColors.chatOtherMessageTextColor.withOpacity(
+                        0.5,
+                      ),
                     ),
                   ),
                   SizedBox(height: 32.h),
@@ -162,9 +148,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   SizedBox(height: 8.h),
                   RoleSelector(
                     selectedRole: _selectedRole,
-                    onRoleSelected: (role) {
-                      setState(() => _selectedRole = role);
-                    },
+                    onRoleSelected: (role) =>
+                        setState(() => _selectedRole = role),
                   ),
                   SizedBox(height: 24.h),
                   CustomTextField(
@@ -179,6 +164,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     hint: "example@email.com",
                     prefixIcon: Icons.email_outlined,
                     controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
                   ),
                   SizedBox(height: 16.h),
                   CustomTextField(
@@ -190,9 +176,8 @@ class _SignupScreenState extends State<SignupScreen> {
                         : Icons.visibility,
                     isPassword: _obscurePassword,
                     controller: passwordController,
-                    onSuffixTap: () {
-                      setState(() => _obscurePassword = !_obscurePassword);
-                    },
+                    onSuffixTap: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                   ),
                   SizedBox(height: 16.h),
                   CustomTextField(
@@ -204,9 +189,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         : Icons.visibility,
                     isPassword: _obscureConfirmPassword,
                     controller: confirmPasswordController,
-                    onSuffixTap: () {
-                      setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
-                    },
+                    onSuffixTap: () => setState(
+                      () => _obscureConfirmPassword = !_obscureConfirmPassword,
+                    ),
                   ),
                   SizedBox(height: 32.h),
                   state is AuthLoading
@@ -223,7 +208,8 @@ class _SignupScreenState extends State<SignupScreen> {
                         "Already have an account? ",
                         style: TextStyle(
                           fontSize: 14.sp,
-                          color: AppColors.chatOtherMessageTextColor.withOpacity(0.7),
+                          color: AppColors.chatOtherMessageTextColor
+                              .withOpacity(0.7),
                         ),
                       ),
                       GestureDetector(

@@ -1,12 +1,17 @@
 import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/usecases/auth_usecases.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
+
+import '../../features/profile/presentation/cubit/profile_cubit.dart';
+
 import '../../features/quiz/data/repositories/quiz_repository_impl.dart';
 import '../../features/quiz/domain/repositories/quiz_repository.dart';
 import '../../features/quiz/domain/usecases/quiz_usecases.dart';
@@ -15,32 +20,49 @@ import '../../features/quiz/presentation/cubit/quiz_cubit.dart';
 final sl = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
-  // 1. External
-  sl.registerLazySingleton(() => FirebaseAuth.instance);
-  sl.registerLazySingleton(() => GoogleSignIn(scopes: ['email']));
-  sl.registerLazySingleton(() => FirebaseFirestore.instance);
+  // =========================
+  // External
+  // =========================
 
-  // 2. Auth - Data Sources
+  sl.registerLazySingleton(() => FirebaseAuth.instance);
+  sl.registerLazySingleton(() => FirebaseFirestore.instance);
+  sl.registerLazySingleton(() => FirebaseStorage.instance);
+  sl.registerLazySingleton(() => GoogleSignIn(scopes: ['email']));
+
+  // =========================
+  // Auth - Data Source
+  // =========================
+
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(
       firebaseAuth: sl(),
+      firestore: sl(),
       googleSignIn: sl(),
     ),
   );
 
-  // 3. Auth - Repositories
+  // =========================
+  // Auth - Repository
+  // =========================
+
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(remoteDataSource: sl()),
   );
 
-  // 4. Auth - Use Cases
+  // =========================
+  // Auth - UseCases
+  // =========================
+
   sl.registerLazySingleton(() => LoginUseCase(sl()));
   sl.registerLazySingleton(() => SignUpUseCase(sl()));
   sl.registerLazySingleton(() => ResetPasswordUseCase(sl()));
   sl.registerLazySingleton(() => SignInWithGoogleUseCase(sl()));
 
-  // 5. Auth - Cubit
-  sl.registerFactory(
+  // =========================
+  // Auth Cubit
+  // =========================
+
+  sl.registerLazySingleton(
     () => AuthCubit(
       loginUseCase: sl(),
       signUpUseCase: sl(),
@@ -49,12 +71,30 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
-  // 6. Quiz - Repositories
+  // =========================
+  // Profile Cubit
+  // =========================
+
+  sl.registerFactory(
+    () => ProfileCubit(
+      firestore: sl(),
+      firebaseAuth: sl(),
+      storage: sl(),
+    ),
+  );
+
+  // =========================
+  // Quiz Repository
+  // =========================
+
   sl.registerLazySingleton<QuizRepository>(
     () => QuizRepositoryImpl(firebaseFirestore: sl()),
   );
 
-  // 7. Quiz - Use Cases
+  // =========================
+  // Quiz UseCases
+  // =========================
+
   sl.registerLazySingleton(() => GetQuizzesUseCase(sl()));
   sl.registerLazySingleton(() => GetQuizByIdUseCase(sl()));
   sl.registerLazySingleton(() => CreateQuizUseCase(sl()));
@@ -64,7 +104,10 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(() => UpdateQuizUseCase(sl()));
   sl.registerLazySingleton(() => DeleteQuizUseCase(sl()));
 
-  // 8. Quiz - Cubit
+  // =========================
+  // Quiz Cubit
+  // =========================
+
   sl.registerFactory(
     () => QuizCubit(
       getQuizzesUseCase: sl(),
