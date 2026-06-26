@@ -6,7 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../../core/theme/app_color.dart';
 import '../../../../../core/utils/service_locator.dart';
 import '../../cubit/quiz_cubit.dart';
-import '../../domain/entities/quiz_entity.dart';
+import '../../../domain/entities/quiz_entity.dart';
 import '../widgets/common_widgets.dart';
 
 class CreateQuizScreen extends StatefulWidget {

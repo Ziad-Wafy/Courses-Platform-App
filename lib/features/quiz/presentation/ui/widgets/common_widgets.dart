@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../core/theme/app_color.dart';
+import '../../../../../core/theme/app_color.dart';
 
 class QuizHeader extends StatelessWidget {
   final String title;

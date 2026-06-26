@@ -8,7 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/theme/app_color.dart';
 import '../../../../../core/utils/service_locator.dart';
 import '../../cubit/quiz_cubit.dart';
-import '../../domain/entities/quiz_entity.dart';
+import '../../../domain/entities/quiz_entity.dart';
 import '../widgets/common_widgets.dart';
 
 class QuizQuestionScreen extends StatefulWidget {
@@ -30,6 +30,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
   int currentQuestionIndex = 0;
   late Map<int, String> answers; // Maps question index to selected answer ID
   late DateTime startTime;
+  String? currentCourseId;
 
   @override
   void initState() {
@@ -116,7 +117,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
                   'totalQuestions': state.result.totalQuestions,
                   'scorePercentage': state.result.scorePercentage,
                   'quizId': state.result.quizId,
-                  'courseId': (quizCubit.state as QuizLoaded).quiz.courseId,
+                  'courseId': currentCourseId ?? '',
                 },
               );
             } else if (state is QuizError) {
@@ -142,6 +143,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
 
               if (state is QuizLoaded) {
                 final quiz = state.quiz;
+                currentCourseId = quiz.courseId;
 
                 if (quiz.questions.isEmpty) {
                   return Center(

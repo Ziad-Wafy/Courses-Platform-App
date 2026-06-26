@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../../core/theme/app_color.dart';
+import '../../../../core/theme/app_color.dart';
+import '../../../../quiz/presentation/routes/quiz_routes.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../domain/entities/profile_entity.dart';
 import '../cubit/profile_cubit.dart';
@@ -90,7 +91,7 @@ class TeacherProfileScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.pushNamed(
                         context,
-                        '/quiz/create',
+                        QuizRoutes.createQuiz,
                         arguments: {
                           'courseId': 'course_123', // TODO: Get actual course ID
                           'instructorId': profile.uid,

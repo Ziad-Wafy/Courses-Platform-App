@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_color.dart';
+import '../../../../quiz/presentation/routes/quiz_routes.dart';
 import '../../../data/data_sources/courses_remote_data_source.dart';
 import '../../../data/models/section_model.dart';
 import '../../../data/repositories/section_repository_impl.dart';
@@ -158,7 +160,7 @@ class _CourseDetailsScreenState
                           onPressed: () {
                             Navigator.pushNamed(
                               context,
-                              '/quiz/list',
+                              QuizRoutes.quizList,
                               arguments: widget.course.id,
                             );
                           },
@@ -172,7 +174,7 @@ class _CourseDetailsScreenState
                             ),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF3B82F6), // AppColors.primary
+                            backgroundColor: AppColors.primary,
                             minimumSize: const Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
