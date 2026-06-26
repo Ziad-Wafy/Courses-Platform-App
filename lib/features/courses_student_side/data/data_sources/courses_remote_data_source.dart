@@ -7,10 +7,7 @@ import '../models/section_model.dart';
 abstract class CoursesRemoteDataSource {
   Future<List<CourseModel>> getCourses();
 
-  Future<List<LessonModel>> getLessons(
-    String courseId,
-    String sectionId,
-  );
+  Future<List<LessonModel>> getLessons(String courseId, String sectionId);
 
   Future<List<SectionModel>> getSections(String courseId);
 }
@@ -74,17 +71,10 @@ class FirebaseCoursesRemoteDataSource implements CoursesRemoteDataSource {
         .collection('lessons')
         .get();
 
-    print(
-      'LESSONS COUNT FOR $sectionId: ${snapshot.docs.length}',
-    );
+    print('LESSONS COUNT FOR $sectionId: ${snapshot.docs.length}');
 
     return snapshot.docs
-        .map(
-          (doc) => LessonModel.fromJson(
-            doc.data(),
-            doc.id,
-          ),
-        )
+        .map((doc) => LessonModel.fromJson(doc.data(), doc.id))
         .toList();
   }
 }

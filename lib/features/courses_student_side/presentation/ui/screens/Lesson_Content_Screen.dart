@@ -21,10 +21,7 @@ class LessonContentScreen extends StatelessWidget {
     try {
       final uri = Uri.parse(pdfUrl);
 
-      await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (e) {
       debugPrint('OPEN URL ERROR: $e');
     }
@@ -34,9 +31,7 @@ class LessonContentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF4F5F7),
-      appBar: AppBar(
-        title: Text(title),
-      ),
+      appBar: AppBar(title: Text(title)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -44,28 +39,19 @@ class LessonContentScreen extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 20),
 
             const Text(
               "Description",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 10),
 
-            Text(
-              description,
-              style: const TextStyle(fontSize: 16),
-            ),
+            Text(description, style: const TextStyle(fontSize: 16)),
 
             const SizedBox(height: 30),
 
@@ -79,7 +65,10 @@ class LessonContentScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (_) => VideoPlayerScreen(
+                        title: title,
+                        description: description,
                         videoUrl: videoUrl,
+                        pdfUrl: pdfUrl,
                       ),
                     ),
                   );
