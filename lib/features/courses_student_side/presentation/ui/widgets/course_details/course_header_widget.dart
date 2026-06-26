@@ -25,14 +25,26 @@ class CourseHeaderWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
-            children: [
-              Icon(Icons.arrow_back_ios_new, color: Colors.white),
-              SizedBox(width: 6),
-              Text("Back", style: TextStyle(color: Colors.white)),
-            ],
+          InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            borderRadius: BorderRadius.circular(8),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                  SizedBox(width: 6),
+                  Text("Back", style: TextStyle(color: Colors.white)),
+                ],
+              ),
+            ),
           ),
+
           const SizedBox(height: 26),
+
           Row(
             children: [
               Container(
@@ -48,7 +60,9 @@ class CourseHeaderWidget extends StatelessWidget {
                   size: 42,
                 ),
               ),
+
               const SizedBox(width: 18),
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,7 +75,9 @@ class CourseHeaderWidget extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
                     const SizedBox(height: 10),
+
                     Text(
                       instructor,
                       style: const TextStyle(color: Colors.white70),

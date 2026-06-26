@@ -1,4 +1,4 @@
-import '../../domain/entities/course_entity.dart';
+import 'package:learning_management_system/features/courses_student_side/domain/entities/course_entity.dart';
 
 class CourseModel extends CourseEntity {
   const CourseModel({
@@ -11,10 +11,7 @@ class CourseModel extends CourseEntity {
     required super.rating,
   });
 
-  factory CourseModel.fromJson(
-    Map<String, dynamic> json,
-    String id,
-  ) {
+  factory CourseModel.fromJson(Map<String, dynamic> json, String id) {
     return CourseModel(
       id: id,
       title: json['title'] ?? '',

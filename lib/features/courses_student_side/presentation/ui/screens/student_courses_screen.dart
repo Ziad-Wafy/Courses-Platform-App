@@ -19,6 +19,11 @@ class StudentCoursesScreen extends StatefulWidget {
 }
 
 class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
+  List allCourses = [];
+  String searchText = '';
+
+  final TextEditingController searchController = TextEditingController();
+
   late Future<dynamic> coursesFuture;
 
   @override
@@ -39,9 +44,13 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController searchController = TextEditingController();
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF4F5F7),
       body: SafeArea(
@@ -50,7 +59,11 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
             children: [
               CoursesHeaderWidget(
                 controller: searchController,
-                onChanged: (value) {},
+                onChanged: (value) {
+                  setState(() {
+                    searchText = value.trim().toLowerCase();
+                  });
+                },
               ),
 
               const SizedBox(height: 24),
@@ -58,11 +71,8 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
               FutureBuilder(
                 future: coursesFuture,
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
                   }
 
                   if (snapshot.hasError) {
@@ -76,16 +86,13 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
                   final courses = snapshot.data as List? ?? [];
 
-                  print(
-                    'COURSES RECEIVED: ${courses.length}',
-                  );
+                  allCourses = List.from(courses);
 
-                  if (courses.isEmpty) {
-                    return const Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Text('No Courses Found'),
-                    );
-                  }
+                  final filteredCourses = allCourses.where((course) {
+                    return course.title.toLowerCase().contains(searchText);
+                  }).toList();
+
+                  print('COURSES RECEIVED: ${courses.length}');
 
                   return Column(
                     children: [
@@ -99,35 +106,40 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
                       const SizedBox(height: 30),
 
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics:
-                            const NeverScrollableScrollPhysics(),
-                        itemCount: courses.length,
-                        itemBuilder: (context, index) {
-                          final course = courses[index];
+                      if (filteredCourses.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Text(
+                            'No Courses Found',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        )
+                      else
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: filteredCourses.length,
+                          itemBuilder: (context, index) {
+                            final course = filteredCourses[index];
 
-                          return CourseCardWidget(
-                            title: course.title,
-                            instructor: course.instructor,
-                            image: course.image,
-                            studentsCount:
-                                course.studentsCount,
-                            rating: course.rating,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      CourseDetailsScreen(
-                                    course: course,
+                            return CourseCardWidget(
+                              title: course.title,
+                              instructor: course.instructor,
+                              image: course.image,
+                              studentsCount: course.studentsCount,
+                              rating: course.rating,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        CourseDetailsScreen(course: course),
                                   ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
+                                );
+                              },
+                            );
+                          },
+                        ),
                     ],
                   );
                 },
