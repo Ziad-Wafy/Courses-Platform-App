@@ -151,6 +151,35 @@ class _CourseDetailsScreenState
                           );
                         },
                       ),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/quiz/list',
+                              arguments: widget.course.id,
+                            );
+                          },
+                          icon: const Icon(Icons.quiz, color: Colors.white),
+                          label: const Text(
+                            "View Quizzes & Assessments",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF3B82F6), // AppColors.primary
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   );
                 },

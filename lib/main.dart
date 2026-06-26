@@ -9,6 +9,7 @@ import 'core/utils/service_locator.dart' as di;
 
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/auth/presentation/ui/screens/login_screen.dart';
+import 'features/courses_student_side/presentation/ui/screens/student_courses_screen.dart';
 import 'features/quiz/presentation/routes/quiz_routes.dart';
 
 void main() async {
@@ -70,10 +71,8 @@ class AuthWrapper extends StatelessWidget {
         }
 
         if (snapshot.hasData && snapshot.data != null) {
-          // TODO: استبدلها بشاشة الـ Home عند توفرها
-          return const LoginScreen();
-          // مثال:
-          // return const HomeScreen();
+          // Navigate to student courses screen as the home for now
+          return const StudentCoursesScreen();
         }
 
         return const LoginScreen();

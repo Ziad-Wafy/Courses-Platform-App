@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../../core/theme/app_color.dart';
 import '../widgets/common_widgets.dart';
 
 class QuizCompletionScreen extends StatelessWidget {
@@ -34,8 +35,8 @@ class QuizCompletionScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFF4A90E2),
-                    const Color(0xFF357ABD),
+                    AppColors.primary,
+                    AppColors.primary.withOpacity(0.8),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -147,7 +148,7 @@ class QuizCompletionScreen extends StatelessWidget {
                     style: OutlinedButton.styleFrom(
                       minimumSize: Size(double.infinity, 50.h),
                       side: const BorderSide(
-                        color: Color(0xFF4A90E2),
+                        color: AppColors.primary,
                         width: 1.5,
                       ),
                       shape: RoundedRectangleBorder(
@@ -167,7 +168,7 @@ class QuizCompletionScreen extends StatelessWidget {
                     icon: const Icon(Icons.home),
                     label: const Text('Back to Quizzes'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4A90E2),
+                      backgroundColor: AppColors.primary,
                       minimumSize: Size(double.infinity, 50.h),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.r),

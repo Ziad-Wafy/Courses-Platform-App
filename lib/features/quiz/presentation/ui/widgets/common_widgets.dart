@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../core/theme/app_color.dart';
 
 class QuizHeader extends StatelessWidget {
   final String title;
@@ -24,7 +25,7 @@ class QuizHeader extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [const Color(0xFF4A90E2), const Color(0xFF357ABD)],
+          colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -139,7 +140,7 @@ class QuizCard extends StatelessWidget {
                   padding:
                       EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF4A90E2).withOpacity(0.1),
+                    color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Text(
@@ -147,7 +148,7 @@ class QuizCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF4A90E2),
+                      color: AppColors.primary,
                     ),
                   ),
                 ),
@@ -219,7 +220,7 @@ class QuizCard extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF4A90E2),
+        backgroundColor: AppColors.primary,
         padding: EdgeInsets.symmetric(vertical: 10.h),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.r),
@@ -243,7 +244,7 @@ class QuizCard extends StatelessWidget {
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
-        side: const BorderSide(color: Color(0xFF4A90E2), width: 1.5),
+        side: const BorderSide(color: AppColors.primary, width: 1.5),
         padding: EdgeInsets.symmetric(vertical: 10.h),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.r),
@@ -252,7 +253,7 @@ class QuizCard extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          color: const Color(0xFF4A90E2),
+          color: AppColors.primary,
           fontSize: 14.sp,
           fontWeight: FontWeight.w600,
         ),
@@ -298,7 +299,7 @@ class AverageScoreCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 32.sp,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF4A90E2),
+                  color: AppColors.primary,
                 ),
               ),
             ],
@@ -307,13 +308,13 @@ class AverageScoreCard extends StatelessWidget {
             width: 60.w,
             height: 60.w,
             decoration: BoxDecoration(
-              color: const Color(0xFF4A90E2).withOpacity(0.1),
+              color: AppColors.primary.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.medal,
               size: 32.sp,
-              color: const Color(0xFF4A90E2),
+              color: AppColors.primary,
             ),
           ),
         ],
@@ -382,7 +383,7 @@ class ProgressBar extends StatelessWidget {
               minHeight: 6.h,
               backgroundColor: Colors.grey.shade200,
               valueColor:
-                  AlwaysStoppedAnimation<Color>(const Color(0xFF4A90E2)),
+                  AlwaysStoppedAnimation<Color>(AppColors.primary),
             ),
           ),
         ],
@@ -430,7 +431,7 @@ class ResultCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 48.sp,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF4A90E2),
+              color: AppColors.primary,
             ),
           ),
           SizedBox(height: 8.h),

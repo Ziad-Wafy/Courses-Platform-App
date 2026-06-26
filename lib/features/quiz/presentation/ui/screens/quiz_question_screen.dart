@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../../core/theme/app_color.dart';
 import '../../../../../core/utils/service_locator.dart';
 import '../../cubit/quiz_cubit.dart';
 import '../../domain/entities/quiz_entity.dart';
@@ -133,7 +134,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
                 return Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      const Color(0xFF4A90E2),
+                      AppColors.primary,
                     ),
                   ),
                 );
@@ -235,12 +236,12 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
                                           padding: EdgeInsets.all(14.w),
                                           decoration: BoxDecoration(
                                             color: isSelected
-                                                ? const Color(0xFF4A90E2)
+                                                ? AppColors.primary
                                                     .withOpacity(0.1)
                                                 : Colors.white,
                                             border: Border.all(
                                               color: isSelected
-                                                  ? const Color(0xFF4A90E2)
+                                                  ? AppColors.primary
                                                   : Colors.grey.shade200,
                                               width: isSelected ? 2 : 1,
                                             ),
@@ -256,7 +257,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
                                                   shape: BoxShape.circle,
                                                   border: Border.all(
                                                     color: isSelected
-                                                        ? const Color(0xFF4A90E2)
+                                                        ? AppColors.primary
                                                         : Colors.grey.shade300,
                                                     width: 2,
                                                   ),
@@ -267,8 +268,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
                                                             const BoxDecoration(
                                                           shape:
                                                               BoxShape.circle,
-                                                          color: Color(
-                                                              0xFF4A90E2),
+                                                          color: AppColors.primary,
                                                         ),
                                                         child: Center(
                                                           child: Container(
@@ -296,7 +296,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
                                                         ? FontWeight.w600
                                                         : FontWeight.w500,
                                                     color: isSelected
-                                                        ? const Color(0xFF4A90E2)
+                                                        ? AppColors.primary
                                                         : Colors.black87,
                                                   ),
                                                 ),
@@ -330,7 +330,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
                                 },
                                 style: OutlinedButton.styleFrom(
                                   side: const BorderSide(
-                                    color: Color(0xFF4A90E2),
+                                    color: AppColors.primary,
                                     width: 1.5,
                                   ),
                                   padding: EdgeInsets.symmetric(vertical: 12.h),
@@ -341,7 +341,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
                                 child: Text(
                                   'Previous',
                                   style: TextStyle(
-                                    color: const Color(0xFF4A90E2),
+                                    color: AppColors.primary,
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -362,7 +362,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF4A90E2),
+                                backgroundColor: AppColors.primary,
                                 padding: EdgeInsets.symmetric(vertical: 12.h),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.r),

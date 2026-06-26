@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../../core/theme/app_color.dart';
 import '../../../../../core/utils/service_locator.dart';
 import '../../cubit/quiz_cubit.dart';
 import '../../domain/entities/quiz_entity.dart';
@@ -132,7 +133,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.r),
                 borderSide: const BorderSide(
-                  color: Color(0xFF4A90E2),
+                  color: AppColors.primary,
                   width: 2,
                 ),
               ),
@@ -167,7 +168,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.r),
                 borderSide: const BorderSide(
-                  color: Color(0xFF4A90E2),
+                  color: AppColors.primary,
                   width: 2,
                 ),
               ),
@@ -203,14 +204,14 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
               },
               child: Row(
                 children: [
-                  Icon(Icons.add, size: 20.sp, color: const Color(0xFF4A90E2)),
+                  Icon(Icons.add, size: 20.sp, color: AppColors.primary),
                   SizedBox(width: 4.w),
                   Text(
                     'Add Question',
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF4A90E2),
+                      color: AppColors.primary,
                     ),
                   ),
                 ],
@@ -299,7 +300,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.r),
                 borderSide: const BorderSide(
-                  color: Color(0xFF4A90E2),
+                  color: AppColors.primary,
                   width: 2,
                 ),
               ),
@@ -339,7 +340,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: question.correctAnswerIndex == optIndex
-                                ? const Color(0xFF4A90E2)
+                                ? AppColors.primary
                                 : Colors.grey.shade300,
                             width: 2,
                           ),
@@ -349,7 +350,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
                                 margin: EdgeInsets.all(4.w),
                                 decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Color(0xFF4A90E2),
+                                  color: AppColors.primary,
                                 ),
                               )
                             : null,
@@ -373,7 +374,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.r),
                             borderSide: const BorderSide(
-                              color: Color(0xFF4A90E2),
+                              color: AppColors.primary,
                               width: 2,
                             ),
                           ),
@@ -413,7 +414,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
           child: ElevatedButton(
             onPressed: isLoading ? null : _saveQuiz,
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF4A90E2),
+              backgroundColor: AppColors.primary,
               disabledBackgroundColor: Colors.grey.shade300,
               padding: EdgeInsets.symmetric(vertical: 14.h),
               shape: RoundedRectangleBorder(

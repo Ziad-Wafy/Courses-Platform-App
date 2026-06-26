@@ -85,6 +85,20 @@ class TeacherProfileScreen extends StatelessWidget {
                     },
                   ),
                   SettingsSectionItem(
+                    icon: Icons.quiz_outlined,
+                    title: 'Create New Quiz',
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/quiz/create',
+                        arguments: {
+                          'courseId': 'course_123', // TODO: Get actual course ID
+                          'instructorId': profile.uid,
+                        },
+                      );
+                    },
+                  ),
+                  SettingsSectionItem(
                     icon: Icons.lock_outline,
                     title: 'Privacy & Security',
                     onTap: () {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../../core/theme/app_color.dart';
 import '../../../../../core/utils/service_locator.dart';
 import '../../cubit/quiz_cubit.dart';
 import '../../domain/entities/quiz_entity.dart';
@@ -66,7 +67,7 @@ class _QuizzesAndAssessmentsScreenState
                       return Center(
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            const Color(0xFF4A90E2),
+                            AppColors.primary,
                           ),
                         ),
                       );
@@ -190,7 +191,7 @@ class _QuizzesAndAssessmentsScreenState
                                 quizCubit.getQuizzesByCourse(widget.courseId);
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF4A90E2),
+                                backgroundColor: AppColors.primary,
                               ),
                               child: const Text('Retry'),
                             ),
