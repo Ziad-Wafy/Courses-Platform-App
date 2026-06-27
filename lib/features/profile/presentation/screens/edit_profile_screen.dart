@@ -319,7 +319,7 @@ class _ReadOnlyEmailField extends StatelessWidget {
           width: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
           decoration: BoxDecoration(
-            color: AppColors.secondary.withOpacity(0.5),
+            color: AppColors.secondary.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(10.r),
             border: Border.all(color: AppColors.secondary, width: 1.5),
           ),
@@ -327,7 +327,7 @@ class _ReadOnlyEmailField extends StatelessWidget {
             children: [
               Icon(
                 Icons.email_outlined,
-                color: AppColors.primary.withOpacity(0.5),
+                color: AppColors.primary.withValues(alpha: 0.5),
                 size: 18.sp,
               ),
               SizedBox(width: 10.w),
@@ -342,7 +342,7 @@ class _ReadOnlyEmailField extends StatelessWidget {
               ),
               Icon(
                 Icons.lock_outline,
-                color: AppColors.chatOtherMessageTextColor.withOpacity(0.3),
+                color: AppColors.chatOtherMessageTextColor.withValues(alpha: 0.3),
                 size: 14.sp,
               ),
             ],

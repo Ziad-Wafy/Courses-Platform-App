@@ -1,23 +1,35 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_color.dart';
 
-class SendMessageWidget extends StatelessWidget {
+class SendMessageWidget extends StatefulWidget {
   const SendMessageWidget({required this.chatId, super.key});
   final String chatId;
 
   @override
+  State<SendMessageWidget> createState() => _SendMessageWidgetState();
+}
+
+class _SendMessageWidgetState extends State<SendMessageWidget> {
+  final messageController = TextEditingController();
+
+  @override
+  void dispose() {
+    messageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final messageController = TextEditingController();
     return Row(
       children: [
         IconButton(
           onPressed: () {},
-          icon: Icon(Icons.attach_file, color: AppColors.chatSendIconColor),
+          icon: const Icon(Icons.attach_file, color: AppColors.chatSendIconColor),
         ),
         Expanded(
           child: TextFormField(
             controller: messageController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(14)),
                 borderSide: BorderSide(color: AppColors.chatBorderColor),
@@ -31,9 +43,12 @@ class SendMessageWidget extends StatelessWidget {
         ),
         IconButton(
           onPressed: () {
-            if (messageController.text.isNotEmpty) {}
+            if (messageController.text.isNotEmpty) {
+              // TODO: Send message logic
+              messageController.clear();
+            }
           },
-          icon: Icon(Icons.send, color: AppColors.chatSendIconColor),
+          icon: const Icon(Icons.send, color: AppColors.chatSendIconColor),
         ),
       ],
     );

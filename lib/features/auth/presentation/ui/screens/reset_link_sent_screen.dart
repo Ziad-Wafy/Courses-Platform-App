@@ -58,7 +58,7 @@ class ResetLinkSentScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: EdgeInsets.all(16.w),
                 decoration: BoxDecoration(
-                  color: AppColors.chatSelectedCourseColor.withOpacity(0.5),
+                  color: AppColors.chatSelectedCourseColor.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Column(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/theme/app_color.dart';
-// import '../../../../home_screen.dart';
+import '../../../../courses_student_side/presentation/ui/screens/student_courses_screen.dart';
 import '../../cubit/auth_cubit.dart';
 import '../../cubit/auth_state.dart';
 import '../widgets/custom_text_field.dart';
@@ -61,10 +61,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(builder: (_) => const HomeScreen()),
-          // );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const StudentCoursesScreen()),
+          );
         } else if (state is AuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message), backgroundColor: Colors.red),

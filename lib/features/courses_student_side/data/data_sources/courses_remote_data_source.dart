@@ -22,8 +22,6 @@ class FirebaseCoursesRemoteDataSource implements CoursesRemoteDataSource {
 
   @override
   Future<List<CourseModel>> getCourses() async {
-    print('START FETCHING COURSES');
-
     final snapshot = await firestore.collection('courses').get();
 
     print('COURSES COUNT = ${snapshot.docs.length}');

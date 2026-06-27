@@ -32,9 +32,9 @@ class _CourseBubbleState extends State<CourseBubble> {
           border: Border.all(color: AppColors.chatBorderColor, width: 1),
         ),
         child: Row(
-          spacing: 4,
           children: [
             Icon(Icons.menu_book, size: 24, color: AppColors.chatBorderColor),
+            const SizedBox(width: 4),
             Text(
               widget.courseName,
               style: TextStyle(
@@ -42,6 +42,7 @@ class _CourseBubbleState extends State<CourseBubble> {
                 fontSize: 14,
               ),
             ),
+            const SizedBox(width: 4),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(

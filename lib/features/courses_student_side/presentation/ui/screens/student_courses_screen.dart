@@ -25,8 +25,6 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
   void initState() {
     super.initState();
 
-    print('StudentCoursesScreen Opened');
-
     final remoteDataSource = FirebaseCoursesRemoteDataSource(
       FirebaseFirestore.instance,
     );
@@ -66,8 +64,6 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                   }
 
                   if (snapshot.hasError) {
-                    print('ERROR: ${snapshot.error}');
-
                     return Padding(
                       padding: const EdgeInsets.all(20),
                       child: Text(snapshot.error.toString()),
@@ -75,10 +71,6 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                   }
 
                   final courses = snapshot.data as List? ?? [];
-
-                  print(
-                    'COURSES RECEIVED: ${courses.length}',
-                  );
 
                   if (courses.isEmpty) {
                     return const Padding(
