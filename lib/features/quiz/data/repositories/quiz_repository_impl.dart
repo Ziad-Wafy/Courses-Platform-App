@@ -202,7 +202,7 @@ class QuizRepositoryImpl implements QuizRepository {
       courseId: entity.courseId,
       instructorId: entity.instructorId,
       timeLimitMinutes: entity.timeLimitMinutes,
-      totalQuestions: entity.totalQuestions,
+      totalQuestions: entity.questions.length,
       questions: entity.questions
           .map((q) => QuestionModel(
                 id: q.id,

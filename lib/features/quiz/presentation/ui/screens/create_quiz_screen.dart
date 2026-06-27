@@ -452,6 +452,14 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
       return;
     }
 
+    final timeLimit = int.tryParse(timeLimitController.text);
+    if (timeLimit == null || timeLimit <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid time limit in minutes')),
+      );
+      return;
+    }
+
     if (questions.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please add at least one question')),

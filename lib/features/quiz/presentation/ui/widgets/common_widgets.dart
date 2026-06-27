@@ -337,7 +337,7 @@ class ProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final progress = currentQuestion / totalQuestions;
+    final progress = totalQuestions > 0 ? currentQuestion / totalQuestions : 0.0;
     final minutes = remainingSeconds ~/ 60;
     final seconds = remainingSeconds % 60;
 
@@ -457,7 +457,7 @@ class ResultCard extends StatelessWidget {
               SizedBox(width: 12.w),
               Expanded(
                 child: _buildCountCard(
-                  count: totalQuestions - correctAnswers,
+                  count: (totalQuestions - correctAnswers).clamp(0, totalQuestions),
                   label: 'Incorrect',
                   backgroundColor: const Color(0xFFE74C3C).withValues(alpha: 0.1),
                   textColor: const Color(0xFFE74C3C),
