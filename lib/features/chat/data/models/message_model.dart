@@ -1,4 +1,4 @@
-import 'package:learning_management_system/features/chat/domain/entities/message_entity.dart';
+import '../../domain/entities/message_entity.dart';
 
 class MessageModel extends MessageEntity {
   MessageModel({

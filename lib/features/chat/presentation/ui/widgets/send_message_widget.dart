@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:learning_management_system/core/theme/app_color.dart';
+import '../../../../../core/theme/app_color.dart';
 
 class SendMessageWidget extends StatelessWidget {
   const SendMessageWidget({required this.chatId, super.key});

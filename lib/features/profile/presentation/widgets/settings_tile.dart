@@ -10,13 +10,13 @@ class SettingsTile extends StatelessWidget {
   final bool isLast;
 
   const SettingsTile({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     this.onTap,
     this.isFirst = false,
     this.isLast = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class SettingsTile extends StatelessWidget {
               Icon(
                 icon,
                 size: 20.sp,
-                color: AppColors.chatOtherMessageTextColor.withOpacity(0.7),
+                color: AppColors.chatOtherMessageTextColor.withValues(alpha: 0.7),
               ),
               SizedBox(width: 12.w),
               Expanded(
@@ -59,7 +59,7 @@ class SettingsTile extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios,
                 size: 12.sp,
-                color: AppColors.chatOtherMessageTextColor.withOpacity(0.4),
+                color: AppColors.chatOtherMessageTextColor.withValues(alpha: 0.4),
               ),
             ],
           ),

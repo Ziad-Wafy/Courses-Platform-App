@@ -4,7 +4,7 @@ import '../../../../../core/theme/app_color.dart';
 import 'login_screen.dart';
 
 class AccountCreatedScreen extends StatelessWidget {
-  const AccountCreatedScreen({Key? key}) : super(key: key);
+  const AccountCreatedScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class AccountCreatedScreen extends StatelessWidget {
               border: Border.all(color: AppColors.secondary, width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withValues(alpha: 0.06),
                   blurRadius: 20,
                   offset: const Offset(0, 4),
                 ),
@@ -58,8 +58,8 @@ class AccountCreatedScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14.sp,
-                    color: AppColors.chatOtherMessageTextColor.withOpacity(
-                      0.55,
+                    color: AppColors.chatOtherMessageTextColor.withValues(
+                      alpha: 0.55,
                     ),
                     height: 1.6,
                   ),

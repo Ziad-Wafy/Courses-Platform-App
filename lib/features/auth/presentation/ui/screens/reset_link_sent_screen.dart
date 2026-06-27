@@ -50,7 +50,7 @@ class ResetLinkSentScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16.sp,
-                  color: AppColors.chatOtherMessageTextColor.withOpacity(0.5),
+                  color: AppColors.chatOtherMessageTextColor.withValues(alpha: 0.5),
                 ),
               ),
               SizedBox(height: 32.h),

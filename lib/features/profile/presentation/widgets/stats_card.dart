@@ -6,7 +6,7 @@ import 'stat_item.dart';
 class StatsCard extends StatelessWidget {
   final List<StatItem> stats;
 
-  const StatsCard({Key? key, required this.stats}) : super(key: key);
+  const StatsCard({super.key, required this.stats});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class StatsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

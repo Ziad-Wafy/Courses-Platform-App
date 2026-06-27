@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:learning_management_system/features/chat/data/models/message_model.dart';
-import 'package:learning_management_system/features/chat/presentation/ui/widgets/course_bubble.dart';
-import 'package:learning_management_system/features/chat/presentation/ui/widgets/message_bubble.dart';
-import 'package:learning_management_system/features/chat/presentation/ui/widgets/send_message_widget.dart';
+import '../../data/models/message_model.dart';
+import '../widgets/course_bubble.dart';
+import '../widgets/message_bubble.dart';
+import '../widgets/send_message_widget.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});

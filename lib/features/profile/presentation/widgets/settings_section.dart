@@ -20,10 +20,10 @@ class SettingsSection extends StatelessWidget {
   final List<SettingsSectionItem> items;
 
   const SettingsSection({
-    Key? key,
+    super.key,
     required this.title,
     required this.items,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class SettingsSection extends StatelessWidget {
             style: TextStyle(
               fontSize: 13.sp,
               fontWeight: FontWeight.w600,
-              color: AppColors.chatOtherMessageTextColor.withOpacity(0.5),
+              color: AppColors.chatOtherMessageTextColor.withValues(alpha: 0.5),
             ),
           ),
         ),
@@ -47,7 +47,7 @@ class SettingsSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(12.r),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),

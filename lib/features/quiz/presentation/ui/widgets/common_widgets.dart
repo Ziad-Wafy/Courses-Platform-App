@@ -312,7 +312,7 @@ class AverageScoreCard extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.medal,
+              Icons.emoji_events,
               size: 32.sp,
               color: AppColors.primary,
             ),

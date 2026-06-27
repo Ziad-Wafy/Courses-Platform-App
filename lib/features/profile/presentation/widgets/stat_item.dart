@@ -8,11 +8,11 @@ class StatItem extends StatelessWidget {
   final String label;
 
   const StatItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.value,
     required this.label,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class StatItem extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 11.sp,
-            color: AppColors.chatOtherMessageTextColor.withOpacity(0.6),
+            color: AppColors.chatOtherMessageTextColor.withValues(alpha: 0.6),
           ),
         ),
       ],

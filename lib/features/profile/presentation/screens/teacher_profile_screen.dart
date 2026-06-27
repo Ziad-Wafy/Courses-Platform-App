@@ -15,8 +15,7 @@ import 'edit_profile_screen.dart';
 class TeacherProfileScreen extends StatelessWidget {
   final ProfileEntity profile;
 
-  const TeacherProfileScreen({Key? key, required this.profile})
-      : super(key: key);
+  const TeacherProfileScreen({super.key, required this.profile});
 
   @override
   Widget build(BuildContext context) {

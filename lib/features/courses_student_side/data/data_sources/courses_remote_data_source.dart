@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:learning_management_system/features/courses_student_side/data/models/lesson_model.dart';
+import '../models/lesson_model.dart';
 
 import '../models/course_model.dart';
 import '../models/section_model.dart';
