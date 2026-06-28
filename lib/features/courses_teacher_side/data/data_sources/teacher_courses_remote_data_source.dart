@@ -3,6 +3,7 @@ import 'package:learning_management_system/features/courses_student_side/data/mo
 import 'package:learning_management_system/features/courses_student_side/data/models/section_model.dart';
 
 abstract class TeacherCoursesRemoteDataSource {
+  Future<List<CourseModel>> getTeacherCourses(String teacherId);
   Future<void> addCourse(CourseModel course);
   Future<void> updateCourse(CourseModel course);
   Future<void> deleteCourse(String courseId);

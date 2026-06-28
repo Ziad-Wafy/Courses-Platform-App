@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning_management_system/features/chat/domain/entities/course_chat_entity.dart';
 import 'package:learning_management_system/features/chat/domain/entities/message_entity.dart';
 import 'package:learning_management_system/features/chat/domain/repositories/chat_repo.dart';

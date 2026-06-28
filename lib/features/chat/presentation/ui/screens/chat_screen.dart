@@ -5,7 +5,7 @@ import 'package:learning_management_system/features/chat/data/models/course_chat
 import 'package:learning_management_system/features/chat/data/models/message_model.dart';
 import 'package:learning_management_system/features/chat/domain/entities/message_entity.dart';
 import 'package:learning_management_system/features/chat/domain/entities/course_chat_entity.dart';
-import 'package:learning_management_system/features/chat/presentation/state_manegment.dart/cubit/chat_cubit.dart';
+import 'package:learning_management_system/features/chat/presentation/state_management/cubit/chat_cubit.dart';
 import 'package:learning_management_system/features/chat/presentation/ui/widgets/course_bubble.dart';
 import 'package:learning_management_system/features/chat/presentation/ui/widgets/message_bubble.dart';
 import 'package:learning_management_system/features/chat/presentation/ui/widgets/send_message_widget.dart';
@@ -249,3 +249,4 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
+

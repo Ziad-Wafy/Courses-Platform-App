@@ -69,16 +69,16 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
 
     if (widget.existingLesson != null) {
       context.read<TeacherCourseCubit>().updateLesson(
-            widget.courseId,
-            widget.sectionId,
-            lesson,
-          );
+        widget.courseId,
+        widget.sectionId,
+        lesson,
+      );
     } else {
       context.read<TeacherCourseCubit>().addLesson(
-            widget.courseId,
-            widget.sectionId,
-            lesson,
-          );
+        widget.courseId,
+        widget.sectionId,
+        lesson,
+      );
     }
   }
 
@@ -104,18 +104,23 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
           borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: Colors.redAccent),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 16,
+        ),
       );
 
   Widget _sectionHeader(String title) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Text(title,
-            style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xff4A90D9))),
-      );
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Text(
+      title,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: Color(0xff4A90D9),
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -123,13 +128,16 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
       listener: (context, state) {
         if (state is TeacherCourseLoading) {
           setState(() => _isSaving = true);
-        } else if (state is TeacherLessonAdded || state is TeacherLessonUpdated) {
+        } else if (state is TeacherLessonAdded ||
+            state is TeacherLessonUpdated) {
           setState(() => _isSaving = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state is TeacherLessonAdded
-                  ? 'Lesson added successfully!'
-                  : 'Lesson updated successfully!'),
+              content: Text(
+                state is TeacherLessonAdded
+                    ? 'Lesson added successfully!'
+                    : 'Lesson updated successfully!',
+              ),
               backgroundColor: Colors.green,
             ),
           );
@@ -162,8 +170,10 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new,
-                          color: Colors.white),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new,
+                        color: Colors.white,
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                     Text(
@@ -197,37 +207,43 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
                               _sectionHeader('Lecture Details'),
                               TextFormField(
                                 controller: _titleCtrl,
-                                decoration: _inputDecoration('Lecture Title',
-                                    hint: 'New Lecture'),
-                                validator: (v) =>
-                                    v == null || v.trim().isEmpty
-                                        ? 'Title is required'
-                                        : null,
+                                decoration: _inputDecoration(
+                                  'Lecture Title',
+                                  hint: 'New Lecture',
+                                ),
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? 'Title is required'
+                                    : null,
                               ),
                               const SizedBox(height: 16),
                               TextFormField(
                                 controller: _descCtrl,
                                 maxLines: 3,
-                                decoration: _inputDecoration('Description',
-                                    hint:
-                                        'What will students learn in this lecture?'),
+                                decoration: _inputDecoration(
+                                  'Description',
+                                  hint:
+                                      'What will students learn in this lecture?',
+                                ),
                               ),
                               const SizedBox(height: 16),
                               TextFormField(
                                 controller: _durationCtrl,
-                                decoration: _inputDecoration('Duration',
-                                    hint: 'e.g., 15:30'),
+                                decoration: _inputDecoration(
+                                  'Duration',
+                                  hint: 'e.g., 15:30',
+                                ),
                                 keyboardType: TextInputType.number,
-                                validator: (v) =>
-                                    v == null || v.trim().isEmpty
-                                        ? 'Duration is required'
-                                        : null,
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? 'Duration is required'
+                                    : null,
                               ),
                               const SizedBox(height: 6),
                               Text(
                                 'Format: MM:SS (e.g., 15:30 for 15 minutes 30 seconds)',
                                 style: TextStyle(
-                                    color: Colors.grey.shade500, fontSize: 12),
+                                  color: Colors.grey.shade500,
+                                  fontSize: 12,
+                                ),
                               ),
                             ],
                           ),
@@ -242,39 +258,53 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
                               _sectionHeader('Video File'),
                               Container(
                                 width: double.infinity,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 24),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 24,
+                                ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xffEDF4FD),
                                   borderRadius: BorderRadius.circular(14),
                                   border: Border.all(
-                                    color: const Color(0xff4A90D9)
-                                        .withOpacity(0.4),
+                                    color: const Color(
+                                      0xff4A90D9,
+                                    ).withValues(alpha: 0.4),
                                     width: 1.5,
                                     style: BorderStyle.solid,
                                   ),
                                 ),
                                 child: const Column(
                                   children: [
-                                    Icon(Icons.upload_outlined,
-                                        color: Color(0xff4A90D9), size: 32),
+                                    Icon(
+                                      Icons.upload_outlined,
+                                      color: Color(0xff4A90D9),
+                                      size: 32,
+                                    ),
                                     SizedBox(height: 8),
-                                    Text('Enter video URL below',
-                                        style: TextStyle(
-                                            color: Color(0xff4A90D9),
-                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                      'Enter video URL below',
+                                      style: TextStyle(
+                                        color: Color(0xff4A90D9),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                     SizedBox(height: 4),
-                                    Text('MP4, WebM, or YouTube URL',
-                                        style: TextStyle(
-                                            color: Colors.grey, fontSize: 12)),
+                                    Text(
+                                      'MP4, WebM, or YouTube URL',
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 12,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
                               const SizedBox(height: 12),
                               TextFormField(
                                 controller: _videoUrlCtrl,
-                                decoration: _inputDecoration('Video URL',
-                                    hint: 'https://...'),
+                                decoration: _inputDecoration(
+                                  'Video URL',
+                                  hint: 'https://...',
+                                ),
                               ),
                             ],
                           ),
@@ -289,8 +319,10 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
                               _sectionHeader('Document (Optional)'),
                               TextFormField(
                                 controller: _pdfUrlCtrl,
-                                decoration: _inputDecoration('PDF / Document URL',
-                                    hint: 'https://...'),
+                                decoration: _inputDecoration(
+                                  'PDF / Document URL',
+                                  hint: 'https://...',
+                                ),
                               ),
                             ],
                           ),
@@ -308,27 +340,34 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
                                     width: 18,
                                     height: 18,
                                     child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.white))
-                                : const Icon(Icons.save_outlined,
-                                    color: Colors.white),
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Icon(
+                                    Icons.save_outlined,
+                                    color: Colors.white,
+                                  ),
                             label: Text(
                               _isSaving
                                   ? 'Saving...'
                                   : widget.existingLesson != null
-                                      ? 'Update Lesson'
-                                      : 'Save Lesson',
+                                  ? 'Update Lesson'
+                                  : 'Save Lesson',
                               style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xff4A90D9),
-                              disabledBackgroundColor:
-                                  const Color(0xff4A90D9).withOpacity(0.5),
+                              disabledBackgroundColor: const Color(
+                                0xff4A90D9,
+                              ).withValues(alpha: 0.5),
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14)),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
                             ),
                           ),
                         ),
@@ -359,7 +398,7 @@ class _Card extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -369,3 +408,4 @@ class _Card extends StatelessWidget {
     );
   }
 }
+

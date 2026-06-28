@@ -12,6 +12,11 @@ class TeacherCourseRepositoryImpl implements TeacherCourseRepository {
   // ── Course ────────────────────────────────────────────────────────────────
 
   @override
+  Future<List<CourseModel>> getTeacherCourses(String teacherId) async {
+    return await remoteDataSource.getTeacherCourses(teacherId);
+  }
+
+  @override
   Future<void> addCourse(CourseModel course) async {
     await remoteDataSource.addCourse(course);
   }

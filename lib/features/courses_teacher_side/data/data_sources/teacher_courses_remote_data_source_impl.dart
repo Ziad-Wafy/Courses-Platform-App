@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:learning_management_system/features/courses_student_side/data/models/course_model.dart';
 import 'package:learning_management_system/features/courses_student_side/data/models/lesson_model.dart';
 import 'package:learning_management_system/features/courses_student_side/data/models/section_model.dart';
@@ -13,11 +14,27 @@ class FirebaseTeacherCoursesRemoteDataSource
   // ── Course ────────────────────────────────────────────────────────────────
 
   @override
+  Future<List<CourseModel>> getTeacherCourses(String teacherId) async {
+    final querySnapshot = await firestore
+        .collection('courses')
+        .where('teacherId', isEqualTo: teacherId)
+        .get();
+    return querySnapshot.docs
+        .map((doc) => CourseModel.fromJson(doc.data(), doc.id))
+        .toList();
+  }
+
+  @override
   Future<void> addCourse(CourseModel course) async {
+    final data = course.toMap();
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      data['teacherId'] = uid;
+    }
     await firestore
         .collection('courses')
         .doc(course.id)
-        .set(course.toMap());
+        .set(data);
   }
 
   @override
