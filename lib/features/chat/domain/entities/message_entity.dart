@@ -1,16 +1,31 @@
+import 'package:learning_management_system/features/chat/data/models/message_model.dart';
+
 abstract class MessageEntity {
   final String message;
-  final String sendAt;
+  final DateTime sendAt;
   final String senderId;
   final String senderName;
-  final String chatId;
-  final bool isMe;
   MessageEntity({
     required this.message,
     required this.sendAt,
     required this.senderId,
     required this.senderName,
-    required this.chatId,
-    required this.isMe,
+  });
+  MessageModel toModel() {
+    return MessageModel(
+      message: message,
+      sendAt: sendAt,
+      senderId: senderId,
+      senderName: senderName,
+    );
+  }
+}
+
+abstract class ReadByEntity {
+  final String userId;
+  final DateTime readAt;
+  ReadByEntity({
+    required this.userId,
+    required this.readAt,
   });
 }

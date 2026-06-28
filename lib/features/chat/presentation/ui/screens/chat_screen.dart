@@ -49,11 +49,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 return MessageBubble(
                   message: MessageModel(
                     message: "hello and how are you ?",
-                    sendAt: "12:00 PM",
+                    sendAt: DateTime.now(),
                     senderId: "123",
                     senderName: "Ahmed",
-                    chatId: "123",
-                    isMe: index % 2 == 0,
                   ),
                 );
               },

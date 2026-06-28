@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:learning_management_system/features/courses_student_side/presentation/ui/screens/student_courses_screen.dart';
+import 'package:learning_management_system/features/chat/presentation/ui/screens/chat_screen.dart';
 
 import 'firebase_options.dart';
 import 'core/utils/service_locator.dart' as di;
@@ -70,7 +70,7 @@ class AuthWrapper extends StatelessWidget {
 
         if (snapshot.hasData && snapshot.data != null) {
           // TODO: استبدلها بشاشة الـ Home عند توفرها
-          return StudentCoursesScreen();
+          return ChatScreen();
           // مثال:
           // return const HomeScreen();
         }

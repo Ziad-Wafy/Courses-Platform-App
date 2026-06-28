@@ -5,16 +5,17 @@ import 'package:learning_management_system/features/chat/domain/entities/message
 class MessageBubble extends StatelessWidget {
   const MessageBubble({super.key, required this.message});
   final MessageEntity message;
+  final bool isMe = true;
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       child: Column(
-        crossAxisAlignment: message.isMe
+        crossAxisAlignment: isMe
             ? CrossAxisAlignment.end
             : CrossAxisAlignment.start,
         children: [
-          if (!message.isMe)
+          if (!isMe)
             Text(
               message.senderName,
               style: TextStyle(
@@ -26,29 +27,29 @@ class MessageBubble extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: message.isMe
+              color: isMe
                   ? AppColors.chatMyMessageColor
                   : AppColors.chatOtherMessageColor,
               borderRadius: BorderRadius.all(Radius.circular(12)),
               border: Border.all(color: AppColors.chatBorderColor, width: 1),
             ),
             child: Column(
-              crossAxisAlignment: message.isMe
+              crossAxisAlignment: isMe
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
                 Text(
                   message.message,
                   style: TextStyle(
-                    color: message.isMe
+                    color: isMe
                         ? AppColors.chatMyMessageTextColor
                         : AppColors.chatOtherMessageTextColor,
                   ),
                 ),
                 Text(
-                  message.sendAt,
+                  message.sendAt.toString(),
                   style: TextStyle(
-                    color: message.isMe
+                    color: isMe
                         ? AppColors.chatMyMessageTextColor
                         : AppColors.chatOtherMessageTextColor,
                     fontSize: 12,
