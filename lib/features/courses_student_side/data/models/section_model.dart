@@ -22,4 +22,12 @@ class SectionModel {
       order: json['order'] ?? 0,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'duration': duration,
+      'order': order,
+    };
+  }
 }

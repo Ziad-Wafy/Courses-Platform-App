@@ -22,4 +22,15 @@ class CourseModel extends CourseEntity {
       rating: (json['rating'] ?? 0).toDouble(),
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'instructor': instructor,
+      'image': image,
+      'description': description,
+      'studentsCount': studentsCount,
+      'rating': rating,
+    };
+  }
 }

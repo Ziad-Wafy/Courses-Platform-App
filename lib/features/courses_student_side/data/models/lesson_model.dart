@@ -25,4 +25,14 @@ class LessonModel {
       duration: json['duration'] ?? '',
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'description': description,
+      'videoUrl': videoUrl,
+      'pdfUrl': pdfUrl,
+      'duration': duration,
+    };
+  }
 }
