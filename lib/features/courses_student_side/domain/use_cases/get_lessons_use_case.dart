@@ -1,8 +1,8 @@
-import '../../data/models/lesson_model.dart';
-import '../repositories/lesson_repository.dart';
+import 'package:learning_management_system/features/courses_student_side/data/repositories/course_repository_impl.dart';
+import 'package:learning_management_system/features/courses_student_side/data/models/lesson_model.dart';
 
 class GetLessonsUseCase {
-  final LessonRepository repository;
+  final CourseRepositoryImpl repository;
 
   GetLessonsUseCase(this.repository);
 
