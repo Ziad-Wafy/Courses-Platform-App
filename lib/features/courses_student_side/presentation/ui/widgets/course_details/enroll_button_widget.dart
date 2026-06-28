@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
 class EnrollButtonWidget extends StatelessWidget {
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
-  const EnrollButtonWidget({super.key, this.onTap = _empty});
-
-  static void _empty() {}
+  const EnrollButtonWidget({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +13,7 @@ class EnrollButtonWidget extends StatelessWidget {
         width: double.infinity,
         height: 62,
         child: ElevatedButton(
-          onPressed: onTap,
+          onPressed: onTap ?? () {},
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white,
             foregroundColor: const Color(0xff3E86F5),

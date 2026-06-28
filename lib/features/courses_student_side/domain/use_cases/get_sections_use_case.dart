@@ -1,8 +1,8 @@
-import '../../data/models/section_model.dart';
-import '../repositories/section_repository.dart';
+import 'package:learning_management_system/features/courses_student_side/data/repositories/course_repository_impl.dart';
+import 'package:learning_management_system/features/courses_student_side/data/models/section_model.dart';
 
 class GetSectionsUseCase {
-  final SectionRepository repository;
+  final CourseRepositoryImpl repository;
 
   GetSectionsUseCase(this.repository);
 

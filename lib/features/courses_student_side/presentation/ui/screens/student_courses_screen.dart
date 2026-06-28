@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:learning_management_system/features/courses_student_side/data/models/course_model.dart';
 
 import '../../../data/data_sources/courses_remote_data_source.dart';
 import '../../../data/repositories/course_repository_impl.dart';
@@ -24,23 +25,30 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
   final TextEditingController searchController = TextEditingController();
 
-  late Future<dynamic> coursesFuture;
+  late List<CourseModel> coursesEnrolled;
+  late List<CourseModel> coursesAvailable;
+  late List<CourseModel> coursesShow;
+  bool isEnrolledSelected = false;
+
+  late Future<void> _coursesFuture;
+
+  Future<void> getCourses() async {
+    final remoteDataSource = FirebaseCoursesRemoteDataSource(
+      FirebaseFirestore.instance,
+    );
+    final repository = CourseRepositoryImpl(remoteDataSource);
+    final getCoursesUseCase = CoursesUseCase(repository);
+
+    coursesAvailable = await getCoursesUseCase.getCourses();
+    coursesEnrolled = await getCoursesUseCase.getEnrolledCourses();
+    coursesShow = coursesAvailable;
+  }
 
   @override
   void initState() {
     super.initState();
-
     print('StudentCoursesScreen Opened');
-
-    final remoteDataSource = FirebaseCoursesRemoteDataSource(
-      FirebaseFirestore.instance,
-    );
-
-    final repository = CourseRepositoryImpl(remoteDataSource);
-
-    final getCoursesUseCase = GetCoursesUseCase(repository);
-
-    coursesFuture = getCoursesUseCase();
+    _coursesFuture = getCourses();
   }
 
   @override
@@ -69,7 +77,7 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
               const SizedBox(height: 24),
 
               FutureBuilder(
-                future: coursesFuture,
+                future: _coursesFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -84,24 +92,32 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
                     );
                   }
 
-                  final courses = snapshot.data as List? ?? [];
-
-                  allCourses = List.from(courses);
+                  allCourses = List.from(coursesShow);
 
                   final filteredCourses = allCourses.where((course) {
                     return course.title.toLowerCase().contains(searchText);
                   }).toList();
 
-                  print('COURSES RECEIVED: ${courses.length}');
+                  print('COURSES RECEIVED: ${coursesAvailable.length}');
 
                   return Column(
                     children: [
                       CourseTabsWidget(
-                        enrolledCount: 0,
-                        availableCount: courses.length,
-                        isEnrolledSelected: true,
-                        onEnrolledTap: () {},
-                        onAvailableTap: () {},
+                        enrolledCount: coursesEnrolled.length,
+                        availableCount: coursesAvailable.length,
+                        isEnrolledSelected: isEnrolledSelected,
+                        onEnrolledTap: () {
+                          setState(() {
+                            coursesShow = coursesEnrolled;
+                            isEnrolledSelected = true;
+                          });
+                        },
+                        onAvailableTap: () {
+                          setState(() {
+                            coursesShow = coursesAvailable;
+                            isEnrolledSelected = false;
+                          });
+                        },
                       ),
 
                       const SizedBox(height: 30),

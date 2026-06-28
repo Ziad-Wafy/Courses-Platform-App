@@ -12,11 +12,6 @@ import '../../features/auth/presentation/cubit/auth_cubit.dart';
 
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
 
-import '../../features/quiz/data/repositories/quiz_repository_impl.dart';
-import '../../features/quiz/domain/repositories/quiz_repository.dart';
-import '../../features/quiz/domain/usecases/quiz_usecases.dart';
-import '../../features/quiz/presentation/cubit/quiz_cubit.dart';
-
 final sl = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
@@ -83,41 +78,4 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
-  // =========================
-  // Quiz Repository
-  // =========================
-
-  sl.registerLazySingleton<QuizRepository>(
-    () => QuizRepositoryImpl(firebaseFirestore: sl()),
-  );
-
-  // =========================
-  // Quiz UseCases
-  // =========================
-
-  sl.registerLazySingleton(() => GetQuizzesUseCase(sl()));
-  sl.registerLazySingleton(() => GetQuizByIdUseCase(sl()));
-  sl.registerLazySingleton(() => CreateQuizUseCase(sl()));
-  sl.registerLazySingleton(() => SubmitQuizAnswersUseCase(sl()));
-  sl.registerLazySingleton(() => GetQuizResultUseCase(sl()));
-  sl.registerLazySingleton(() => GetStudentQuizResultsUseCase(sl()));
-  sl.registerLazySingleton(() => UpdateQuizUseCase(sl()));
-  sl.registerLazySingleton(() => DeleteQuizUseCase(sl()));
-
-  // =========================
-  // Quiz Cubit
-  // =========================
-
-  sl.registerFactory(
-    () => QuizCubit(
-      getQuizzesUseCase: sl(),
-      getQuizByIdUseCase: sl(),
-      createQuizUseCase: sl(),
-      submitQuizAnswersUseCase: sl(),
-      getQuizResultUseCase: sl(),
-      getStudentQuizResultsUseCase: sl(),
-      updateQuizUseCase: sl(),
-      deleteQuizUseCase: sl(),
-    ),
-  );
 }
