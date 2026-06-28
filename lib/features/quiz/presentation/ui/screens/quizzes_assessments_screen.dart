@@ -7,23 +7,16 @@ import '../../../../../core/theme/app_color.dart';
 import '../../../../../core/utils/service_locator.dart';
 import '../../cubit/quiz_cubit.dart';
 import '../../../domain/entities/quiz_entity.dart';
-import '../widgets/common_widgets.dart';
 
 class QuizzesAndAssessmentsScreen extends StatefulWidget {
   final String courseId;
-
-  const QuizzesAndAssessmentsScreen({
-    super.key,
-    required this.courseId,
-  });
+  const QuizzesAndAssessmentsScreen({super.key, required this.courseId});
 
   @override
-  State<QuizzesAndAssessmentsScreen> createState() =>
-      _QuizzesAndAssessmentsScreenState();
+  State<QuizzesAndAssessmentsScreen> createState() => _QuizzesAndAssessmentsScreenState();
 }
 
-class _QuizzesAndAssessmentsScreenState
-    extends State<QuizzesAndAssessmentsScreen> {
+class _QuizzesAndAssessmentsScreenState extends State<QuizzesAndAssessmentsScreen> {
   late QuizCubit quizCubit;
 
   @override
@@ -31,181 +24,55 @@ class _QuizzesAndAssessmentsScreenState
     super.initState();
     quizCubit = sl<QuizCubit>();
     quizCubit.getQuizzesByCourse(widget.courseId);
-    final studentId = FirebaseAuth.instance.currentUser?.uid ?? '';
-    if (studentId.isNotEmpty) {
-      quizCubit.getStudentResults(studentId);
-    }
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) quizCubit.getStudentResults(uid);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        title: const Text('Quizzes'),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+      ),
       body: BlocProvider.value(
         value: quizCubit,
-        child: BlocListener<QuizCubit, QuizState>(
-          listener: (context, state) {
-            if (state is QuizError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
-                ),
+        child: BlocBuilder<QuizCubit, QuizState>(
+          builder: (context, state) {
+            if (state is QuizLoading) return const Center(child: CircularProgressIndicator());
+            if (state is QuizError) return Center(child: Text(state.message, style: const TextStyle(color: Colors.red)));
+            
+            if (state is QuizzesLoaded) {
+              if (state.quizzes.isEmpty) return const Center(child: Text('No quizzes found.'));
+              
+              return ListView.builder(
+                padding: EdgeInsets.all(16.w),
+                itemCount: state.quizzes.length,
+                itemBuilder: (context, index) {
+                  final quiz = state.quizzes[index];
+                  final result = state.studentResults.cast<QuizResult?>().firstWhere(
+                    (r) => r?.quizId == quiz.id, orElse: () => null);
+
+                  return Card(
+                    margin: EdgeInsets.bottom(12.h),
+                    child: ListTile(
+                      title: Text(quiz.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text('${quiz.totalQuestions} Questions • ${quiz.timeLimitMinutes} Min'),
+                      trailing: result != null 
+                        ? Text('${result.scorePercentage.toStringAsFixed(0)}%', 
+                            style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold))
+                        : const Icon(Icons.chevron_right),
+                      onTap: quiz.isLocked ? null : () {
+                        Navigator.pushNamed(context, '/quiz/question', arguments: quiz.id);
+                      },
+                    ),
+                  );
+                },
               );
             }
+            return const SizedBox();
           },
-          child: Column(
-            children: [
-              QuizHeader(
-                title: 'Quizzes & Assessments',
-                onBackPressed: () => Navigator.pop(context),
-              ),
-              Expanded(
-                child: BlocBuilder<QuizCubit, QuizState>(
-                  builder: (context, state) {
-                    if (state is QuizLoading) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            AppColors.primary,
-                          ),
-                        ),
-                      );
-                    }
-
-                    if (state is QuizzesLoaded) {
-                      if (state.quizzes.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.quiz,
-                                size: 64.sp,
-                                color: Colors.grey.shade300,
-                              ),
-                              SizedBox(height: 16.h),
-                              Text(
-                                'No quizzes available',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-
-                      return SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            if (state.averageScore > 0)
-                              AverageScoreCard(averageScore: state.averageScore),
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: state.quizzes.length,
-                              itemBuilder: (context, index) {
-                                final quiz = state.quizzes[index];
-                                // Find result for this quiz if any
-                                final result = state.studentResults
-                                    .where((r) => r.quizId == quiz.id)
-                                    .toList();
-
-                                QuizResult? latestResult;
-                                if (result.isNotEmpty) {
-                                  result.sort((a, b) => b.completedAt.compareTo(a.completedAt));
-                                  latestResult = result.first;
-                                }
-
-                                return QuizCard(
-                                  title: quiz.title,
-                                  questionsCount: quiz.totalQuestions,
-                                  timeLimit: quiz.timeLimitMinutes,
-                                  score: latestResult?.scorePercentage,
-                                  isLocked: quiz.isLocked,
-                                  onStartQuiz: !quiz.isLocked && latestResult == null
-                                      ? () {
-                                          Navigator.pushNamed(
-                                            context,
-                                            '/quiz/question',
-                                            arguments: quiz.id,
-                                          );
-                                        }
-                                      : null,
-                                  onRetakeQuiz: latestResult != null
-                                      ? () {
-                                          Navigator.pushNamed(
-                                            context,
-                                            '/quiz/question',
-                                            arguments: quiz.id,
-                                          );
-                                        }
-                                      : null,
-                                  onViewResults: latestResult != null
-                                      ? () {
-                                          Navigator.pushNamed(
-                                            context,
-                                            '/quiz/completion',
-                                            arguments: {
-                                              'correctAnswers': latestResult!.correctAnswers,
-                                              'totalQuestions': latestResult.totalQuestions,
-                                              'scorePercentage': latestResult.scorePercentage,
-                                              'quizId': latestResult.quizId,
-                                              'courseId': widget.courseId,
-                                            },
-                                          );
-                                        }
-                                      : null,
-                                );
-                              },
-                            ),
-                            SizedBox(height: 16.h),
-                          ],
-                        ),
-                      );
-                    }
-
-                    if (state is QuizError) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.error_outline,
-                              size: 64.sp,
-                              color: Colors.red,
-                            ),
-                            SizedBox(height: 16.h),
-                            Text(
-                              'Error loading quizzes',
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                color: Colors.red,
-                              ),
-                            ),
-                            SizedBox(height: 16.h),
-                            ElevatedButton(
-                              onPressed: () {
-                                quizCubit.getQuizzesByCourse(widget.courseId);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                              ),
-                              child: const Text('Retry'),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    return const SizedBox();
-                  },
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
