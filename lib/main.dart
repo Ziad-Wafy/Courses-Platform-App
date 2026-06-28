@@ -3,8 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:learning_management_system/features/chat/presentation/state_manegment.dart/cubit/chat_cubit.dart';
-import 'package:learning_management_system/features/chat/presentation/ui/screens/chat_screen.dart';
+import 'package:learning_management_system/features/chat/presentation/state_management/cubit/chat_cubit.dart';
+import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/screens/teacher_courses_screen.dart';
 
 import 'firebase_options.dart';
 import 'core/utils/service_locator.dart' as di;
@@ -72,7 +72,7 @@ class AuthWrapper extends StatelessWidget {
 
         if (snapshot.hasData && snapshot.data != null) {
           // TODO: استبدلها بشاشة الـ Home عند توفرها
-          return ChatScreen();
+          return TeacherCoursesScreen();
           // مثال:
           // return const HomeScreen();
         }
@@ -82,3 +82,4 @@ class AuthWrapper extends StatelessWidget {
     );
   }
 }
+

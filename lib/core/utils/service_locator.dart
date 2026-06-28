@@ -7,7 +7,7 @@ import 'package:learning_management_system/features/chat/data/data_source/chat_d
 import 'package:learning_management_system/features/chat/data/data_source/chat_data_source_impl.dart';
 import 'package:learning_management_system/features/chat/data/repositories/chat_repo_impl.dart';
 import 'package:learning_management_system/features/chat/domain/repositories/chat_repo.dart';
-import 'package:learning_management_system/features/chat/presentation/state_manegment.dart/cubit/chat_cubit.dart';
+import 'package:learning_management_system/features/chat/presentation/state_management/cubit/chat_cubit.dart';
 
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
