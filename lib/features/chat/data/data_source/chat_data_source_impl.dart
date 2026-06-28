@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:learning_management_system/features/chat/data/data_source/chat_data_source.dart';
+import 'package:learning_management_system/features/chat/data/models/course_chat_model.dart';
 import 'package:learning_management_system/features/chat/data/models/message_model.dart';
-import 'package:learning_management_system/features/chat/domain/entities/message_entity.dart';
 
 class ChatDataSourceImpl implements ChatDataSource {
   final FirebaseFirestore firestore;
@@ -40,7 +40,7 @@ class ChatDataSourceImpl implements ChatDataSource {
   }
 
   @override
-  Stream<List<MessageEntity>> getChatMessages({required String courseId}) {
+  Stream<List<MessageModel>> getChatMessages({required String courseId}) {
     return firestore
         .collection('courses')
         .doc(courseId)
@@ -52,5 +52,25 @@ class ChatDataSourceImpl implements ChatDataSource {
               .map((doc) => MessageModel.fromMap(doc.data()))
               .toList(),
         );
+  }
+
+  @override
+  Future<List<CourseChatModel>> getCoursesChat() async {
+    final List<String> enrolledCoursesIDs = (await firestore
+            .collection("users")
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection("courses")
+            .get())
+        .docs
+        .map((doc) => doc.id)
+        .toList();
+
+    return (await firestore
+            .collection('courses')
+            .where(FieldPath.documentId, whereIn: enrolledCoursesIDs)
+            .get())
+        .docs
+        .map((doc) => CourseChatModel.fromJson(doc.data()))
+        .toList();
   }
 }

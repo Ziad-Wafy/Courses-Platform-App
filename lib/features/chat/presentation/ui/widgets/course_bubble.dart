@@ -4,8 +4,8 @@ import 'package:learning_management_system/core/theme/app_color.dart';
 class CourseBubble extends StatefulWidget {
   final String courseName;
   final int unreadMessagesCount;
-  final int courseId;
-  final int selectedCourseId;
+  final String courseId;
+  final String selectedCourseId;
   const CourseBubble({
     super.key,
     required this.courseName,

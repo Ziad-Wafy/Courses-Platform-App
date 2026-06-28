@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:learning_management_system/core/error/failure.dart';
+import 'package:learning_management_system/features/chat/domain/entities/course_chat_entity.dart';
 import 'package:learning_management_system/features/chat/domain/entities/message_entity.dart';
 
 abstract class ChatRepo {
@@ -14,4 +15,5 @@ abstract class ChatRepo {
   Stream<Either<Failure, List<MessageEntity>>> getChatMessages({
     required String courseId,
   });
+  Future<Either<Failure, List<CourseChatEntity>>> getCoursesChat();
 }

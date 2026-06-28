@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learning_management_system/features/chat/presentation/state_manegment.dart/cubit/chat_cubit.dart';
 import 'package:learning_management_system/features/chat/presentation/ui/screens/chat_screen.dart';
 
 import 'firebase_options.dart';
@@ -42,6 +43,7 @@ class MainApp extends StatelessWidget {
         return MultiBlocProvider(
           providers: [
             BlocProvider<AuthCubit>(create: (context) => di.sl<AuthCubit>()),
+            BlocProvider<ChatCubit>(create: (context) => di.sl<ChatCubit>())
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,

@@ -3,6 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:learning_management_system/features/chat/data/data_source/chat_data_source.dart';
+import 'package:learning_management_system/features/chat/data/data_source/chat_data_source_impl.dart';
+import 'package:learning_management_system/features/chat/data/repositories/chat_repo_impl.dart';
+import 'package:learning_management_system/features/chat/domain/repositories/chat_repo.dart';
+import 'package:learning_management_system/features/chat/presentation/state_manegment.dart/cubit/chat_cubit.dart';
 
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
@@ -78,4 +83,28 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
+
+  // =========================
+  // Chat - Data Source
+  // =========================
+
+  sl.registerLazySingleton<ChatDataSource>(
+    () => ChatDataSourceImpl(sl()),
+  );
+
+  // =========================
+  // Chat - Repository
+  // =========================
+
+  sl.registerLazySingleton<ChatRepo>(
+    () => ChatRepoImpl(chatDataSource: sl()),
+  );
+
+  // =========================
+  // Chat Cubit
+  // =========================
+
+  sl.registerLazySingleton(
+    () => ChatCubit(chatRepo: sl()),
+  );
 }
