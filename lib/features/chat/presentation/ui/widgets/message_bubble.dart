@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import 'package:learning_management_system/core/theme/app_color.dart';
 import 'package:learning_management_system/features/chat/domain/entities/message_entity.dart';
 
 class MessageBubble extends StatelessWidget {
   const MessageBubble({super.key, required this.message});
   final MessageEntity message;
-  final bool isMe = true;
+  
+  bool get isMe => FirebaseAuth.instance.currentUser?.uid == message.senderId;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -47,7 +51,7 @@ class MessageBubble extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  message.sendAt.toString(),
+                  "${message.sendAt.hour > 12 ? message.sendAt.hour - 12 : (message.sendAt.hour == 0 ? 12 : message.sendAt.hour)}:${message.sendAt.minute.toString().padLeft(2, '0')} ${message.sendAt.hour >= 12 ? 'PM' : 'AM'}",
                   style: TextStyle(
                     color: isMe
                         ? AppColors.chatMyMessageTextColor

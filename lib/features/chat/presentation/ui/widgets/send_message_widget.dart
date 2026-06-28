@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:learning_management_system/core/theme/app_color.dart';
 
 class SendMessageWidget extends StatelessWidget {
-  const SendMessageWidget({required this.chatId, super.key});
-  final String chatId;
+  final Function(String message) onSendMessage;
+  const SendMessageWidget({required this.onSendMessage, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,10 @@ class SendMessageWidget extends StatelessWidget {
         ),
         IconButton(
           onPressed: () {
-            if (messageController.text.isNotEmpty) {}
+            if (messageController.text.isNotEmpty) {
+              onSendMessage(messageController.text);
+              messageController.clear();
+            }
           },
           icon: Icon(Icons.send, color: AppColors.chatSendIconColor),
         ),

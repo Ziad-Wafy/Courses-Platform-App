@@ -16,4 +16,5 @@ abstract class ChatRepo {
     required String courseId,
   });
   Future<Either<Failure, List<CourseChatEntity>>> getCoursesChat();
+  Stream<Either<Failure, int>> getUnreadCount({required String courseId});
 }

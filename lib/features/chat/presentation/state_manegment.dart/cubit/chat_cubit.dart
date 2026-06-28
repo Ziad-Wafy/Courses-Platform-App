@@ -53,4 +53,10 @@ class ChatCubit extends Cubit<ChatState> {
         .getChatMessages(courseId: courseId)
         .map((event) => event.fold((failure) => [], (messages) => messages));
   }
+
+  Stream<int> getUnreadCount({required String courseId}) {
+    return chatRepo
+        .getUnreadCount(courseId: courseId)
+        .map((event) => event.fold((failure) => 0, (count) => count));
+  }
 }

@@ -63,4 +63,15 @@ class ChatRepoImpl implements ChatRepo {
       return Left(Failure(message: e.toString()));
     }
   }
+
+  @override
+  Stream<Either<Failure, int>> getUnreadCount({required String courseId}) {
+    try {
+      return chatDataSource.getUnreadCount(courseId: courseId).map((count) {
+        return Right(count);
+      });
+    } catch (e) {
+      return Stream.value(Left(Failure(message: e.toString())));
+    }
+  }
 }

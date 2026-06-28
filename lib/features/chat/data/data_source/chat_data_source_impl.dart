@@ -27,16 +27,47 @@ class ChatDataSourceImpl implements ChatDataSource {
     required String messageId,
   }) async {
     await firestore
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
         .collection('courses')
         .doc(courseId)
-        .collection('messages')
-        .doc(messageId)
-        .collection('readBy')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .set({
-          'userId': FirebaseAuth.instance.currentUser!.uid,
-          'readAt': Timestamp.now(),
+        .update({
+          'lastReadAt': Timestamp.now(),
+        }).catchError((_) {
+          firestore
+              .collection('users')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .collection('courses')
+              .doc(courseId)
+              .set({'lastReadAt': Timestamp.now()}, SetOptions(merge: true));
         });
+  }
+
+  @override
+  Stream<int> getUnreadCount({required String courseId}) {
+    return firestore
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('courses')
+        .doc(courseId)
+        .snapshots()
+        .asyncExpand((userCourseDoc) {
+      final data = userCourseDoc.data();
+      final lastReadAt = data != null && data.containsKey('lastReadAt')
+          ? data['lastReadAt'] as Timestamp?
+          : null;
+
+      Query query = firestore
+          .collection('courses')
+          .doc(courseId)
+          .collection('messages');
+
+      if (lastReadAt != null) {
+        query = query.where('sendAt', isGreaterThan: lastReadAt);
+      }
+
+      return query.snapshots().map((snapshot) => snapshot.docs.length);
+    });
   }
 
   @override
@@ -45,7 +76,7 @@ class ChatDataSourceImpl implements ChatDataSource {
         .collection('courses')
         .doc(courseId)
         .collection('messages')
-        .orderBy('sendAt')
+        .orderBy('sendAt', descending: true)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs

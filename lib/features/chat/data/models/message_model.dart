@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:learning_management_system/features/chat/domain/entities/message_entity.dart';
+
 
 class MessageModel extends MessageEntity {
   MessageModel({
@@ -19,10 +21,10 @@ class MessageModel extends MessageEntity {
 
   factory MessageModel.fromMap(Map<String, dynamic> map) {
     return MessageModel(
-      message: map['message'],
-      sendAt: map['sendAt'],
-      senderId: map['senderId'],
-      senderName: map['senderName'],
+      message: map['message'] ?? '',
+      sendAt: map['sendAt'] != null ? (map['sendAt'] as Timestamp).toDate() : DateTime.now(),
+      senderId: map['senderId'] ?? '',
+      senderName: map['senderName'] ?? '',
     );
   }
 }
@@ -42,8 +44,8 @@ class ReadByModel extends ReadByEntity {
 
   factory ReadByModel.fromMap(Map<String, dynamic> map) {
     return ReadByModel(
-      userId: map['userId'],
-      readAt: map['readAt'],
+      userId: map['userId'] ?? '',
+      readAt: map['readAt'] != null ? (map['readAt'] as Timestamp).toDate() : DateTime.now(),
     );
   }
 }

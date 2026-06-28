@@ -5,6 +5,9 @@ class CourseChatModel extends CourseChatEntity {
     required super.id,
     required super.title,
     required super.image,
+    required super.description,
+    required super.rating,
+    required super.studentsCount, 
     required super.instructor,
   });
 
@@ -13,11 +16,14 @@ class CourseChatModel extends CourseChatEntity {
       id: json['id'],
       title: json['title'],
       image: json['image'],
-      instructor: json['instructor'],
+      description: json['description'] ?? '',
+      rating: (json['rating'] ?? 0).toDouble(),
+      studentsCount: json['studentsCount'] ?? 0,
+      instructor: json['instructor'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'title': title, 'image': image, 'instructor': instructor};
+    return {'id': id, 'title': title, 'image': image, 'description': description, 'rating': rating, 'studentsCount': studentsCount, 'instructor': instructor};
   }
 }

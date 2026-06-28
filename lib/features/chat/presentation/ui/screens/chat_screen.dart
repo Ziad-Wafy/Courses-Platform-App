@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learning_management_system/features/chat/data/models/course_chat_model.dart';
 import 'package:learning_management_system/features/chat/data/models/message_model.dart';
+import 'package:learning_management_system/features/chat/domain/entities/message_entity.dart';
+import 'package:learning_management_system/features/chat/domain/entities/course_chat_entity.dart';
 import 'package:learning_management_system/features/chat/presentation/state_manegment.dart/cubit/chat_cubit.dart';
 import 'package:learning_management_system/features/chat/presentation/ui/widgets/course_bubble.dart';
 import 'package:learning_management_system/features/chat/presentation/ui/widgets/message_bubble.dart';
@@ -14,6 +18,8 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   String selectedCourseId = "";
+  List<CourseChatEntity> courses = [];
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -23,64 +29,179 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    CourseChatEntity? selectedCourse = courses.firstWhere(
+      (c) => c.id == selectedCourseId,
+      orElse: () => CourseChatModel(
+        id: '',
+        title: 'Loading...',
+        image: '',
+        description: '',
+        rating: 0,
+        studentsCount: 0,
+        instructor: '',
+      ),
+    );
+
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        toolbarHeight: 90,
+        title: selectedCourse.id.isEmpty
+            ? const Text("Chat")
+            : Row(
+                children: [
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundImage: selectedCourse.image.isNotEmpty
+                        ? NetworkImage(selectedCourse.image)
+                        : null,
+                    child: selectedCourse.image.isEmpty
+                        ? const Icon(Icons.book)
+                        : null,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          selectedCourse.title,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          "Instructor: ${selectedCourse.instructor}",
+                          style: const TextStyle(fontSize: 12),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          selectedCourse.description,
+                          style: const TextStyle(fontSize: 10, color: Colors.grey),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+      ),
       body: Column(
         children: [
-          BlocBuilder<ChatCubit, ChatState>(
-            builder: (context, state) {
-              if (state is ChatLoading) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is ChatError) {
-                return Center(child: Text(state.errorMessage));
-              } else if (state is ChatLoadedCourses) {
-                return SizedBox(
-                  height: 50,
-                  width: MediaQuery.sizeOf(context).width,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: state.coursesChat.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedCourseId = state.coursesChat[index].id;
-                          });
-                        },
-                        child: CourseBubble(
-                          courseName: state.coursesChat[index].title,
-                          unreadMessagesCount: 1, // TODO:: unread messages count
-                          courseId: state.coursesChat[index].id,
-                          selectedCourseId: selectedCourseId,
-                        ),
-                      );
-                    },
-                  ),
+          BlocListener<ChatCubit, ChatState>(
+            listener: (context, state) {
+              if (state is ChatLoadedCourses) {
+                setState(() {
+                  courses = state.coursesChat;
+                  isLoading = false;
+                  if (courses.isNotEmpty && selectedCourseId.isEmpty) {
+                    selectedCourseId = courses[0].id;
+                    context.read<ChatCubit>().readMessage(
+                          courseId: selectedCourseId,
+                          messageId: "",
+                        );
+                  }
+                });
+              } else if (state is ChatError && isLoading) {
+                setState(() {
+                  isLoading = false;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(state.errorMessage)),
                 );
-              } else {
-                return const Center(child: Text("no courses"));
               }
             },
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : courses.isEmpty
+                    ? const Center(child: Text("no courses"))
+                    : SizedBox(
+                        height: 50,
+                        width: MediaQuery.sizeOf(context).width,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: courses.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedCourseId = courses[index].id;
+                                });
+                                context.read<ChatCubit>().readMessage(
+                                      courseId: courses[index].id,
+                                      messageId: "",
+                                    );
+                              },
+                              child: StreamBuilder<int>(
+                                stream: context.read<ChatCubit>().getUnreadCount(courseId: courses[index].id),
+                                builder: (context, snapshot) {
+                                  return CourseBubble(
+                                    courseName: courses[index].title,
+                                    unreadMessagesCount: snapshot.data ?? 0,
+                                    courseId: courses[index].id,
+                                    selectedCourseId: selectedCourseId,
+                                  );
+                                }
+                              ),
+                            );
+                          },
+                        ),
+                      ),
           ),
 
           SizedBox(height: 8),
           Expanded(
-            child: ListView.builder(
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return MessageBubble(
-                  message: MessageModel(
-                    message: "hello and how are you ?",
-                    sendAt: DateTime.now(),
-                    senderId: "123",
-                    senderName: "Ahmed",
+            child: selectedCourseId.isEmpty
+                ? const Center(child: Text("Select a course to start chatting"))
+                : StreamBuilder<List<MessageEntity>>(
+                    stream: context
+                        .read<ChatCubit>()
+                        .getChatMessages(courseId: selectedCourseId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return Center(child: Text(snapshot.error.toString()));
+                      }
+
+                      final messages = snapshot.data ?? [];
+
+                      if (messages.isEmpty) {
+                        return const Center(child: Text("No messages yet"));
+                      }
+
+                      return ListView.builder(
+                        reverse: true,
+                        itemCount: messages.length,
+                        itemBuilder: (context, index) {
+                          return MessageBubble(
+                            message: messages[index],
+                          );
+                        },
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
           SizedBox(height: 8),
-          SendMessageWidget(chatId: selectedCourseId.toString()),
+          SendMessageWidget(
+            onSendMessage: (message) {
+              context.read<ChatCubit>().sendMessage(
+                courseId: selectedCourseId,
+                message: MessageModel(
+                  message: message,
+                  sendAt: DateTime.now(),
+                  senderId: FirebaseAuth.instance.currentUser!.uid,
+                  senderName: FirebaseAuth.instance.currentUser!.displayName ?? 'User',
+                ),
+              );
+              context.read<ChatCubit>().readMessage(
+                courseId: selectedCourseId,
+                messageId: "",
+              );
+            },
+          ),
           SizedBox(height: 8),
         ],
       ),
