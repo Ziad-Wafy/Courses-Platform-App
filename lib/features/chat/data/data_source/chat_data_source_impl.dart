@@ -31,9 +31,8 @@ class ChatDataSourceImpl implements ChatDataSource {
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .collection('courses')
         .doc(courseId)
-        .update({
-          'lastReadAt': Timestamp.now(),
-        }).catchError((_) {
+        .update({'lastReadAt': Timestamp.now()})
+        .catchError((_) {
           firestore
               .collection('users')
               .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -52,22 +51,32 @@ class ChatDataSourceImpl implements ChatDataSource {
         .doc(courseId)
         .snapshots()
         .asyncExpand((userCourseDoc) {
-      final data = userCourseDoc.data();
-      final lastReadAt = data != null && data.containsKey('lastReadAt')
-          ? data['lastReadAt'] as Timestamp?
-          : null;
+          final data = userCourseDoc.data();
+          final lastReadAt = data != null && data.containsKey('lastReadAt')
+              ? data['lastReadAt'] as Timestamp?
+              : null;
 
-      Query query = firestore
-          .collection('courses')
-          .doc(courseId)
-          .collection('messages');
+          Query query = firestore
+              .collection('courses')
+              .doc(courseId)
+              .collection('messages');
 
-      if (lastReadAt != null) {
-        query = query.where('sendAt', isGreaterThan: lastReadAt);
-      }
+          if (lastReadAt != null) {
+            query = query.where('sendAt', isGreaterThan: lastReadAt);
+          }
 
-      return query.snapshots().map((snapshot) => snapshot.docs.length);
-    });
+          return query.snapshots().map((snapshot) {
+            int count = 0;
+            final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+            for (var doc in snapshot.docs) {
+              final docData = doc.data() as Map<String, dynamic>?;
+              if (docData != null && docData['senderId'] != currentUserId) {
+                count++;
+              }
+            }
+            return count;
+          });
+        });
   }
 
   @override
@@ -87,14 +96,15 @@ class ChatDataSourceImpl implements ChatDataSource {
 
   @override
   Future<List<CourseChatModel>> getCoursesChat() async {
-    final List<String> enrolledCoursesIDs = (await firestore
-            .collection("users")
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .collection("courses")
-            .get())
-        .docs
-        .map((doc) => doc.id)
-        .toList();
+    final List<String> enrolledCoursesIDs =
+        (await firestore
+                .collection("users")
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .collection("courses")
+                .get())
+            .docs
+            .map((doc) => doc.id)
+            .toList();
 
     return (await firestore
             .collection('courses')

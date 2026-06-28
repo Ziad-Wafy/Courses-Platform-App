@@ -43,41 +43,79 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     return Scaffold(
+      backgroundColor: const Color(0xffF4F5F7),
       appBar: AppBar(
         toolbarHeight: 90,
+        backgroundColor: Colors.white,
+        elevation: 2,
+        shadowColor: Colors.black.withOpacity(0.1),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+        ),
         title: selectedCourse.id.isEmpty
-            ? const Text("Chat")
+            ? const Text(
+                "Chat",
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
             : Row(
                 children: [
-                  CircleAvatar(
-                    radius: 25,
-                    backgroundImage: selectedCourse.image.isNotEmpty
-                        ? NetworkImage(selectedCourse.image)
-                        : null,
-                    child: selectedCourse.image.isEmpty
-                        ? const Icon(Icons.book)
-                        : null,
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: CircleAvatar(
+                      radius: 25,
+                      backgroundColor: Colors.grey.shade200,
+                      backgroundImage: selectedCourse.image.isNotEmpty
+                          ? NetworkImage(selectedCourse.image)
+                          : null,
+                      child: selectedCourse.image.isEmpty
+                          ? const Icon(Icons.book, color: Colors.grey)
+                          : null,
+                    ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           selectedCourse.title,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
+                        const SizedBox(height: 2),
                         Text(
                           "Instructor: ${selectedCourse.instructor}",
-                          style: const TextStyle(fontSize: 12),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.black54,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
+                        const SizedBox(height: 2),
                         Text(
                           selectedCourse.description,
-                          style: const TextStyle(fontSize: 10, color: Colors.grey),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey,
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -98,56 +136,60 @@ class _ChatScreenState extends State<ChatScreen> {
                   if (courses.isNotEmpty && selectedCourseId.isEmpty) {
                     selectedCourseId = courses[0].id;
                     context.read<ChatCubit>().readMessage(
-                          courseId: selectedCourseId,
-                          messageId: "",
-                        );
+                      courseId: selectedCourseId,
+                      messageId: "",
+                    );
                   }
                 });
               } else if (state is ChatError && isLoading) {
                 setState(() {
                   isLoading = false;
                 });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.errorMessage)),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
               }
             },
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : courses.isEmpty
-                    ? const Center(child: Text("no courses"))
-                    : SizedBox(
-                        height: 50,
-                        width: MediaQuery.sizeOf(context).width,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: courses.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedCourseId = courses[index].id;
-                                });
-                                context.read<ChatCubit>().readMessage(
-                                      courseId: courses[index].id,
-                                      messageId: "",
-                                    );
-                              },
-                              child: StreamBuilder<int>(
-                                stream: context.read<ChatCubit>().getUnreadCount(courseId: courses[index].id),
-                                builder: (context, snapshot) {
-                                  return CourseBubble(
-                                    courseName: courses[index].title,
-                                    unreadMessagesCount: snapshot.data ?? 0,
-                                    courseId: courses[index].id,
-                                    selectedCourseId: selectedCourseId,
-                                  );
-                                }
-                              ),
+                ? const Center(child: Text("no courses"))
+                : Container(
+                    height: 50,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    width: MediaQuery.sizeOf(context).width,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: courses.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedCourseId = courses[index].id;
+                            });
+                            context.read<ChatCubit>().readMessage(
+                              courseId: courses[index].id,
+                              messageId: "",
                             );
                           },
-                        ),
-                      ),
+                          child: StreamBuilder<int>(
+                            stream: context.read<ChatCubit>().getUnreadCount(
+                              courseId: courses[index].id,
+                            ),
+                            builder: (context, snapshot) {
+                              return CourseBubble(
+                                courseName: courses[index].title,
+                                unreadMessagesCount: snapshot.data ?? 0,
+                                courseId: courses[index].id,
+                                selectedCourseId: selectedCourseId,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
           ),
 
           SizedBox(height: 8),
@@ -155,9 +197,9 @@ class _ChatScreenState extends State<ChatScreen> {
             child: selectedCourseId.isEmpty
                 ? const Center(child: Text("Select a course to start chatting"))
                 : StreamBuilder<List<MessageEntity>>(
-                    stream: context
-                        .read<ChatCubit>()
-                        .getChatMessages(courseId: selectedCourseId),
+                    stream: context.read<ChatCubit>().getChatMessages(
+                      courseId: selectedCourseId,
+                    ),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
@@ -176,9 +218,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         reverse: true,
                         itemCount: messages.length,
                         itemBuilder: (context, index) {
-                          return MessageBubble(
-                            message: messages[index],
-                          );
+                          return MessageBubble(message: messages[index]);
                         },
                       );
                     },
@@ -193,7 +233,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   message: message,
                   sendAt: DateTime.now(),
                   senderId: FirebaseAuth.instance.currentUser!.uid,
-                  senderName: FirebaseAuth.instance.currentUser!.displayName ?? 'User',
+                  senderName:
+                      FirebaseAuth.instance.currentUser!.displayName ?? 'User',
                 ),
               );
               context.read<ChatCubit>().readMessage(
