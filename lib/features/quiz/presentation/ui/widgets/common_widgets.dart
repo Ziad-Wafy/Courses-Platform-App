@@ -25,7 +25,7 @@ class QuizHeader extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
+          colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -69,7 +69,7 @@ class QuizHeader extends StatelessWidget {
             Text(
               subtitle!,
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.9),
+                color: Colors.white.withOpacity(0.9),
                 fontSize: 14.sp,
               ),
             ),
@@ -113,7 +113,7 @@ class QuizCard extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -140,7 +140,7 @@ class QuizCard extends StatelessWidget {
                   padding:
                       EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Text(
@@ -308,7 +308,7 @@ class AverageScoreCard extends StatelessWidget {
             width: 60.w,
             height: 60.w,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: AppColors.primary.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -360,8 +360,8 @@ class ProgressBar extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
                   color: remainingSeconds < 300
-                      ? Colors.red.withValues(alpha: 0.1)
-                      : Colors.grey.withValues(alpha: 0.1),
+                      ? Colors.red.withOpacity(0.1)
+                      : Colors.grey.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(6.r),
                 ),
                 child: Text(
@@ -449,7 +449,7 @@ class ResultCard extends StatelessWidget {
                 child: _buildCountCard(
                   count: correctAnswers,
                   label: 'Correct',
-                  backgroundColor: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                  backgroundColor: const Color(0xFF4CAF50).withOpacity(0.1),
                   textColor: const Color(0xFF4CAF50),
                   icon: Icons.check_circle,
                 ),
@@ -459,7 +459,7 @@ class ResultCard extends StatelessWidget {
                 child: _buildCountCard(
                   count: (totalQuestions - correctAnswers).clamp(0, totalQuestions),
                   label: 'Incorrect',
-                  backgroundColor: const Color(0xFFE74C3C).withValues(alpha: 0.1),
+                  backgroundColor: const Color(0xFFE74C3C).withOpacity(0.1),
                   textColor: const Color(0xFFE74C3C),
                   icon: Icons.cancel,
                 ),

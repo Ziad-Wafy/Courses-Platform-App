@@ -24,6 +24,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
   int currentIndex = 0;
   final Map<int, String> answers = {};
   DateTime? startTime;
+  String? cachedCourseId;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
   }
 
   void _startTimer(int minutes) {
+    if (timer != null) return;
     remainingSeconds = minutes * 60;
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (remainingSeconds > 0) {
@@ -48,16 +50,17 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
   void _submit() {
     timer?.cancel();
     final user = FirebaseAuth.instance.currentUser;
-    final state = quizCubit.state;
-    if (user != null && state is QuizLoaded) {
-      final quiz = state.quiz;
-      final studentAnswers = List.generate(quiz.questions.length, (i) => StudentAnswer(
-        questionId: quiz.questions[i].id,
-        selectedAnswerId: answers[i] ?? '',
-        isCorrect: false,
-      ));
-      final timeSpent = DateTime.now().difference(startTime!).inSeconds;
-      quizCubit.submitAnswers(quiz.id, user.uid, studentAnswers, timeSpent);
+    if (user != null) {
+      final state = quizCubit.state;
+      if (state is QuizLoaded) {
+        final studentAnswers = List.generate(state.quiz.questions.length, (i) => StudentAnswer(
+          questionId: state.quiz.questions[i].id,
+          selectedAnswerId: answers[i] ?? '',
+          isCorrect: false,
+        ));
+        final timeSpent = DateTime.now().difference(startTime!).inSeconds;
+        quizCubit.submitAnswers(state.quiz.id, user.uid, studentAnswers, timeSpent);
+      }
     }
   }
 
@@ -77,11 +80,12 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           actions: [
-            Center(child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Text('${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, "0")}', 
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-            ))
+            if (remainingSeconds > 0)
+              Center(child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Text('${remainingSeconds ~/ 60}:${(remainingSeconds % 60).toString().padLeft(2, "0")}', 
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              ))
           ],
         ),
         body: BlocConsumer<QuizCubit, QuizState>(
@@ -92,25 +96,27 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
                 'totalQuestions': state.result.totalQuestions,
                 'scorePercentage': state.result.scorePercentage,
                 'quizId': state.result.quizId,
-                'courseId': (quizCubit.state as QuizLoaded).quiz.courseId,
+                'courseId': cachedCourseId ?? '',
               });
             }
           },
           builder: (context, state) {
             if (state is QuizLoading) return const Center(child: CircularProgressIndicator());
+            if (state is QuizError) return Center(child: Text(state.message, style: const TextStyle(color: Colors.red)));
+            
             if (state is QuizLoaded) {
-              final quiz = state.quiz;
-              if (timer == null) _startTimer(quiz.timeLimitMinutes);
-              final question = quiz.questions[currentIndex];
+              cachedCourseId = state.quiz.courseId;
+              _startTimer(state.quiz.timeLimitMinutes);
+              final question = state.quiz.questions[currentIndex];
 
               return Padding(
                 padding: EdgeInsets.all(16.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    LinearProgressIndicator(value: (currentIndex + 1) / quiz.questions.length),
+                    LinearProgressIndicator(value: (currentIndex + 1) / state.quiz.questions.length),
                     SizedBox(height: 24.h),
-                    Text('Question ${currentIndex + 1}/${quiz.questions.length}', style: TextStyle(color: Colors.grey, fontSize: 14.sp)),
+                    Text('Question ${currentIndex + 1}/${state.quiz.questions.length}', style: const TextStyle(color: Colors.grey)),
                     SizedBox(height: 8.h),
                     Text(question.text, style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
                     SizedBox(height: 24.h),
@@ -132,14 +138,14 @@ class _QuizQuestionScreenState extends State<QuizQuestionScreen> {
                         if (currentIndex > 0) ElevatedButton(onPressed: () => setState(() => currentIndex--), child: const Text('Back')),
                         ElevatedButton(
                           onPressed: () {
-                            if (currentIndex < quiz.questions.length - 1) {
+                            if (currentIndex < state.quiz.questions.length - 1) {
                               setState(() => currentIndex++);
                             } else {
                               _submit();
                             }
                           },
                           style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
-                          child: Text(currentIndex < quiz.questions.length - 1 ? 'Next' : 'Submit'),
+                          child: Text(currentIndex < state.quiz.questions.length - 1 ? 'Next' : 'Submit'),
                         ),
                       ],
                     )

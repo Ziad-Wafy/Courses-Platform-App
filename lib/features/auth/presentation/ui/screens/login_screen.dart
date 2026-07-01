@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../../core/theme/app_color.dart';
-import '../../../../courses_student_side/presentation/ui/screens/student_courses_screen.dart';
-import '../../cubit/auth_cubit.dart';
-import '../../cubit/auth_state.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/primary_button.dart';
-import '../widgets/social_button.dart';
+import 'package:learning_management_system/core/theme/app_color.dart';
+import 'package:learning_management_system/features/courses_student_side/presentation/ui/screens/student_courses_screen.dart';
+import 'package:learning_management_system/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:learning_management_system/features/auth/presentation/cubit/auth_state.dart';
+import 'package:learning_management_system/features/auth/presentation/ui/widgets/custom_text_field.dart';
+import 'package:learning_management_system/features/auth/presentation/ui/widgets/primary_button.dart';
+import 'package:learning_management_system/features/auth/presentation/ui/widgets/social_button.dart';
 import 'forgot_password_screen.dart';
 import 'signup_screen.dart';
 
@@ -112,8 +112,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     "Sign in to continue learning",
                     style: TextStyle(
                       fontSize: 14.sp,
-                      color: AppColors.chatOtherMessageTextColor.withValues(
-                        alpha: 0.5,
+                      color: AppColors.chatOtherMessageTextColor.withOpacity(
+                        0.5,
                       ),
                     ),
                   ),
@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           "or continue with",
                           style: TextStyle(
                             color: AppColors.chatOtherMessageTextColor
-                                .withValues(alpha: 0.5),
+                                .withOpacity(0.5),
                             fontSize: 12.sp,
                           ),
                         ),
@@ -207,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(
                           fontSize: 14.sp,
                           color: AppColors.chatOtherMessageTextColor
-                              .withValues(alpha: 0.7),
+                              .withOpacity(0.7),
                         ),
                       ),
                       GestureDetector(

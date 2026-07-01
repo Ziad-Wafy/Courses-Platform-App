@@ -30,7 +30,12 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
   }
 
   void _save() {
-    if (titleController.text.isEmpty) return;
+    final title = titleController.text.trim();
+    if (title.isEmpty) {
+       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Title cannot be empty')));
+       return;
+    }
+    
     final quizQuestions = questions.map((q) {
       final options = q.optionControllers.map((oc) => Answer(id: const Uuid().v4(), text: oc.text)).toList();
       return Question(
@@ -43,7 +48,7 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
 
     final quiz = Quiz(
       id: const Uuid().v4(),
-      title: titleController.text,
+      title: title,
       courseId: widget.courseId,
       instructorId: widget.instructorId,
       timeLimitMinutes: int.tryParse(timeController.text) ?? 20,
@@ -61,7 +66,10 @@ class _CreateQuizScreenState extends State<CreateQuizScreen> {
         appBar: AppBar(title: const Text('Create Quiz'), backgroundColor: AppColors.primary, foregroundColor: Colors.white),
         body: BlocListener<QuizCubit, QuizState>(
           listener: (context, state) {
-            if (state is QuizCreated) Navigator.pop(context);
+            if (state is QuizCreated) {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Quiz Saved!')));
+            }
             if (state is QuizError) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
           },
           child: SingleChildScrollView(

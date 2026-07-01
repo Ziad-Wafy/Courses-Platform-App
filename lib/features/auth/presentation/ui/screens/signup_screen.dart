@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../../core/theme/app_color.dart';
-import '../../cubit/auth_cubit.dart';
-import '../../cubit/auth_state.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/primary_button.dart';
-import '../widgets/role_selector.dart';
+import 'package:learning_management_system/core/theme/app_color.dart';
+import 'package:learning_management_system/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:learning_management_system/features/auth/presentation/cubit/auth_state.dart';
+import 'package:learning_management_system/features/auth/presentation/ui/widgets/custom_text_field.dart';
+import 'package:learning_management_system/features/auth/presentation/ui/widgets/primary_button.dart';
+import 'package:learning_management_system/features/auth/presentation/ui/widgets/role_selector.dart';
 import 'account_created_screen.dart'; // ✅ استبدلنا HomeScreen بـ AccountCreatedScreen
 
 class SignupScreen extends StatefulWidget {
@@ -128,8 +128,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     "Join us and start learning today",
                     style: TextStyle(
                       fontSize: 14.sp,
-                      color: AppColors.chatOtherMessageTextColor.withValues(
-                        alpha: 0.5,
+                      color: AppColors.chatOtherMessageTextColor.withOpacity(
+                        0.5,
                       ),
                     ),
                   ),
@@ -209,7 +209,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         style: TextStyle(
                           fontSize: 14.sp,
                           color: AppColors.chatOtherMessageTextColor
-                              .withValues(alpha: 0.7),
+                              .withOpacity(0.7),
                         ),
                       ),
                       GestureDetector(

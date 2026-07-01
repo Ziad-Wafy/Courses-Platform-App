@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../../data/models/lesson_model.dart';
-import '../../screens/lesson_content_screen.dart';
+import 'package:learning_management_system/features/courses_student_side/data/models/lesson_model.dart';
+import 'package:learning_management_system/features/courses_student_side/presentation/ui/screens/lesson_content_screen.dart';
 import 'lesson_tile_widget.dart';
 
 class SectionCardWidget extends StatefulWidget {

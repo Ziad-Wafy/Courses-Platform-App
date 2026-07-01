@@ -1,6 +1,6 @@
 import '../data_sources/courses_remote_data_source.dart';
 import '../models/section_model.dart';
-import '../../domain/repositories/section_repository.dart';
+import 'package:learning_management_system/features/courses_student_side/domain/repositories/section_repository.dart';
 
 class SectionRepositoryImpl implements SectionRepository {
   final CoursesRemoteDataSource remoteDataSource;

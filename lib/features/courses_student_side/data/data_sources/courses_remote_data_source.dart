@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/lesson_model.dart';
-
-import '../models/course_model.dart';
-import '../models/section_model.dart';
+import 'package:learning_management_system/features/courses_student_side/data/models/lesson_model.dart';
+import 'package:learning_management_system/features/courses_student_side/data/models/course_model.dart';
+import 'package:learning_management_system/features/courses_student_side/data/models/section_model.dart';
 
 abstract class CoursesRemoteDataSource {
   Future<List<CourseModel>> getCourses();
@@ -24,13 +23,6 @@ class FirebaseCoursesRemoteDataSource implements CoursesRemoteDataSource {
   Future<List<CourseModel>> getCourses() async {
     final snapshot = await firestore.collection('courses').get();
 
-    print('COURSES COUNT = ${snapshot.docs.length}');
-
-    for (var doc in snapshot.docs) {
-      print(doc.id);
-      print(doc.data());
-    }
-
     return snapshot.docs
         .map((doc) => CourseModel.fromJson(doc.data(), doc.id))
         .toList();
@@ -43,16 +35,6 @@ class FirebaseCoursesRemoteDataSource implements CoursesRemoteDataSource {
         .doc(courseId)
         .collection('sections')
         .get();
-
-    print('==========================');
-    print('SECTIONS COUNT FOR $courseId: ${snapshot.docs.length}');
-
-    for (var doc in snapshot.docs) {
-      print('SECTION ID: ${doc.id}');
-      print('DATA: ${doc.data()}');
-    }
-
-    print('==========================');
 
     return snapshot.docs
         .map((doc) => SectionModel.fromJson(doc.data(), doc.id))
@@ -71,10 +53,6 @@ class FirebaseCoursesRemoteDataSource implements CoursesRemoteDataSource {
         .doc(sectionId)
         .collection('lessons')
         .get();
-
-    print(
-      'LESSONS COUNT FOR $sectionId: ${snapshot.docs.length}',
-    );
 
     return snapshot.docs
         .map(

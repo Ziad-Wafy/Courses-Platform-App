@@ -4,18 +4,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../../features/auth/data/datasources/auth_remote_data_source.dart';
-import '../../features/auth/data/repositories/auth_repository_impl.dart';
-import '../../features/auth/domain/repositories/auth_repository.dart';
-import '../../features/auth/domain/usecases/auth_usecases.dart';
-import '../../features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:learning_management_system/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:learning_management_system/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:learning_management_system/features/auth/domain/repositories/auth_repository.dart';
+import 'package:learning_management_system/features/auth/domain/usecases/auth_usecases.dart';
+import 'package:learning_management_system/features/auth/presentation/cubit/auth_cubit.dart';
 
-import '../../features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:learning_management_system/features/profile/presentation/cubit/profile_cubit.dart';
 
-import '../../features/quiz/data/repositories/quiz_repository_impl.dart';
-import '../../features/quiz/domain/repositories/quiz_repository.dart';
-import '../../features/quiz/domain/usecases/quiz_usecases.dart';
-import '../../features/quiz/presentation/cubit/quiz_cubit.dart';
+import 'package:learning_management_system/features/quiz/data/repositories/quiz_repository_impl.dart';
+import 'package:learning_management_system/features/quiz/domain/repositories/quiz_repository.dart';
+import 'package:learning_management_system/features/quiz/domain/usecases/quiz_usecases.dart';
+import 'package:learning_management_system/features/quiz/presentation/cubit/quiz_cubit.dart';
 
 final sl = GetIt.instance;
 

@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../../../data/data_sources/courses_remote_data_source.dart';
-import '../../../data/repositories/course_repository_impl.dart';
-import '../../../domain/use_cases/get_courses_use_case.dart';
+import 'package:learning_management_system/features/courses_student_side/data/data_sources/courses_remote_data_source.dart';
+import 'package:learning_management_system/features/courses_student_side/data/repositories/course_repository_impl.dart';
+import 'package:learning_management_system/features/courses_student_side/domain/use_cases/get_courses_use_case.dart';
 
 import '../widgets/courses/course_card_widget.dart';
 import '../widgets/courses/course_tabs_widget.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../../core/theme/app_color.dart';
+import 'package:learning_management_system/core/theme/app_color.dart';
 
 class StatItem extends StatelessWidget {
   final IconData icon;
@@ -46,7 +46,7 @@ class StatItem extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 11.sp,
-            color: AppColors.chatOtherMessageTextColor.withValues(alpha: 0.6),
+            color: AppColors.chatOtherMessageTextColor.withOpacity(0.6),
           ),
         ),
       ],

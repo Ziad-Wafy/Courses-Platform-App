@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../../core/theme/app_color.dart';
-import '../../domain/entities/profile_entity.dart';
-import '../cubit/profile_cubit.dart';
-import '../screens/edit_profile_screen.dart';
+import 'package:learning_management_system/core/theme/app_color.dart';
+import 'package:learning_management_system/features/profile/domain/entities/profile_entity.dart';
+import 'package:learning_management_system/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:learning_management_system/features/profile/presentation/screens/edit_profile_screen.dart';
 
 class ProfileHeader extends StatelessWidget {
   final ProfileEntity profile;
@@ -73,7 +73,7 @@ class ProfileHeader extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14.r),
                   // ✅ border خفيف يوضح حدود الـ avatar
                   border: Border.all(
-                    color: AppColors.chatMyMessageTextColor.withValues(alpha: 0.3),
+                    color: AppColors.chatMyMessageTextColor.withOpacity(0.3),
                     width: 1.5,
                   ),
                 ),
@@ -105,7 +105,7 @@ class ProfileHeader extends StatelessWidget {
                       profile.email,
                       style: TextStyle(
                         color:
-                            AppColors.chatMyMessageTextColor.withValues(alpha: 0.8),
+                            AppColors.chatMyMessageTextColor.withOpacity(0.8),
                         fontSize: 12.sp,
                       ),
                       maxLines: 1,
@@ -120,7 +120,7 @@ class ProfileHeader extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color:
-                            AppColors.chatMyMessageTextColor.withValues(alpha: 0.2),
+                            AppColors.chatMyMessageTextColor.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20.r),
                       ),
                       child: Text(
@@ -148,13 +148,13 @@ class ProfileHeader extends StatelessWidget {
                 vertical: 8.h,
               ),
               decoration: BoxDecoration(
-                color: AppColors.chatMyMessageTextColor.withValues(alpha: 0.12),
+                color: AppColors.chatMyMessageTextColor.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(10.r),
               ),
               child: Text(
                 profile.bio!,
                 style: TextStyle(
-                  color: AppColors.chatMyMessageTextColor.withValues(alpha: 0.9),
+                  color: AppColors.chatMyMessageTextColor.withOpacity(0.9),
                   fontSize: 12.sp,
                   height: 1.5,
                 ),

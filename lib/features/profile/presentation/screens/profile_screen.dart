@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../../core/theme/app_color.dart';
-import '../../../../../core/utils/service_locator.dart';
-import '../cubit/profile_cubit.dart';
-import '../cubit/profile_state.dart';
-import '../../domain/entities/profile_entity.dart';
+import 'package:learning_management_system/core/theme/app_color.dart';
+import 'package:learning_management_system/core/utils/service_locator.dart';
+import 'package:learning_management_system/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:learning_management_system/features/profile/presentation/cubit/profile_state.dart';
+import 'package:learning_management_system/features/profile/domain/entities/profile_entity.dart';
 import 'student_profile_screen.dart';
 import 'teacher_profile_screen.dart';
 

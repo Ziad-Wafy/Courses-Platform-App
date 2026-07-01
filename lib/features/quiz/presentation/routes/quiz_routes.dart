@@ -14,12 +14,18 @@ class QuizRoutes {
   static Map<String, WidgetBuilder> getRoutes() {
     return {
       quizList: (context) {
-        final courseId = ModalRoute.of(context)!.settings.arguments as String;
-        return QuizzesAndAssessmentsScreen(courseId: courseId);
+        final args = ModalRoute.of(context)?.settings.arguments;
+        if (args is! String) {
+          return const Scaffold(body: Center(child: Text('Error: Missing Course ID')));
+        }
+        return QuizzesAndAssessmentsScreen(courseId: args);
       },
       quizQuestion: (context) {
-        final quizId = ModalRoute.of(context)!.settings.arguments as String;
-        return QuizQuestionScreen(quizId: quizId);
+        final args = ModalRoute.of(context)?.settings.arguments;
+        if (args is! String) {
+          return const Scaffold(body: Center(child: Text('Error: Missing Quiz ID')));
+        }
+        return QuizQuestionScreen(quizId: args);
       },
       quizCompletion: (context) {
         final args =

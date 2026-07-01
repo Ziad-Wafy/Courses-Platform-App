@@ -25,20 +25,22 @@ class _QuizzesAndAssessmentsScreenState extends State<QuizzesAndAssessmentsScree
     quizCubit = sl<QuizCubit>();
     quizCubit.getQuizzesByCourse(widget.courseId);
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid != null) quizCubit.getStudentResults(uid);
+    if (uid != null) {
+      quizCubit.getStudentResults(uid);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Quizzes'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-      ),
-      body: BlocProvider.value(
-        value: quizCubit,
-        child: BlocBuilder<QuizCubit, QuizState>(
+    return BlocProvider.value(
+      value: quizCubit,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Quizzes'),
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+        ),
+        body: BlocBuilder<QuizCubit, QuizState>(
           builder: (context, state) {
             if (state is QuizLoading) return const Center(child: CircularProgressIndicator());
             if (state is QuizError) return Center(child: Text(state.message, style: const TextStyle(color: Colors.red)));
@@ -51,16 +53,20 @@ class _QuizzesAndAssessmentsScreenState extends State<QuizzesAndAssessmentsScree
                 itemCount: state.quizzes.length,
                 itemBuilder: (context, index) {
                   final quiz = state.quizzes[index];
-                  final result = state.studentResults.cast<QuizResult?>().firstWhere(
-                    (r) => r?.quizId == quiz.id, orElse: () => null);
+                  final result = state.studentResults.where((r) => r.quizId == quiz.id).toList();
+                  QuizResult? latest;
+                  if(result.isNotEmpty) {
+                    result.sort((a, b) => b.completedAt.compareTo(a.completedAt));
+                    latest = result.first;
+                  }
 
                   return Card(
-                    margin: EdgeInsets.bottom(12.h),
+                    margin: EdgeInsets.only(bottom: 12.h),
                     child: ListTile(
                       title: Text(quiz.title, style: const TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text('${quiz.totalQuestions} Questions • ${quiz.timeLimitMinutes} Min'),
-                      trailing: result != null 
-                        ? Text('${result.scorePercentage.toStringAsFixed(0)}%', 
+                      trailing: latest != null 
+                        ? Text('${latest.scorePercentage.toStringAsFixed(0)}%',
                             style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold))
                         : const Icon(Icons.chevron_right),
                       onTap: quiz.isLocked ? null : () {

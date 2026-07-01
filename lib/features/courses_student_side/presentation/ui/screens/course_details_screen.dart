@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_color.dart';
-import '../../../../quiz/presentation/routes/quiz_routes.dart';
-import '../../../data/data_sources/courses_remote_data_source.dart';
-import '../../../data/models/section_model.dart';
-import '../../../data/repositories/section_repository_impl.dart';
-import '../../../domain/use_cases/get_sections_use_case.dart';
+import 'package:learning_management_system/core/theme/app_color.dart';
+import 'package:learning_management_system/features/quiz/presentation/routes/quiz_routes.dart';
+import 'package:learning_management_system/features/courses_student_side/data/data_sources/courses_remote_data_source.dart';
+import 'package:learning_management_system/features/courses_student_side/data/models/section_model.dart';
+import 'package:learning_management_system/features/courses_student_side/data/repositories/section_repository_impl.dart';
+import 'package:learning_management_system/features/courses_student_side/domain/use_cases/get_sections_use_case.dart';
 
 import '../widgets/course_details/course_header_widget.dart';
 import '../widgets/course_details/enroll_button_widget.dart';

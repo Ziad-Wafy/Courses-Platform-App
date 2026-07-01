@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../../core/theme/app_color.dart';
-import '../../../auth/presentation/cubit/auth_cubit.dart';
-import '../../domain/entities/profile_entity.dart';
-import '../cubit/profile_cubit.dart';
-import '../cubit/profile_state.dart';
-import '../widgets/profile_header.dart';
-import '../widgets/settings_section.dart';
-import '../widgets/stat_item.dart';
-import '../widgets/stats_card.dart';
+import 'package:learning_management_system/core/theme/app_color.dart';
+import 'package:learning_management_system/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:learning_management_system/features/profile/domain/entities/profile_entity.dart';
+import 'package:learning_management_system/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:learning_management_system/features/profile/presentation/cubit/profile_state.dart';
+import 'package:learning_management_system/features/profile/presentation/widgets/profile_header.dart';
+import 'package:learning_management_system/features/profile/presentation/widgets/settings_section.dart';
+import 'package:learning_management_system/features/profile/presentation/widgets/stat_item.dart';
+import 'package:learning_management_system/features/profile/presentation/widgets/stats_card.dart';
 import 'edit_profile_screen.dart';
 
 class StudentProfileScreen extends StatelessWidget {
@@ -154,7 +154,7 @@ class _LogOutButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Colors.black.withOpacity(0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),

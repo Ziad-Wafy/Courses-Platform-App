@@ -23,7 +23,7 @@ class PrimaryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           // ✅ لو onPressed == null يظهر بلون أفتح تلقائياً
           backgroundColor:
-              onPressed != null ? AppColors.primary : AppColors.primary.withValues(alpha: 0.5),
+              onPressed != null ? AppColors.primary : AppColors.primary.withOpacity(0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
           ),

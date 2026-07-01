@@ -1,4 +1,4 @@
-import '../../domain/entities/course_entity.dart';
+import 'package:learning_management_system/features/courses_student_side/domain/entities/course_entity.dart';
 
 class CourseModel extends CourseEntity {
   const CourseModel({

@@ -1,6 +1,6 @@
 import '../data_sources/courses_remote_data_source.dart';
 import '../models/course_model.dart';
-import '../../domain/repositories/course_repository.dart';
+import 'package:learning_management_system/features/courses_student_side/domain/repositories/course_repository.dart';
 
 class CourseRepositoryImpl implements CourseRepository {
   final CoursesRemoteDataSource remoteDataSource;

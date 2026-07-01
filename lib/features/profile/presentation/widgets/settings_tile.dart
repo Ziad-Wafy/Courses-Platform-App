@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../../core/theme/app_color.dart';
+import 'package:learning_management_system/core/theme/app_color.dart';
 
 class SettingsTile extends StatelessWidget {
   final IconData icon;
@@ -43,7 +43,7 @@ class SettingsTile extends StatelessWidget {
               Icon(
                 icon,
                 size: 20.sp,
-                color: AppColors.chatOtherMessageTextColor.withValues(alpha: 0.7),
+                color: AppColors.chatOtherMessageTextColor.withOpacity(0.7),
               ),
               SizedBox(width: 12.w),
               Expanded(
@@ -59,7 +59,7 @@ class SettingsTile extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios,
                 size: 12.sp,
-                color: AppColors.chatOtherMessageTextColor.withValues(alpha: 0.4),
+                color: AppColors.chatOtherMessageTextColor.withOpacity(0.4),
               ),
             ],
           ),
