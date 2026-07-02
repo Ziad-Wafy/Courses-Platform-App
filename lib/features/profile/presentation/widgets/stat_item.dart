@@ -46,7 +46,7 @@ class StatItem extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 11.sp,
-            color: AppColors.chatOtherMessageTextColor.withOpacity(0.6),
+            color: AppColors.chatOtherMessageTextColor.withValues(alpha: 0.6),
           ),
         ),
       ],

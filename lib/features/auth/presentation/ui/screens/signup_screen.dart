@@ -128,8 +128,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     "Join us and start learning today",
                     style: TextStyle(
                       fontSize: 14.sp,
-                      color: AppColors.chatOtherMessageTextColor.withOpacity(
-                        0.5,
+                      color: AppColors.chatOtherMessageTextColor.withValues(
+                        alpha: 0.5,
                       ),
                     ),
                   ),
@@ -209,7 +209,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         style: TextStyle(
                           fontSize: 14.sp,
                           color: AppColors.chatOtherMessageTextColor
-                              .withOpacity(0.7),
+                              .withValues(alpha: 0.7),
                         ),
                       ),
                       GestureDetector(

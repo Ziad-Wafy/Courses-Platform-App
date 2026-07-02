@@ -47,8 +47,7 @@ class TeacherProfileScreen extends StatelessWidget {
                   ),
                   StatItem(
                     icon: Icons.star_rounded,
-                    value:
-                        '${stats?.rating.toStringAsFixed(1) ?? '0.0'}',
+                    value: stats?.rating.toStringAsFixed(1) ?? '0.0',
                     label: 'Rating',
                   ),
                   StatItem(
@@ -169,7 +168,7 @@ class _LogOutButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),

@@ -55,7 +55,7 @@ class CustomTextField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
-              color: AppColors.chatOtherMessageTextColor.withOpacity(0.4),
+              color: AppColors.chatOtherMessageTextColor.withValues(alpha: 0.4),
               fontSize: 13.sp,
             ),
             prefixIcon: prefixIcon != null

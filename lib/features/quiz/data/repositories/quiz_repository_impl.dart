@@ -86,7 +86,7 @@ class QuizRepositoryImpl implements QuizRepository {
       }
 
       final scorePercentage =
-          (correctCount / quiz.totalQuestions * 100).roundToDouble();
+          (correctCount / quiz.totalQuestions * 100).round() / 100;
       final result = QuizResultModel(
         id: '',
         quizId: quizId,
@@ -142,7 +142,7 @@ class QuizRepositoryImpl implements QuizRepository {
 
       return snapshot.docs
           .map((doc) => _resultModelToEntity(
-              QuizResultModel.fromJson({...doc.data() as Map<String, dynamic>})))
+              QuizResultModel.fromJson(doc.data())))
           .toList();
     } catch (e) {
       throw Exception('Failed to get results: $e');
@@ -237,11 +237,5 @@ class QuizRepositoryImpl implements QuizRepository {
               ))
           .toList(),
     );
-  }
-}
-
-extension on double {
-  double roundToDouble() {
-    return (this * 100).round() / 100;
   }
 }

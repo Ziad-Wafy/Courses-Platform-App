@@ -121,7 +121,6 @@ class QuizCubit extends Cubit<QuizState> {
 
   Future<void> getQuizById(String quizId) async {
     // Keep current quizzes if any
-    final currentState = state;
     emit(const QuizLoading());
     try {
       final quiz = await getQuizByIdUseCase(quizId);

@@ -112,8 +112,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     "Sign in to continue learning",
                     style: TextStyle(
                       fontSize: 14.sp,
-                      color: AppColors.chatOtherMessageTextColor.withOpacity(
-                        0.5,
+                      color: AppColors.chatOtherMessageTextColor.withValues(
+                        alpha: 0.5,
                       ),
                     ),
                   ),
@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           "or continue with",
                           style: TextStyle(
                             color: AppColors.chatOtherMessageTextColor
-                                .withOpacity(0.5),
+                                .withValues(alpha: 0.5),
                             fontSize: 12.sp,
                           ),
                         ),
@@ -207,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(
                           fontSize: 14.sp,
                           color: AppColors.chatOtherMessageTextColor
-                              .withOpacity(0.7),
+                              .withValues(alpha: 0.7),
                         ),
                       ),
                       GestureDetector(
