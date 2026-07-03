@@ -5,6 +5,8 @@ import 'package:learning_management_system/features/courses_student_side/data/mo
 import 'package:learning_management_system/features/courses_student_side/data/models/section_model.dart';
 import 'package:learning_management_system/features/courses_teacher_side/presentation/cubit/teacher_course_cubit.dart';
 import 'package:learning_management_system/features/courses_teacher_side/presentation/cubit/teacher_course_state.dart';
+import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/widgets/lesson_type_chip.dart';
+import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/widgets/teacher_shared_widgets.dart';
 import 'package:uuid/uuid.dart';
 
 // ── Local data classes (only used during creation flow) ───────────────────────
@@ -95,45 +97,15 @@ class _TeacherCreateCourseScreenState extends State<TeacherCreateCourseScreen>
     super.dispose();
   }
 
-  // ── Shared Decoration Builder ──────────────────────────────────────────────
-
-  InputDecoration _field(String label, {String? hint}) => InputDecoration(
-    labelText: label,
-    hintText: hint,
-    filled: true,
-    fillColor: const Color(0xffF4F5F7),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: BorderSide.none,
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: BorderSide(color: Colors.grey.shade200),
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide(color: Color(0xff4A90D9), width: 1.5),
-    ),
-    errorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide(color: Colors.redAccent),
-    ),
-    contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-  );
-
   // ── Publish / Save Action ──────────────────────────────────────────────────
 
   Future<void> _publish() async {
-    print("_publish");
     if (_formKey.currentState == null || !_formKey.currentState!.validate()) {
-      print("_publish - validation failed or form unmounted");
       _tabController.animateTo(0);
       return;
     }
 
-    print("========================= 1 =========================");
     final courseId = widget.existingCourse?.id ?? const Uuid().v4();
-    print("========================= 2 =========================");
 
     final course = CourseModel(
       id: courseId,
@@ -144,16 +116,12 @@ class _TeacherCreateCourseScreenState extends State<TeacherCreateCourseScreen>
       studentsCount: widget.existingCourse?.studentsCount ?? 0,
       rating: widget.existingCourse?.rating ?? 0.0,
     );
-    print("========================= 3 =========================");
 
     final cubit = context.read<TeacherCourseCubit>();
-    print("========================= 4 =========================");
 
     if (widget.existingCourse != null) {
       cubit.updateCourse(course);
-      print("========================= 5 =========================");
     } else {
-      print("========================= 6 =========================");
       await cubit.addCourse(course);
 
       for (final ps in _sections) {
@@ -164,7 +132,6 @@ class _TeacherCreateCourseScreenState extends State<TeacherCreateCourseScreen>
           order: ps.order,
         );
         await cubit.addSection(courseId, section);
-        print("========================= 7 =========================");
 
         for (final pl in ps.lessons) {
           final lesson = LessonModel(
@@ -175,7 +142,6 @@ class _TeacherCreateCourseScreenState extends State<TeacherCreateCourseScreen>
             videoUrl: pl.videoUrl,
             pdfUrl: pl.pdfUrl,
           );
-          print("========================= 8 =========================");
           await cubit.addLesson(courseId, ps.id, lesson);
         }
       }
@@ -211,17 +177,17 @@ class _TeacherCreateCourseScreenState extends State<TeacherCreateCourseScreen>
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xffF4F5F7),
+        backgroundColor: TeacherShared.backgroundColor,
         body: SafeArea(
           child: Column(
             children: [
               // ── Header + Tabs ──────────────────────────────────────────────
               Container(
                 decoration: const BoxDecoration(
-                  color: Color(0xff4A90D9),
+                  color: TeacherShared.primaryBlue,
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(24),
-                    bottomRight: Radius.circular(24),
+                    bottomLeft: Radius.circular(TeacherShared.radiusXXL),
+                    bottomRight: Radius.circular(TeacherShared.radiusXXL),
                   ),
                 ),
                 child: Column(
@@ -263,9 +229,11 @@ class _TeacherCreateCourseScreenState extends State<TeacherCreateCourseScreen>
                           controller: _tabController,
                           indicator: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(25),
+                            borderRadius: BorderRadius.circular(
+                              TeacherShared.radiusXXXL,
+                            ),
                           ),
-                          labelColor: const Color(0xff4A90D9),
+                          labelColor: TeacherShared.primaryBlue,
                           unselectedLabelColor: Colors.white,
                           labelStyle: const TextStyle(
                             fontWeight: FontWeight.bold,
@@ -295,14 +263,14 @@ class _TeacherCreateCourseScreenState extends State<TeacherCreateCourseScreen>
                       imageCtrl: _imageCtrl,
                       descCtrl: _descCtrl,
                       tabController: _tabController,
-                      fieldDecorationBuilder: _field,
+                      fieldDecorationBuilder: teacherInputDecoration,
                     ),
                     _CourseContentTab(
                       sections: _sections,
                       isSaving: _isSaving,
                       existingCourse: widget.existingCourse,
                       onPublish: _publish,
-                      fieldDecorationBuilder: _field,
+                      fieldDecorationBuilder: teacherInputDecoration,
                     ),
                   ],
                 ),
@@ -413,12 +381,7 @@ class _CourseInfoTabState extends State<_CourseInfoTab>
                     widget.tabController.animateTo(1);
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff4A90D9),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
+                style: teacherPrimaryButtonStyle(),
                 child: const Text(
                   'Next: Add Content',
                   style: TextStyle(
@@ -528,90 +491,40 @@ class _CourseContentTabState extends State<_CourseContentTab>
     );
   }
 
-  void _addLesson(_PendingSection section) {
-    final titleCtrl = TextEditingController();
-    final descCtrl = TextEditingController();
-    final durationCtrl = TextEditingController();
-    final videoCtrl = TextEditingController();
-    final pdfCtrl = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Add Lecture',
-          style: TextStyle(fontWeight: FontWeight.bold),
+  void _navigateToAddLesson(_PendingSection section) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _PendingLessonScreen(
+          onLessonAdded: (lesson) {
+            setState(() {
+              section.lessons.add(lesson);
+            });
+          },
+          fieldDecorationBuilder: widget.fieldDecorationBuilder,
         ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: titleCtrl,
-                autofocus: true,
-                decoration: widget.fieldDecorationBuilder('Lecture Title'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: descCtrl,
-                maxLines: 2,
-                decoration: widget.fieldDecorationBuilder('Description'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: durationCtrl,
-                decoration: widget.fieldDecorationBuilder(
-                  'Duration',
-                  hint: 'e.g. 15:30',
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: videoCtrl,
-                decoration: widget.fieldDecorationBuilder(
-                  'Video URL',
-                  hint: 'https://...',
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: pdfCtrl,
-                decoration: widget.fieldDecorationBuilder('PDF URL (optional)'),
-              ),
-            ],
-          ),
+      ),
+    );
+  }
+
+  void _navigateToEditLesson(_PendingSection section, _PendingLesson lesson) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _PendingLessonScreen(
+          existingLesson: lesson,
+          onLessonUpdated: (updatedLesson) {
+            setState(() {
+              final index = section.lessons.indexWhere(
+                (l) => l.id == lesson.id,
+              );
+              if (index != -1) {
+                section.lessons[index] = updatedLesson;
+              }
+            });
+          },
+          fieldDecorationBuilder: widget.fieldDecorationBuilder,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (titleCtrl.text.trim().isEmpty) return;
-              setState(() {
-                section.lessons.add(
-                  _PendingLesson(
-                    id: const Uuid().v4(),
-                    title: titleCtrl.text.trim(),
-                    description: descCtrl.text.trim(),
-                    duration: durationCtrl.text.trim(),
-                    videoUrl: videoCtrl.text.trim(),
-                    pdfUrl: pdfCtrl.text.trim(),
-                  ),
-                );
-              });
-              Navigator.pop(ctx);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xff4A90D9),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: const Text('Add', style: TextStyle(color: Colors.white)),
-          ),
-        ],
       ),
     );
   }
@@ -646,9 +559,10 @@ class _CourseContentTabState extends State<_CourseContentTab>
                   (ps) => _PendingSectionCard(
                     ps: ps,
                     onDelete: () => setState(() => widget.sections.remove(ps)),
-                    onAddLesson: () => _addLesson(ps),
+                    onAddLesson: () => _navigateToAddLesson(ps),
                     onDeleteLesson: (pl) =>
                         setState(() => ps.lessons.remove(pl)),
+                    onEditLesson: (pl) => _navigateToEditLesson(ps, pl),
                   ),
                 ),
             ],
@@ -688,33 +602,7 @@ class _CourseContentTabState extends State<_CourseContentTab>
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xff4A90D9),
-                    disabledBackgroundColor: const Color(
-                      0xff4A90D9,
-                    ).withAlpha(128),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Colors.grey.shade300, width: 1.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Save as Draft',
-                    style: TextStyle(fontSize: 15),
-                  ),
+                  style: teacherPrimaryButtonStyle(isDisabled: widget.isSaving),
                 ),
               ),
             ],
@@ -732,12 +620,14 @@ class _PendingSectionCard extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onAddLesson;
   final void Function(_PendingLesson) onDeleteLesson;
+  final void Function(_PendingLesson) onEditLesson;
 
   const _PendingSectionCard({
     required this.ps,
     required this.onDelete,
     required this.onAddLesson,
     required this.onDeleteLesson,
+    required this.onEditLesson,
   });
 
   @override
@@ -776,7 +666,7 @@ class _PendingSectionCard extends StatelessWidget {
                 IconButton(
                   icon: const Icon(
                     Icons.delete_outline,
-                    color: Colors.redAccent,
+                    color: TeacherShared.errorColor,
                   ),
                   onPressed: onDelete,
                 ),
@@ -797,7 +687,7 @@ class _PendingSectionCard extends StatelessWidget {
               (pl) => ListTile(
                 leading: const Icon(
                   Icons.description_outlined,
-                  color: Color(0xff4A90D9),
+                  color: TeacherShared.primaryBlue,
                 ),
                 title: Text(
                   pl.title,
@@ -806,13 +696,28 @@ class _PendingSectionCard extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
-                trailing: IconButton(
-                  icon: const Icon(
-                    Icons.delete_outline,
-                    color: Colors.redAccent,
-                    size: 20,
-                  ),
-                  onPressed: () => onDeleteLesson(pl),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.edit_outlined,
+                        color: TeacherShared.primaryBlue,
+                        size: 20,
+                      ),
+                      onPressed: () => onEditLesson(pl),
+                      tooltip: 'Edit Lesson',
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: TeacherShared.errorColor,
+                        size: 20,
+                      ),
+                      onPressed: () => onDeleteLesson(pl),
+                      tooltip: 'Delete Lesson',
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -821,64 +726,15 @@ class _PendingSectionCard extends StatelessWidget {
             child: Wrap(
               spacing: 8,
               children: [
-                _LessonTypeChip(
+                LessonTypeChip(
                   icon: Icons.play_circle_outline,
-                  label: 'Video',
-                  onTap: onAddLesson,
-                ),
-                _LessonTypeChip(
-                  icon: Icons.description_outlined,
-                  label: 'Document',
+                  label: 'Add Lecture',
                   onTap: onAddLesson,
                 ),
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _LessonTypeChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  const _LessonTypeChip({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-        decoration: BoxDecoration(
-          color: const Color(0xffEDF4FD),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: const Color(0xff4A90D9).withAlpha(102),
-            width: 1,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 15, color: const Color(0xff4A90D9)),
-            const SizedBox(width: 5),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Color(0xff4A90D9),
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -902,13 +758,13 @@ class _OutlineButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xff4A90D9), width: 1.5),
+          borderRadius: BorderRadius.circular(TeacherShared.radiusLarge),
+          border: Border.all(color: TeacherShared.primaryBlue, width: 1.5),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: const Color(0xff4A90D9)),
+            Icon(icon, color: TeacherShared.primaryBlue),
             const SizedBox(width: 8),
             Text(
               label,
@@ -921,6 +777,326 @@ class _OutlineButton extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ── Pending Lesson Screen (for course creation flow) ────────────────────────
+
+class _PendingLessonScreen extends StatefulWidget {
+  final _PendingLesson? existingLesson;
+  final void Function(_PendingLesson)? onLessonAdded;
+  final void Function(_PendingLesson)? onLessonUpdated;
+  final InputDecoration Function(String, {String? hint}) fieldDecorationBuilder;
+
+  const _PendingLessonScreen({
+    this.existingLesson,
+    this.onLessonAdded,
+    this.onLessonUpdated,
+    required this.fieldDecorationBuilder,
+  });
+
+  @override
+  State<_PendingLessonScreen> createState() => _PendingLessonScreenState();
+}
+
+class _PendingLessonScreenState extends State<_PendingLessonScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _titleCtrl = TextEditingController();
+  final _descCtrl = TextEditingController();
+  final _durationCtrl = TextEditingController();
+  final _videoUrlCtrl = TextEditingController();
+  final _pdfUrlCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.existingLesson != null) {
+      _titleCtrl.text = widget.existingLesson!.title;
+      _descCtrl.text = widget.existingLesson!.description;
+      _durationCtrl.text = widget.existingLesson!.duration;
+      _videoUrlCtrl.text = widget.existingLesson!.videoUrl;
+      _pdfUrlCtrl.text = widget.existingLesson!.pdfUrl;
+    }
+  }
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    _descCtrl.dispose();
+    _durationCtrl.dispose();
+    _videoUrlCtrl.dispose();
+    _pdfUrlCtrl.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+
+    final lesson = _PendingLesson(
+      id: widget.existingLesson?.id ?? const Uuid().v4(),
+      title: _titleCtrl.text.trim(),
+      description: _descCtrl.text.trim(),
+      duration: _durationCtrl.text.trim(),
+      videoUrl: _videoUrlCtrl.text.trim(),
+      pdfUrl: _pdfUrlCtrl.text.trim(),
+    );
+
+    if (widget.existingLesson != null) {
+      widget.onLessonUpdated?.call(lesson);
+    } else {
+      widget.onLessonAdded?.call(lesson);
+    }
+    Navigator.pop(context);
+  }
+
+  Widget _sectionHeader(String title) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Text(
+      title,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: TeacherShared.primaryBlue,
+      ),
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: TeacherShared.backgroundColor,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // ── Header ─────────────────────────────────────────────────
+            Container(
+              padding: const EdgeInsets.fromLTRB(8, 12, 16, 18),
+              decoration: const BoxDecoration(
+                color: TeacherShared.primaryBlue,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(TeacherShared.radiusXXL),
+                  bottomRight: Radius.circular(TeacherShared.radiusXXL),
+                ),
+              ),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new,
+                      color: Colors.white,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Text(
+                    widget.existingLesson != null
+                        ? 'Edit Video Lecture'
+                        : 'Add Video Lecture',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // ── Form ───────────────────────────────────────────────────
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Basic Info Card
+                      _Card(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _sectionHeader('Lecture Details'),
+                            TextFormField(
+                              controller: _titleCtrl,
+                              decoration: widget.fieldDecorationBuilder(
+                                'Lecture Title',
+                                hint: 'New Lecture',
+                              ),
+                              validator: (v) => v == null || v.trim().isEmpty
+                                  ? 'Title is required'
+                                  : null,
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _descCtrl,
+                              maxLines: 3,
+                              decoration: widget.fieldDecorationBuilder(
+                                'Description',
+                                hint:
+                                    'What will students learn in this lecture?',
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _durationCtrl,
+                              decoration: widget.fieldDecorationBuilder(
+                                'Duration',
+                                hint: 'e.g., 15:30',
+                              ),
+                              keyboardType: TextInputType.number,
+                              validator: (v) => v == null || v.trim().isEmpty
+                                  ? 'Duration is required'
+                                  : null,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Format: MM:SS (e.g., 15:30 for 15 minutes 30 seconds)',
+                              style: TextStyle(
+                                color: Colors.grey.shade500,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Video URL Card
+                      _Card(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _sectionHeader('Video File'),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 24),
+                              decoration: BoxDecoration(
+                                color: TeacherShared.lightBlue,
+                                borderRadius: BorderRadius.circular(
+                                  TeacherShared.radiusMedium,
+                                ),
+                                border: Border.all(
+                                  color: TeacherShared.primaryBlue.withValues(
+                                    alpha: 0.4,
+                                  ),
+                                  width: 1.5,
+                                  style: BorderStyle.solid,
+                                ),
+                              ),
+                              child: const Column(
+                                children: [
+                                  Icon(
+                                    Icons.upload_outlined,
+                                    color: TeacherShared.primaryBlue,
+                                    size: 32,
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Enter video URL below',
+                                    style: TextStyle(
+                                      color: TeacherShared.primaryBlue,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'MP4, WebM, or YouTube URL',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              controller: _videoUrlCtrl,
+                              decoration: widget.fieldDecorationBuilder(
+                                'Video URL',
+                                hint: 'https://...',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // PDF URL Card
+                      _Card(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _sectionHeader('Document (Optional)'),
+                            TextFormField(
+                              controller: _pdfUrlCtrl,
+                              decoration: widget.fieldDecorationBuilder(
+                                'PDF / Document URL',
+                                hint: 'https://...',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Save button
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton.icon(
+                          onPressed: _submit,
+                          icon: const Icon(
+                            Icons.save_outlined,
+                            color: Colors.white,
+                          ),
+                          label: Text(
+                            widget.existingLesson != null
+                                ? 'Update Lesson'
+                                : 'Save Lesson',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: teacherPrimaryButtonStyle(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Card extends StatelessWidget {
+  final Widget child;
+  const _Card({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: child,
     );
   }
 }

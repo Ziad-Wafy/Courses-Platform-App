@@ -11,6 +11,8 @@ import 'package:learning_management_system/features/courses_student_side/domain/
 import 'package:learning_management_system/features/courses_teacher_side/presentation/cubit/teacher_course_cubit.dart';
 import 'package:learning_management_system/features/courses_teacher_side/presentation/cubit/teacher_course_state.dart';
 import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/screens/teacher_add_lesson_screen.dart';
+import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/widgets/lesson_type_chip.dart';
+import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/widgets/teacher_shared_widgets.dart';
 import 'package:uuid/uuid.dart';
 
 // ── Data type ────────────────────────────────────────────────────────────────
@@ -95,19 +97,21 @@ class _TeacherCourseContentScreenState
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Add Section',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Add Section',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: titleCtrl,
-              decoration: _inputDecoration('Section Title'),
+              decoration: teacherInputDecoration('Section Title'),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: durationCtrl,
-              decoration: _inputDecoration('Duration (e.g. 2 Hours)'),
+              decoration: teacherInputDecoration('Duration (e.g. 2 Hours)'),
             ),
           ],
         ),
@@ -125,16 +129,13 @@ class _TeacherCourseContentScreenState
                 duration: durationCtrl.text.trim(),
                 order: _entries.length + 1,
               );
-              context
-                  .read<TeacherCourseCubit>()
-                  .addSection(widget.course.id, section);
+              context.read<TeacherCourseCubit>().addSection(
+                widget.course.id,
+                section,
+              );
               Navigator.pop(ctx);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xff4A90D9),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
+            style: teacherPrimaryButtonStyle(),
             child: const Text('Add', style: TextStyle(color: Colors.white)),
           ),
         ],
@@ -149,19 +150,21 @@ class _TeacherCourseContentScreenState
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Edit Section',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Edit Section',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: titleCtrl,
-              decoration: _inputDecoration('Section Title'),
+              decoration: teacherInputDecoration('Section Title'),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: durationCtrl,
-              decoration: _inputDecoration('Duration'),
+              decoration: teacherInputDecoration('Duration'),
             ),
           ],
         ),
@@ -179,16 +182,13 @@ class _TeacherCourseContentScreenState
                 duration: durationCtrl.text.trim(),
                 order: section.order,
               );
-              context
-                  .read<TeacherCourseCubit>()
-                  .updateSection(widget.course.id, updated);
+              context.read<TeacherCourseCubit>().updateSection(
+                widget.course.id,
+                updated,
+              );
               Navigator.pop(ctx);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xff4A90D9),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
+            style: teacherPrimaryButtonStyle(),
             child: const Text('Save', style: TextStyle(color: Colors.white)),
           ),
         ],
@@ -201,10 +201,13 @@ class _TeacherCourseContentScreenState
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Section?',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Delete Section?',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: Text(
-            'Are you sure you want to delete "${section.title}" and all its lessons?'),
+          'Are you sure you want to delete "${section.title}" and all its lessons?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -212,15 +215,17 @@ class _TeacherCourseContentScreenState
           ),
           ElevatedButton(
             onPressed: () {
-              context
-                  .read<TeacherCourseCubit>()
-                  .deleteSection(widget.course.id, section.id);
+              context.read<TeacherCourseCubit>().deleteSection(
+                widget.course.id,
+                section.id,
+              );
               Navigator.pop(ctx);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
+              backgroundColor: TeacherShared.errorColor,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                borderRadius: BorderRadius.circular(TeacherShared.radiusSmall),
+              ),
             ),
             child: const Text('Delete', style: TextStyle(color: Colors.white)),
           ),
@@ -267,8 +272,10 @@ class _TeacherCourseContentScreenState
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Lesson?',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Delete Lesson?',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: Text('Are you sure you want to delete "${lesson.title}"?'),
         actions: [
           TextButton(
@@ -277,15 +284,18 @@ class _TeacherCourseContentScreenState
           ),
           ElevatedButton(
             onPressed: () {
-              context
-                  .read<TeacherCourseCubit>()
-                  .deleteLesson(widget.course.id, sectionId, lesson.id);
+              context.read<TeacherCourseCubit>().deleteLesson(
+                widget.course.id,
+                sectionId,
+                lesson.id,
+              );
               Navigator.pop(ctx);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
+              backgroundColor: TeacherShared.errorColor,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                borderRadius: BorderRadius.circular(TeacherShared.radiusSmall),
+              ),
             ),
             child: const Text('Delete', style: TextStyle(color: Colors.white)),
           ),
@@ -294,18 +304,6 @@ class _TeacherCourseContentScreenState
     );
   }
 
-  InputDecoration _inputDecoration(String hint) => InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: const Color(0xffF4F5F7),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      );
-
   // ── Build ────────────────────────────────────────────────────────────────
 
   @override
@@ -313,10 +311,12 @@ class _TeacherCourseContentScreenState
     return BlocListener<TeacherCourseCubit, TeacherCourseState>(
       listener: (context, state) {
         if (state is TeacherCourseError) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(state.message),
-            backgroundColor: Colors.redAccent,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
         } else if (state is TeacherSectionAdded ||
             state is TeacherSectionUpdated ||
             state is TeacherSectionDeleted ||
@@ -327,26 +327,30 @@ class _TeacherCourseContentScreenState
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xffF4F5F7),
+        backgroundColor: TeacherShared.backgroundColor,
         body: SafeArea(
           child: Column(
             children: [
               // ── AppBar ───────────────────────────────────────────────
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 18,
+                ),
                 decoration: const BoxDecoration(
-                  color: Color(0xff4A90D9),
+                  color: TeacherShared.primaryBlue,
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(24),
-                    bottomRight: Radius.circular(24),
+                    bottomLeft: Radius.circular(TeacherShared.radiusXXL),
+                    bottomRight: Radius.circular(TeacherShared.radiusXXL),
                   ),
                 ),
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new,
-                          color: Colors.white),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new,
+                        color: Colors.white,
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                     const SizedBox(width: 4),
@@ -371,79 +375,86 @@ class _TeacherCourseContentScreenState
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : _error != null
-                        ? Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.error_outline,
-                                    color: Colors.red, size: 48),
-                                const SizedBox(height: 12),
-                                Text(_error!,
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        const TextStyle(color: Colors.red)),
-                                const SizedBox(height: 16),
-                                ElevatedButton.icon(
-                                  onPressed: _fetchContent,
-                                  icon: const Icon(Icons.refresh),
-                                  label: const Text('Retry'),
-                                ),
-                              ],
+                    ? Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 48,
                             ),
-                          )
-                        : RefreshIndicator(
-                            onRefresh: _fetchContent,
-                            child: ListView(
-                              padding:
-                                  const EdgeInsets.fromLTRB(16, 16, 16, 100),
-                              children: [
-                                _AddSectionButton(
-                                    onTap: _showAddSectionDialog),
-                                const SizedBox(height: 16),
-                                if (_entries.isEmpty)
-                                  Center(
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(top: 40),
-                                      child: Column(
-                                        children: [
-                                          Icon(Icons.playlist_add,
-                                              size: 64,
-                                              color: Colors.grey.shade300),
-                                          const SizedBox(height: 12),
-                                          Text(
-                                            'No sections yet.\nTap above to add your first section.',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Colors.grey.shade500,
-                                                fontSize: 15),
-                                          ),
-                                        ],
+                            const SizedBox(height: 12),
+                            Text(
+                              _error!,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                            const SizedBox(height: 16),
+                            ElevatedButton.icon(
+                              onPressed: _fetchContent,
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _fetchContent,
+                        child: ListView(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                          children: [
+                            _AddSectionButton(onTap: _showAddSectionDialog),
+                            const SizedBox(height: 16),
+                            if (_entries.isEmpty)
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 40),
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.playlist_add,
+                                        size: 64,
+                                        color: Colors.grey.shade300,
                                       ),
-                                    ),
-                                  )
-                                else
-                                  ..._entries.map((entry) => _SectionCard(
-                                        entry: entry,
-                                        onEditSection: () =>
-                                            _showEditSectionDialog(
-                                                entry.section),
-                                        onDeleteSection: () =>
-                                            _confirmDeleteSection(
-                                                entry.section),
-                                        onAddLesson: () =>
-                                            _navigateToAddLesson(
-                                                entry.section.id),
-                                        onEditLesson: (lesson) =>
-                                            _navigateToEditLesson(
-                                                entry.section.id, lesson),
-                                        onDeleteLesson: (lesson) =>
-                                            _confirmDeleteLesson(
-                                                entry.section.id, lesson),
-                                      )),
-                              ],
-                            ),
-                          ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        'No sections yet.\nTap above to add your first section.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.grey.shade500,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            else
+                              ..._entries.map(
+                                (entry) => _SectionCard(
+                                  entry: entry,
+                                  onEditSection: () =>
+                                      _showEditSectionDialog(entry.section),
+                                  onDeleteSection: () =>
+                                      _confirmDeleteSection(entry.section),
+                                  onAddLesson: () =>
+                                      _navigateToAddLesson(entry.section.id),
+                                  onEditLesson: (lesson) =>
+                                      _navigateToEditLesson(
+                                        entry.section.id,
+                                        lesson,
+                                      ),
+                                  onDeleteLesson: (lesson) =>
+                                      _confirmDeleteLesson(
+                                        entry.section.id,
+                                        lesson,
+                                      ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
               ),
             ],
           ),
@@ -467,29 +478,32 @@ class _AddSectionButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(TeacherShared.radiusLarge),
           border: Border.all(
-              color: const Color(0xff4A90D9),
-              width: 1.5,
-              style: BorderStyle.solid),
+            color: TeacherShared.primaryBlue,
+            width: 1.5,
+            style: BorderStyle.solid,
+          ),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 6,
-                offset: const Offset(0, 2)),
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.add_circle_outline, color: Color(0xff4A90D9)),
+            Icon(Icons.add_circle_outline, color: TeacherShared.primaryBlue),
             SizedBox(width: 8),
             Text(
               'Add Section',
               style: TextStyle(
-                  color: Color(0xff4A90D9),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15),
+                color: TeacherShared.primaryBlue,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
             ),
           ],
         ),
@@ -527,9 +541,10 @@ class _SectionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 3)),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: Column(
@@ -546,26 +561,39 @@ class _SectionCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(section.title,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
+                      Text(
+                        section.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
                       if (section.duration.isNotEmpty)
-                        Text(section.duration,
-                            style: TextStyle(
-                                color: Colors.grey.shade500, fontSize: 12)),
+                        Text(
+                          section.duration,
+                          style: TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 12,
+                          ),
+                        ),
                     ],
                   ),
                 ),
                 // Edit section
                 IconButton(
-                  icon:
-                      const Icon(Icons.edit_outlined, color: Color(0xff4A90D9)),
+                  icon: const Icon(
+                    Icons.edit_outlined,
+                    color: TeacherShared.primaryBlue,
+                  ),
                   onPressed: onEditSection,
                   tooltip: 'Edit Section',
                 ),
                 // Delete section
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: TeacherShared.errorColor,
+                  ),
                   onPressed: onDeleteSection,
                   tooltip: 'Delete Section',
                 ),
@@ -598,32 +626,49 @@ class _SectionCard extends StatelessWidget {
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: const Color(0xffEDF4FD),
+                      color: TeacherShared.lightBlue,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.play_circle_fill,
-                        color: Color(0xff4A90D9), size: 20),
+                    child: const Icon(
+                      Icons.play_circle_fill,
+                      color: TeacherShared.primaryBlue,
+                      size: 20,
+                    ),
                   ),
-                  title: Text(lesson.title,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w500, fontSize: 14)),
+                  title: Text(
+                    lesson.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                    ),
+                  ),
                   subtitle: lesson.duration.isNotEmpty
-                      ? Text(lesson.duration,
+                      ? Text(
+                          lesson.duration,
                           style: TextStyle(
-                              color: Colors.grey.shade500, fontSize: 12))
+                            color: Colors.grey.shade500,
+                            fontSize: 12,
+                          ),
+                        )
                       : null,
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.edit_outlined,
-                            color: Color(0xff4A90D9), size: 20),
+                        icon: const Icon(
+                          Icons.edit_outlined,
+                          color: TeacherShared.primaryBlue,
+                          size: 20,
+                        ),
                         onPressed: () => onEditLesson(lesson),
                         tooltip: 'Edit Lesson',
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline,
-                            color: Colors.redAccent, size: 20),
+                        icon: const Icon(
+                          Icons.delete_outline,
+                          color: TeacherShared.errorColor,
+                          size: 20,
+                        ),
                         onPressed: () => onDeleteLesson(lesson),
                         tooltip: 'Delete Lesson',
                       ),
@@ -636,30 +681,15 @@ class _SectionCard extends StatelessWidget {
           // Add lesson button
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),
-            child: GestureDetector(
-              onTap: onAddLesson,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: const Color(0xffEDF4FD),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                      color: const Color(0xff4A90D9).withValues(alpha: 0.4),
-                      width: 1),
+            child: Wrap(
+              spacing: 8,
+              children: [
+                LessonTypeChip(
+                  icon: Icons.play_circle_outline,
+                  label: 'Add Lecture',
+                  onTap: onAddLesson,
                 ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.add, size: 16, color: Color(0xff4A90D9)),
-                    SizedBox(width: 6),
-                    Text('Add Lecture',
-                        style: TextStyle(
-                            color: Color(0xff4A90D9),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500)),
-                  ],
-                ),
-              ),
+              ],
             ),
           ),
         ],
@@ -667,4 +697,3 @@ class _SectionCard extends StatelessWidget {
     );
   }
 }
-

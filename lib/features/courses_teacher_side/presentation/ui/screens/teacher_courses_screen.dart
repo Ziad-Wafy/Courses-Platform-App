@@ -19,6 +19,7 @@ import 'package:learning_management_system/features/courses_teacher_side/domain/
 import 'package:learning_management_system/features/courses_teacher_side/presentation/cubit/teacher_course_cubit.dart';
 import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/screens/teacher_create_course_screen.dart';
 import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/screens/teacher_course_content_screen.dart';
+import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/widgets/teacher_shared_widgets.dart';
 
 /// Entry point for the teacher side — lists all courses from Firestore.
 class TeacherCoursesScreen extends StatefulWidget {
@@ -55,7 +56,9 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
     });
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid;
-      final courses = uid != null ? await _getTeacherCoursesUseCase(uid) : <CourseModel>[];
+      final courses = uid != null
+          ? await _getTeacherCoursesUseCase(uid)
+          : <CourseModel>[];
       setState(() {
         _courses = courses;
         _isLoading = false;
@@ -123,7 +126,7 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
         .toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xffF4F5F7),
+      backgroundColor: TeacherShared.backgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -131,10 +134,10 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
             Container(
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
               decoration: const BoxDecoration(
-                color: Color(0xff4A90D9),
+                color: TeacherShared.primaryBlue,
                 borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(28),
-                  bottomRight: Radius.circular(28),
+                  bottomLeft: Radius.circular(TeacherShared.radiusXXL),
+                  bottomRight: Radius.circular(TeacherShared.radiusXXL),
                 ),
               ),
               child: Column(
@@ -284,7 +287,7 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xff4A90D9),
+                                    color: TeacherShared.primaryBlue,
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: const Row(
@@ -320,4 +323,3 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
     );
   }
 }
-
