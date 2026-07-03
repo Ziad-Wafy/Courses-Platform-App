@@ -8,9 +8,8 @@ import 'package:learning_management_system/features/courses_teacher_side/present
 
 import 'firebase_options.dart';
 import 'core/utils/service_locator.dart' as di;
-
+import 'package:learning_management_system/features/courses_student_side/presentation/ui/screens/student_courses_screen.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
-import 'features/auth/presentation/ui/screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +42,7 @@ class MainApp extends StatelessWidget {
         return MultiBlocProvider(
           providers: [
             BlocProvider<AuthCubit>(create: (context) => di.sl<AuthCubit>()),
-            BlocProvider<ChatCubit>(create: (context) => di.sl<ChatCubit>())
+            BlocProvider<ChatCubit>(create: (context) => di.sl<ChatCubit>()),
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -77,9 +76,8 @@ class AuthWrapper extends StatelessWidget {
           // return const HomeScreen();
         }
 
-        return const LoginScreen();
+        return const StudentCoursesScreen();
       },
     );
   }
 }
-
