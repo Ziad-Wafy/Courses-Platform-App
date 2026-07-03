@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/widegets/home/stat_card.dart';
+import 'package:learning_management_system/features/main_layout/presentation/ui/home/stat_card.dart';
 
 class TopSection extends StatelessWidget {
   const TopSection({super.key});

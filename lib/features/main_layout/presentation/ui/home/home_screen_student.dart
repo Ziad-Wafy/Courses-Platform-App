@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/widegets/home/top_section.dart';
-import 'package:test_app/widegets/home/continue_learning_card.dart';
-import 'package:test_app/widegets/home/course_list.dart';
+import 'package:learning_management_system/features/main_layout/presentation/ui/home/top_section.dart';
+import 'package:learning_management_system/features/main_layout/presentation/ui/home/continue_learning_card.dart';
+import 'package:learning_management_system/features/main_layout/presentation/ui/home/course_list.dart';
 
 class HomeScreenStudent extends StatelessWidget {
   const HomeScreenStudent({super.key});

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/widegets/home/course_list_item_tech.dart';
-import 'course_list_item.dart';
+import 'package:learning_management_system/features/main_layout/presentation/ui/home/course_list_item_tech.dart';
 
 class CourseData {
   final String title;

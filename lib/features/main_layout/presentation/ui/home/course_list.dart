@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/widegets/home/course_list_item.dart';
+import 'package:learning_management_system/features/main_layout/presentation/ui/home/course_list_item.dart';
 
 class CourseList extends StatelessWidget {
   const CourseList({super.key});

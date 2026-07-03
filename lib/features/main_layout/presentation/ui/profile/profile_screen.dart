@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/widegets/profile/logout_button.dart';
-import 'package:test_app/widegets/profile/profile_header.dart';
-import 'package:test_app/widegets/profile/settings_section.dart';
-import 'package:test_app/widegets/profile/statistics_card.dart';
+import 'package:learning_management_system/features/main_layout/presentation/ui/profile/logout_button.dart';
+import 'package:learning_management_system/features/main_layout/presentation/ui/profile/profile_header.dart';
+import 'package:learning_management_system/features/main_layout/presentation/ui/profile/settings_section.dart';
+import 'package:learning_management_system/features/main_layout/presentation/ui/profile/statistics_card.dart';
 
 
 class ProfileScreen extends StatefulWidget {

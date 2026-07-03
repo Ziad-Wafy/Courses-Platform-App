@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:test_app/widegets/home/course_list.dart';
-import 'package:test_app/widegets/home/course_list_tech.dart'
-   ;
-import 'package:test_app/widegets/home/quick_stats_card.dart';
-import 'package:test_app/widegets/home/top_section_tech.dart';
+import 'package:learning_management_system/features/main_layout/presentation/ui/home/course_list_tech.dart';
+import 'package:learning_management_system/features/main_layout/presentation/ui/home/quick_stats_card.dart';
+import 'package:learning_management_system/features/main_layout/presentation/ui/home/top_section_tech.dart';
 
 class HomeScreenTech extends StatefulWidget {
   const HomeScreenTech({super.key});
