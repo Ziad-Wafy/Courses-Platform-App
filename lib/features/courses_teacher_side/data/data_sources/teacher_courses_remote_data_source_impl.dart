@@ -31,18 +31,26 @@ class FirebaseTeacherCoursesRemoteDataSource
     if (uid != null) {
       data['teacherId'] = uid;
     }
+    await firestore.collection('courses').doc(course.id).set(data);
+
     await firestore
         .collection('courses')
         .doc(course.id)
-        .set(data);
+        .collection('users')
+        .doc(uid)
+        .set({'userId': uid});
+
+    await firestore
+        .collection('users')
+        .doc(uid)
+        .collection('courses')
+        .doc(course.id)
+        .set({'courseId': course.id});
   }
 
   @override
   Future<void> updateCourse(CourseModel course) async {
-    await firestore
-        .collection('courses')
-        .doc(course.id)
-        .update(course.toMap());
+    await firestore.collection('courses').doc(course.id).update(course.toMap());
   }
 
   @override

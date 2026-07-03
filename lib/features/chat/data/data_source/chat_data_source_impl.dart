@@ -95,23 +95,50 @@ class ChatDataSourceImpl implements ChatDataSource {
   }
 
   @override
-  Future<List<CourseChatModel>> getCoursesChat() async {
-    final List<String> enrolledCoursesIDs =
-        (await firestore
-                .collection("users")
-                .doc(FirebaseAuth.instance.currentUser!.uid)
-                .collection("courses")
-                .get())
-            .docs
-            .map((doc) => doc.id)
-            .toList();
+  Stream<List<CourseChatModel>> getCoursesChat() {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
-    return (await firestore
-            .collection('courses')
-            .where(FieldPath.documentId, whereIn: enrolledCoursesIDs)
-            .get())
-        .docs
-        .map((doc) => CourseChatModel.fromJson(doc.data()))
-        .toList();
+    return firestore
+        .collection('users')
+        .doc(currentUserId)
+        .snapshots()
+        .asyncExpand((userDoc) {
+          final role = userDoc.data()?['role'] as String? ?? 'Student';
+
+          if (role == 'Teacher') {
+            return firestore
+                .collection('courses')
+                .where('teacherId', isEqualTo: currentUserId)
+                .snapshots()
+                .map((snapshot) {
+                  return snapshot.docs.map((doc) {
+                    final data = doc.data();
+                    data['id'] = doc.id;
+                    return CourseChatModel.fromJson(data);
+                  }).toList();
+                });
+          } else {
+            return firestore
+                .collection("users")
+                .doc(currentUserId)
+                .collection("courses")
+                .snapshots()
+                .asyncMap((snapshot) async {
+                  final List<CourseChatModel> courses = [];
+                  for (var doc in snapshot.docs) {
+                    final courseDoc = await firestore
+                        .collection('courses')
+                        .doc(doc.id)
+                        .get();
+                    if (courseDoc.exists) {
+                      final data = courseDoc.data() ?? {};
+                      data['id'] = courseDoc.id;
+                      courses.add(CourseChatModel.fromJson(data));
+                    }
+                  }
+                  return courses;
+                });
+          }
+        });
   }
 }

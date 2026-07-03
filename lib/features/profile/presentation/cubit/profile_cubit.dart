@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore firestore;
   final FirebaseStorage storage;
+  StreamSubscription<DocumentSnapshot>? _userSubscription;
 
   ProfileCubit({
     required this.firebaseAuth,
@@ -18,72 +20,81 @@ class ProfileCubit extends Cubit<ProfileState> {
     required this.storage,
   }) : super(ProfileInitial());
 
-  Future<void> loadProfile() async {
+  void loadProfile() {
     emit(ProfileLoading());
-    try {
-      final firebaseUser = firebaseAuth.currentUser;
-      if (firebaseUser == null) {
-        emit(ProfileError(message: 'User not found. Please login again.'));
-        return;
-      }
-
-      final doc =
-          await firestore.collection('users').doc(firebaseUser.uid).get();
-
-      if (!doc.exists) {
-        emit(ProfileError(message: 'Profile data not found.'));
-        return;
-      }
-
-      final data = doc.data()!;
-      final role = data['role'] as String? ?? 'Student';
-      final fullName =
-          data['fullName'] as String? ?? firebaseUser.displayName ?? 'User';
-      final email = data['email'] as String? ?? firebaseUser.email ?? '';
-      final bio = data['bio'] as String?;
-      final phoneNumber = data['phoneNumber'] as String?;
-      final avatarUrl = data['avatarUrl'] as String?;
-
-      final ProfileEntity profile;
-
-      if (role == 'Teacher') {
-        profile = ProfileEntity(
-          uid: firebaseUser.uid,
-          fullName: fullName,
-          email: email,
-          role: role,
-          bio: bio,
-          phoneNumber: phoneNumber,
-          avatarUrl: avatarUrl,
-          teacherStats: const TeacherStats(
-            courses: 8,
-            students: 546,
-            rating: 4.8,
-            issued: 12,
-          ),
-        );
-      } else {
-        profile = ProfileEntity(
-          uid: firebaseUser.uid,
-          fullName: fullName,
-          email: email,
-          role: role,
-          bio: bio,
-          phoneNumber: phoneNumber,
-          avatarUrl: avatarUrl,
-          studentStats: const StudentStats(
-            enrolled: 8,
-            completed: 12,
-            certificates: 5,
-            avgScore: 87,
-          ),
-        );
-      }
-
-      emit(ProfileLoaded(profile: profile));
-    } catch (e) {
-      emit(ProfileError(message: 'Failed to load profile: ${e.toString()}'));
+    final firebaseUser = firebaseAuth.currentUser;
+    if (firebaseUser == null) {
+      emit(ProfileError(message: 'User not found. Please login again.'));
+      return;
     }
+
+    // Listen to user document for real-time updates
+    _userSubscription = firestore
+        .collection('users')
+        .doc(firebaseUser.uid)
+        .snapshots()
+        .listen(
+          (doc) {
+            if (!doc.exists) {
+              emit(ProfileError(message: 'Profile data not found.'));
+              return;
+            }
+
+            final data = doc.data()!;
+            final role = data['role'] as String? ?? 'Student';
+            final fullName =
+                data['fullName'] as String? ??
+                firebaseUser.displayName ??
+                'User';
+            final email = data['email'] as String? ?? firebaseUser.email ?? '';
+            final bio = data['bio'] as String?;
+            final phoneNumber = data['phoneNumber'] as String?;
+            final avatarUrl = data['avatarUrl'] as String?;
+
+            final ProfileEntity profile;
+
+            if (role == 'Teacher') {
+              profile = ProfileEntity(
+                uid: firebaseUser.uid,
+                fullName: fullName,
+                email: email,
+                role: role,
+                bio: bio,
+                phoneNumber: phoneNumber,
+                avatarUrl: avatarUrl,
+                teacherStats: const TeacherStats(
+                  courses: 8,
+                  students: 546,
+                  rating: 4.8,
+                  issued: 12,
+                ),
+              );
+            } else {
+              profile = ProfileEntity(
+                uid: firebaseUser.uid,
+                fullName: fullName,
+                email: email,
+                role: role,
+                bio: bio,
+                phoneNumber: phoneNumber,
+                avatarUrl: avatarUrl,
+                studentStats: const StudentStats(
+                  enrolled: 8,
+                  completed: 12,
+                  certificates: 5,
+                  avgScore: 87,
+                ),
+              );
+            }
+
+            emit(ProfileLoaded(profile: profile));
+          },
+          onError: (e) {
+            emit(
+              ProfileError(message: 'Failed to load profile: ${e.toString()}'),
+            );
+          },
+        );
   }
 
   Future<void> updateProfile({
@@ -140,5 +151,11 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   Future<void> signOut() async {
     await firebaseAuth.signOut();
+  }
+
+  @override
+  Future<void> close() {
+    _userSubscription?.cancel();
+    return super.close();
   }
 }

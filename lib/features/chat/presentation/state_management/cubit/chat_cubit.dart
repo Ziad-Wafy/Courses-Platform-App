@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning_management_system/features/chat/domain/entities/course_chat_entity.dart';
 import 'package:learning_management_system/features/chat/domain/entities/message_entity.dart';
@@ -9,13 +10,23 @@ class ChatCubit extends Cubit<ChatState> {
   final ChatRepo chatRepo;
   ChatCubit({required this.chatRepo}) : super(ChatInitial());
 
-  void getCoursesChat() async {
+  StreamSubscription? _coursesChatSubscription;
+
+  void getCoursesChat() {
     emit(ChatLoading());
-    final result = await chatRepo.getCoursesChat();
-    result.fold(
-      (failure) => emit(ChatError(errorMessage: failure.message)),
-      (coursesChat) => emit(ChatLoadedCourses(coursesChat: coursesChat)),
-    );
+    _coursesChatSubscription?.cancel();
+    _coursesChatSubscription = chatRepo.getCoursesChat().listen((result) {
+      result.fold(
+        (failure) => emit(ChatError(errorMessage: failure.message)),
+        (coursesChat) => emit(ChatLoadedCourses(coursesChat: coursesChat)),
+      );
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _coursesChatSubscription?.cancel();
+    return super.close();
   }
 
   void sendMessage({

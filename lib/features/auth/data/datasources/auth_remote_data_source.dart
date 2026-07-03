@@ -1,13 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../../data/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<UserCredential> login(String email, String password);
   Future<UserCredential> signUp(
-      String email, String password, String fullName, String role);
+    String email,
+    String password,
+    String fullName,
+    String role,
+  );
   Future<void> resetPassword(String email);
   Future<UserCredential> signInWithGoogle();
+  Future<UserModel?> getUserData(String uid);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -31,7 +37,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<UserCredential> signUp(
-      String email, String password, String fullName, String role) async {
+    String email,
+    String password,
+    String fullName,
+    String role,
+  ) async {
     final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
@@ -79,8 +89,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       idToken: googleAuth.idToken,
     );
 
-    final userCredential =
-        await firebaseAuth.signInWithCredential(credential);
+    final userCredential = await firebaseAuth.signInWithCredential(credential);
 
     // ✅ لو مستخدم جديد بـ Google، احفظ بياناته في Firestore
     if (userCredential.additionalUserInfo?.isNewUser == true) {
@@ -95,5 +104,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
 
     return userCredential;
+  }
+
+  @override
+  Future<UserModel?> getUserData(String uid) async {
+    try {
+      final docSnapshot = await firestore.collection('users').doc(uid).get();
+      if (docSnapshot.exists) {
+        return UserModel.fromMap(docSnapshot.data() as Map<String, dynamic>);
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
   }
 }

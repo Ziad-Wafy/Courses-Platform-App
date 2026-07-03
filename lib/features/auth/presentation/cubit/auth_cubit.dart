@@ -1,6 +1,9 @@
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecases/auth_usecases.dart';
+import '../../domain/repositories/auth_repository.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -8,13 +11,53 @@ class AuthCubit extends Cubit<AuthState> {
   final SignUpUseCase signUpUseCase;
   final ResetPasswordUseCase resetPasswordUseCase;
   final SignInWithGoogleUseCase signInWithGoogleUseCase;
+  final AuthRepository authRepository;
+  StreamSubscription<DocumentSnapshot>? _userSubscription;
 
   AuthCubit({
     required this.loginUseCase,
     required this.signUpUseCase,
     required this.resetPasswordUseCase,
     required this.signInWithGoogleUseCase,
-  }) : super(AuthInitial());
+    required this.authRepository,
+  }) : super(AuthInitial()) {
+    _listenToAuthChanges();
+  }
+
+  void _listenToAuthChanges() {
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        _listenToUserData(user.uid);
+      } else {
+        _userSubscription?.cancel();
+        emit(AuthUnauthenticated());
+      }
+    });
+  }
+
+  void _listenToUserData(String uid) {
+    _userSubscription?.cancel();
+    _userSubscription = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .snapshots()
+        .listen(
+          (snapshot) {
+            if (snapshot.exists && snapshot.data() != null) {
+              final userData = authRepository.getUserDataFromSnapshot(snapshot);
+              emit(
+                AuthSuccess(
+                  user: FirebaseAuth.instance.currentUser,
+                  userData: userData,
+                ),
+              );
+            }
+          },
+          onError: (e) {
+            emit(AuthError(message: e.toString()));
+          },
+        );
+  }
 
   String _handleFirebaseError(dynamic e) {
     if (e is FirebaseAuthException) {
@@ -46,8 +89,8 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
     try {
       final credential = await loginUseCase.call(email, password);
-      // ✅ نجيب الـ user من الـ credential
-      emit(AuthSuccess(user: credential.user));
+      final userData = await authRepository.getUserData(credential.user!.uid);
+      emit(AuthSuccess(user: credential.user, userData: userData));
     } catch (e) {
       emit(AuthError(message: _handleFirebaseError(e)));
     }
@@ -67,8 +110,8 @@ class AuthCubit extends Cubit<AuthState> {
         fullName,
         role,
       );
-      // ✅ SignUp يبعت AuthSignUpSuccess مش AuthSuccess عشان نفرق بينهم
-      emit(AuthSignUpSuccess(user: credential.user));
+      final userData = await authRepository.getUserData(credential.user!.uid);
+      emit(AuthSignUpSuccess(user: credential.user, userData: userData));
     } catch (e) {
       emit(AuthError(message: _handleFirebaseError(e)));
     }
@@ -78,7 +121,24 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
     try {
       final credential = await signInWithGoogleUseCase.call();
-      emit(AuthSuccess(user: credential.user));
+      final userData = await authRepository.getUserData(credential.user!.uid);
+      emit(AuthSuccess(user: credential.user, userData: userData));
+    } catch (e) {
+      emit(AuthError(message: _handleFirebaseError(e)));
+    }
+  }
+
+  Future<void> fetchUserData(String uid) async {
+    try {
+      final userData = await authRepository.getUserData(uid);
+      if (userData != null) {
+        emit(
+          AuthSuccess(
+            user: FirebaseAuth.instance.currentUser,
+            userData: userData,
+          ),
+        );
+      }
     } catch (e) {
       emit(AuthError(message: _handleFirebaseError(e)));
     }
@@ -98,5 +158,11 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
     emit(AuthUnauthenticated());
+  }
+
+  @override
+  Future<void> close() {
+    _userSubscription?.cancel();
+    return super.close();
   }
 }

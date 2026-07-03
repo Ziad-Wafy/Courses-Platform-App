@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +20,7 @@ import 'package:learning_management_system/features/courses_teacher_side/domain/
 import 'package:learning_management_system/features/courses_teacher_side/presentation/cubit/teacher_course_cubit.dart';
 import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/screens/teacher_create_course_screen.dart';
 import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/screens/teacher_course_content_screen.dart';
+import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/widgets/teacher_shared_widgets.dart';
 
 /// Entry point for the teacher side — lists all courses from Firestore.
 class TeacherCoursesScreen extends StatefulWidget {
@@ -34,6 +36,7 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
   String? _error;
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
+  StreamSubscription<QuerySnapshot>? _coursesSubscription;
 
   late final GetTeacherCoursesUseCase _getTeacherCoursesUseCase;
 
@@ -45,17 +48,61 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
     );
     final repository = TeacherCourseRepositoryImpl(remoteDataSource);
     _getTeacherCoursesUseCase = GetTeacherCoursesUseCase(repository);
-    _fetchCourses();
+    _fetchCoursesStream();
+  }
+
+  void _fetchCoursesStream() {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      setState(() {
+        _isLoading = false;
+        _courses = [];
+      });
+      return;
+    }
+
+    _coursesSubscription = FirebaseFirestore.instance
+        .collection('courses')
+        .where('teacherId', isEqualTo: uid)
+        .snapshots()
+        .listen(
+          (snapshot) {
+            final courses = snapshot.docs.map((doc) {
+              final data = doc.data();
+              return CourseModel.fromJson(data, doc.id);
+            }).toList();
+
+            setState(() {
+              _courses = courses;
+              _isLoading = false;
+              _error = null;
+            });
+          },
+          onError: (e) {
+            setState(() {
+              _error = e.toString();
+              _isLoading = false;
+            });
+          },
+        );
   }
 
   Future<void> _fetchCourses() async {
+    // Keep this for manual refresh
     setState(() {
       _isLoading = true;
       _error = null;
     });
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid;
-      final courses = uid != null ? await _getTeacherCoursesUseCase(uid) : <CourseModel>[];
+      final courses = uid != null
+          ? await _getTeacherCoursesUseCase(uid)
+          : <CourseModel>[];
       setState(() {
         _courses = courses;
         _isLoading = false;
@@ -113,6 +160,7 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _coursesSubscription?.cancel();
     super.dispose();
   }
 
@@ -123,7 +171,7 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
         .toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xffF4F5F7),
+      backgroundColor: TeacherShared.backgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -131,10 +179,10 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
             Container(
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
               decoration: const BoxDecoration(
-                color: Color(0xff4A90D9),
+                color: TeacherShared.primaryBlue,
                 borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(28),
-                  bottomRight: Radius.circular(28),
+                  bottomLeft: Radius.circular(TeacherShared.radiusXXL),
+                  bottomRight: Radius.circular(TeacherShared.radiusXXL),
                 ),
               ),
               child: Column(
@@ -284,7 +332,7 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xff4A90D9),
+                                    color: TeacherShared.primaryBlue,
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: const Row(
@@ -320,4 +368,3 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
     );
   }
 }
-

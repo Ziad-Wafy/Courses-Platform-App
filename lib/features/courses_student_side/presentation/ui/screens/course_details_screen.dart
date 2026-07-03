@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:learning_management_system/features/courses_student_side/data/repositories/course_repository_impl.dart';
 import 'package:learning_management_system/features/courses_student_side/domain/use_cases/get_courses_use_case.dart';
@@ -53,14 +54,35 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
 
               const SizedBox(height: 22),
 
-              EnrollButtonWidget(
-                onTap: () {
-                  final remoteDataSource = FirebaseCoursesRemoteDataSource(
-                    FirebaseFirestore.instance,
+              StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('courses')
+                    .doc(widget.course.id)
+                    .collection('users')
+                    .doc(FirebaseAuth.instance.currentUser?.uid)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox(height: 50, child: Center(child: CircularProgressIndicator()));
+                  }
+                  
+                  final isEnrolled = snapshot.hasData && snapshot.data!.exists;
+                  
+                  if (isEnrolled) {
+                    // Hide the enroll button if already enrolled
+                    return const SizedBox();
+                  }
+                  
+                  return EnrollButtonWidget(
+                    onTap: () {
+                      final remoteDataSource = FirebaseCoursesRemoteDataSource(
+                        FirebaseFirestore.instance,
+                      );
+                      final repository = CourseRepositoryImpl(remoteDataSource);
+                      final coursesUseCase = CoursesUseCase(repository);
+                      coursesUseCase.courseEnroll(widget.course.id);
+                    },
                   );
-                  final repository = CourseRepositoryImpl(remoteDataSource);
-                  final coursesUseCase = CoursesUseCase(repository);
-                  coursesUseCase.courseEnroll(widget.course.id);
                 },
               ),
 

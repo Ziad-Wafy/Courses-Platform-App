@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning_management_system/features/courses_student_side/data/models/lesson_model.dart';
 import 'package:learning_management_system/features/courses_teacher_side/presentation/cubit/teacher_course_cubit.dart';
 import 'package:learning_management_system/features/courses_teacher_side/presentation/cubit/teacher_course_state.dart';
+import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/widgets/teacher_shared_widgets.dart';
 import 'package:uuid/uuid.dart';
 
 /// Screen for adding a new video/document lesson to a section.
@@ -82,34 +83,6 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
     }
   }
 
-  InputDecoration _inputDecoration(String label, {String? hint}) =>
-      InputDecoration(
-        labelText: label,
-        hintText: hint,
-        filled: true,
-        fillColor: const Color(0xffF4F5F7),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey.shade200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xff4A90D9), width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Colors.redAccent),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 18,
-          vertical: 16,
-        ),
-      );
-
   Widget _sectionHeader(String title) => Padding(
     padding: const EdgeInsets.only(bottom: 12),
     child: Text(
@@ -117,7 +90,7 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
       style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: Color(0xff4A90D9),
+        color: TeacherShared.primaryBlue,
       ),
     ),
   );
@@ -153,7 +126,7 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xffF4F5F7),
+        backgroundColor: TeacherShared.backgroundColor,
         body: SafeArea(
           child: Column(
             children: [
@@ -161,10 +134,10 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
               Container(
                 padding: const EdgeInsets.fromLTRB(8, 12, 16, 18),
                 decoration: const BoxDecoration(
-                  color: Color(0xff4A90D9),
+                  color: TeacherShared.primaryBlue,
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(24),
-                    bottomRight: Radius.circular(24),
+                    bottomLeft: Radius.circular(TeacherShared.radiusXXL),
+                    bottomRight: Radius.circular(TeacherShared.radiusXXL),
                   ),
                 ),
                 child: Row(
@@ -207,7 +180,7 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
                               _sectionHeader('Lecture Details'),
                               TextFormField(
                                 controller: _titleCtrl,
-                                decoration: _inputDecoration(
+                                decoration: teacherInputDecoration(
                                   'Lecture Title',
                                   hint: 'New Lecture',
                                 ),
@@ -219,7 +192,7 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
                               TextFormField(
                                 controller: _descCtrl,
                                 maxLines: 3,
-                                decoration: _inputDecoration(
+                                decoration: teacherInputDecoration(
                                   'Description',
                                   hint:
                                       'What will students learn in this lecture?',
@@ -228,7 +201,7 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
                               const SizedBox(height: 16),
                               TextFormField(
                                 controller: _durationCtrl,
-                                decoration: _inputDecoration(
+                                decoration: teacherInputDecoration(
                                   'Duration',
                                   hint: 'e.g., 15:30',
                                 ),
@@ -262,12 +235,14 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
                                   vertical: 24,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xffEDF4FD),
-                                  borderRadius: BorderRadius.circular(14),
+                                  color: TeacherShared.lightBlue,
+                                  borderRadius: BorderRadius.circular(
+                                    TeacherShared.radiusMedium,
+                                  ),
                                   border: Border.all(
-                                    color: const Color(
-                                      0xff4A90D9,
-                                    ).withValues(alpha: 0.4),
+                                    color: TeacherShared.primaryBlue.withValues(
+                                      alpha: 0.4,
+                                    ),
                                     width: 1.5,
                                     style: BorderStyle.solid,
                                   ),
@@ -276,14 +251,14 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
                                   children: [
                                     Icon(
                                       Icons.upload_outlined,
-                                      color: Color(0xff4A90D9),
+                                      color: TeacherShared.primaryBlue,
                                       size: 32,
                                     ),
                                     SizedBox(height: 8),
                                     Text(
                                       'Enter video URL below',
                                       style: TextStyle(
-                                        color: Color(0xff4A90D9),
+                                        color: TeacherShared.primaryBlue,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -301,7 +276,7 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
                               const SizedBox(height: 12),
                               TextFormField(
                                 controller: _videoUrlCtrl,
-                                decoration: _inputDecoration(
+                                decoration: teacherInputDecoration(
                                   'Video URL',
                                   hint: 'https://...',
                                 ),
@@ -319,7 +294,7 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
                               _sectionHeader('Document (Optional)'),
                               TextFormField(
                                 controller: _pdfUrlCtrl,
-                                decoration: _inputDecoration(
+                                decoration: teacherInputDecoration(
                                   'PDF / Document URL',
                                   hint: 'https://...',
                                 ),
@@ -360,14 +335,8 @@ class _TeacherAddLessonScreenState extends State<TeacherAddLessonScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xff4A90D9),
-                              disabledBackgroundColor: const Color(
-                                0xff4A90D9,
-                              ).withValues(alpha: 0.5),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
+                            style: teacherPrimaryButtonStyle(
+                              isDisabled: _isSaving,
                             ),
                           ),
                         ),
@@ -408,4 +377,3 @@ class _Card extends StatelessWidget {
     );
   }
 }
-
