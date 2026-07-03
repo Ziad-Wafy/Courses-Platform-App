@@ -56,11 +56,13 @@ class ChatRepoImpl implements ChatRepo {
   }
 
   @override
-  Future<Either<Failure, List<CourseChatEntity>>> getCoursesChat() async {
+  Stream<Either<Failure, List<CourseChatEntity>>> getCoursesChat() {
     try {
-      return Right(await chatDataSource.getCoursesChat());
+      return chatDataSource.getCoursesChat().map((courses) {
+        return Right<Failure, List<CourseChatEntity>>(courses);
+      });
     } catch (e) {
-      return Left(Failure(message: e.toString()));
+      return Stream.value(Left(Failure(message: e.toString())));
     }
   }
 

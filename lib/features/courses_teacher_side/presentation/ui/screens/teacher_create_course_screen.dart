@@ -145,6 +145,17 @@ class _TeacherCreateCourseScreenState extends State<TeacherCreateCourseScreen>
           await cubit.addLesson(courseId, ps.id, lesson);
         }
       }
+
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Course published successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context);
+      }
     }
   }
 

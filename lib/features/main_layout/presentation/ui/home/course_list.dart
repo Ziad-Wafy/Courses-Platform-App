@@ -61,7 +61,7 @@ class CourseList extends StatelessWidget {
                   Navigator.pushNamed(
                     context,
                     '/course-details',
-                    arguments: course.id,
+                    arguments: course,
                   );
                 },
               ),

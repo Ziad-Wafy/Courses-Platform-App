@@ -13,6 +13,7 @@ import 'features/auth/presentation/cubit/auth_state.dart';
 import 'features/auth/presentation/ui/screens/login_screen.dart';
 import 'features/profile/presentation/cubit/profile_cubit.dart';
 import 'features/main_layout/presentation/cubit/home_cubit.dart';
+import 'features/courses_student_side/presentation/ui/screens/course_details_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,6 +56,14 @@ class MainApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             title: 'Learning Management System',
             home: const AuthWrapper(),
+            onGenerateRoute: (settings) {
+              if (settings.name == '/course-details') {
+                return MaterialPageRoute(
+                  builder: (_) => CourseDetailsScreen(course: settings.arguments),
+                );
+              }
+              return null;
+            },
           ),
         );
       },

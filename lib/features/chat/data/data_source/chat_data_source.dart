@@ -5,6 +5,6 @@ abstract class ChatDataSource {
   Future<void> sendMessage({required String courseId, required MessageModel message});
   Future<void> readMessage({required String courseId, required String messageId});
   Stream<List<MessageModel>> getChatMessages({required String courseId});
-  Future<List<CourseChatModel>> getCoursesChat();
+  Stream<List<CourseChatModel>> getCoursesChat();
   Stream<int> getUnreadCount({required String courseId});
 }

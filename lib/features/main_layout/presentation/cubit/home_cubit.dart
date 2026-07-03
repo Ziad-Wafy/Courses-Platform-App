@@ -33,23 +33,42 @@ class HomeCubit extends Cubit<HomeState> {
   void _fetchStudentDataStream() {
     // Listen to enrolled courses for student
     _coursesSubscription = firestore
+        .collection('users')
+        .doc(currentUser.uid)
         .collection('courses')
-        .where('enrolledStudents', arrayContains: currentUser.uid)
         .snapshots()
         .listen(
-          (snapshot) {
-            final courses = snapshot.docs.map((doc) {
-              final data = doc.data();
-              return CourseData(
-                id: doc.id,
-                title: data['title'] ?? '',
-                instructor: data['instructorName'] ?? '',
-                progress: _calculateProgress(data),
-                progressText: '${_calculateProgress(data) * 100}%',
-                icon: _getIconForCourse(data['category'] ?? 'general'),
-              );
-            }).toList();
+          (snapshot) async {
+            final List<CourseData> courses = [];
+            for (var doc in snapshot.docs) {
+              final courseDoc = await firestore
+                  .collection('courses')
+                  .doc(doc.id)
+                  .get();
+              if (courseDoc.exists) {
+                final courseData = courseDoc.data() ?? {};
+                final enrollmentData = doc.data(); // users/{uid}/courses/{id}
 
+                courses.add(
+                  CourseData(
+                    id: courseDoc.id,
+                    title: courseData['title'] ?? '',
+                    instructor:
+                        courseData['instructor'] ??
+                        '', // Changed from instructorName to instructor
+                    description: courseData['description'] ?? '',
+                    progress: _calculateProgress(enrollmentData),
+                    progressText:
+                        '${(_calculateProgress(enrollmentData) * 100).toInt()}%',
+                    icon: _getIconForCourse(
+                      courseData['category'] ?? 'general',
+                    ),
+                  ),
+                );
+              }
+            }
+
+            _userSubscription?.cancel();
             // Listen to user stats
             _userSubscription = firestore
                 .collection('users')
@@ -96,22 +115,25 @@ class HomeCubit extends Cubit<HomeState> {
     // Listen to courses created by teacher
     _coursesSubscription = firestore
         .collection('courses')
-        .where('instructorId', isEqualTo: currentUser.uid)
+        .where('teacherId', isEqualTo: currentUser.uid)
         .snapshots()
         .listen(
           (snapshot) {
             final courses = snapshot.docs.map((doc) {
-              final data = doc.data();
+              final courseData = doc.data();
               return TeacherCourseData(
                 id: doc.id,
-                title: data['title'] ?? '',
-                studentCount: data['enrolledStudents']?.length ?? 0,
-                completionPercent: data['averageCompletion'] ?? 0,
-                icon: _getIconForCourse(data['category'] ?? 'general'),
+                title: courseData['title'] ?? '',
+                instructor: courseData['instructor'] ?? currentUser.fullName,
+                description: courseData['description'] ?? '',
+                studentCount: courseData['studentsCount'] ?? 0,
+                completionPercent: courseData['averageCompletion'] ?? 0,
+                icon: _getIconForCourse(courseData['category'] ?? 'general'),
                 iconColor: const Color(0xFF5B93F5),
               );
             }).toList();
 
+            _userSubscription?.cancel();
             // Listen to teacher stats
             _userSubscription = firestore
                 .collection('users')
@@ -221,6 +243,7 @@ class CourseData {
   final String id;
   final String title;
   final String instructor;
+  final String description;
   final double progress;
   final String progressText;
   final IconData icon;
@@ -229,6 +252,7 @@ class CourseData {
     required this.id,
     required this.title,
     required this.instructor,
+    required this.description,
     required this.progress,
     required this.progressText,
     required this.icon,
@@ -238,6 +262,8 @@ class CourseData {
 class TeacherCourseData {
   final String id;
   final String title;
+  final String instructor;
+  final String description;
   final int studentCount;
   final int completionPercent;
   final IconData icon;
@@ -246,6 +272,8 @@ class TeacherCourseData {
   TeacherCourseData({
     required this.id,
     required this.title,
+    required this.instructor,
+    required this.description,
     required this.studentCount,
     required this.completionPercent,
     required this.icon,

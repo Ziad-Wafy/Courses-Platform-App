@@ -25,12 +25,21 @@ class CourseListTech extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         ...courses.map(
-          (c) => CourseListItemTech(
-            title: c.title,
-            studentCount: c.studentCount,
-            completionPercent: c.completionPercent,
-            icon: c.icon,
-            iconColor: c.iconColor,
+          (c) => InkWell(
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                '/course-details',
+                arguments: c,
+              );
+            },
+            child: CourseListItemTech(
+              title: c.title,
+              studentCount: c.studentCount,
+              completionPercent: c.completionPercent,
+              icon: c.icon,
+              iconColor: c.iconColor,
+            ),
           ),
         ),
       ],
