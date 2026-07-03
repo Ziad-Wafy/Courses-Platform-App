@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning_management_system/features/chat/presentation/state_management/cubit/chat_cubit.dart';
 
-import 'firebase_options.dart';
-import 'core/utils/service_locator.dart' as di;
-import 'core/routing/role_based_router.dart';
+import 'package:learning_management_system/firebase_options.dart';
+import 'package:learning_management_system/core/utils/service_locator.dart' as di;
+import 'package:learning_management_system/core/routing/role_based_router.dart';
 
-import 'features/auth/presentation/cubit/auth_cubit.dart';
-import 'features/auth/presentation/cubit/auth_state.dart';
-import 'features/auth/presentation/ui/screens/login_screen.dart';
-import 'features/profile/presentation/cubit/profile_cubit.dart';
-import 'features/main_layout/presentation/cubit/home_cubit.dart';
-import 'features/courses_student_side/presentation/ui/screens/course_details_screen.dart';
-import 'features/quiz/presentation/routes/quiz_routes.dart';
+import 'package:learning_management_system/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:learning_management_system/features/auth/presentation/cubit/auth_state.dart';
+import 'package:learning_management_system/features/auth/presentation/ui/screens/login_screen.dart';
+import 'package:learning_management_system/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:learning_management_system/features/main_layout/presentation/cubit/home_cubit.dart';
+import 'package:learning_management_system/features/courses_student_side/presentation/ui/screens/course_details_screen.dart';
+import 'package:learning_management_system/features/quiz/presentation/routes/quiz_routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

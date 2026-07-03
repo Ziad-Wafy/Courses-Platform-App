@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../data/models/quiz_model.dart';
+import '../models/quiz_model.dart';
 import '../../domain/entities/quiz_entity.dart';
 import '../../domain/repositories/quiz_repository.dart';
 
@@ -40,7 +40,7 @@ class QuizRepositoryImpl implements QuizRepository {
       }
 
       return _modelToEntity(
-          QuizModel.fromJson({...doc.data() as Map<String, dynamic>, 'id': doc.id}));
+          QuizModel.fromJson({...doc.data()!, 'id': doc.id}));
     } catch (e) {
       throw Exception('Failed to get quiz: $e');
     }
@@ -85,8 +85,7 @@ class QuizRepositoryImpl implements QuizRepository {
         );
       }
 
-      final scorePercentage =
-          (correctCount / quiz.totalQuestions * 100).round() / 100;
+      final scorePercentage = (correctCount / quiz.totalQuestions * 100).roundToDouble();
       final result = QuizResultModel(
         id: '',
         quizId: quizId,
@@ -125,7 +124,7 @@ class QuizRepositoryImpl implements QuizRepository {
       }
 
       final model =
-          QuizResultModel.fromJson({...doc.data() as Map<String, dynamic>});
+          QuizResultModel.fromJson(doc.data()!);
       return _resultModelToEntity(model);
     } catch (e) {
       throw Exception('Failed to get result: $e');
@@ -237,5 +236,11 @@ class QuizRepositoryImpl implements QuizRepository {
               ))
           .toList(),
     );
+  }
+}
+
+extension on num {
+  double roundToDouble() {
+    return (this * 100).round() / 100.0;
   }
 }

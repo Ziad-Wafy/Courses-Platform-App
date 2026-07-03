@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:learning_management_system/features/courses_student_side/data/repositories/course_repository_impl.dart';
-import 'package:learning_management_system/features/courses_student_side/domain/use_cases/get_courses_use_case.dart';
+import 'package:learning_management_system/features/quiz/presentation/routes/quiz_routes.dart';
+import 'package:learning_management_system/core/theme/app_color.dart';
 import '../../../data/data_sources/courses_remote_data_source.dart';
 import '../../../data/models/section_model.dart';
 import '../../../domain/use_cases/get_sections_use_case.dart';
@@ -145,6 +146,35 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                             ),
                           );
                         },
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              QuizRoutes.quizList,
+                              arguments: widget.course.id,
+                            );
+                          },
+                          icon: const Icon(Icons.quiz, color: Colors.white),
+                          label: const Text(
+                            "View Quizzes & Assessments",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   );

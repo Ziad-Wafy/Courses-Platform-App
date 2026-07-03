@@ -120,7 +120,6 @@ class QuizCubit extends Cubit<QuizState> {
   }
 
   Future<void> getQuizById(String quizId) async {
-    // Keep current quizzes if any
     emit(const QuizLoading());
     try {
       final quiz = await getQuizByIdUseCase(quizId);
@@ -149,10 +148,8 @@ class QuizCubit extends Cubit<QuizState> {
     emit(const QuizLoading());
     try {
       await submitQuizAnswersUseCase(quizId, studentId, answers, timeSpentSeconds);
-      // Get the results after submission
       final results = await getStudentQuizResultsUseCase(studentId);
       if (results.isNotEmpty) {
-        // Sort results by date to get the latest one
         results.sort((a, b) => b.completedAt.compareTo(a.completedAt));
         final latestResult = results.first;
         emit(QuizAnswersSubmitted(latestResult));
@@ -203,7 +200,6 @@ class QuizCubit extends Cubit<QuizState> {
   Future<void> updateQuiz(Quiz quiz) async {
     try {
       await updateQuizUseCase(quiz);
-      // Refresh the quiz data
       await getQuizById(quiz.id);
     } catch (e) {
       emit(QuizError(e.toString()));

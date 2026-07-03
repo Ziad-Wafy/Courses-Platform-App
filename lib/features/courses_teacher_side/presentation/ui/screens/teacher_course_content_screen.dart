@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learning_management_system/features/quiz/presentation/routes/quiz_routes.dart';
 import 'package:learning_management_system/features/courses_student_side/data/data_sources/courses_remote_data_source.dart';
 import 'package:learning_management_system/features/courses_student_side/data/models/course_model.dart';
 import 'package:learning_management_system/features/courses_student_side/data/models/lesson_model.dart';
@@ -452,6 +453,24 @@ class _TeacherCourseContentScreenState
                                       ),
                                 ),
                               ),
+                            const SizedBox(height: 16),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  QuizRoutes.createQuiz,
+                                  arguments: {
+                                    'courseId': widget.course.id,
+                                    'instructorId': widget.course.teacherId,
+                                  },
+                                );
+                              },
+                              icon: const Icon(Icons.add, color: Colors.white),
+                              label: const Text('Create New Quiz', style: TextStyle(color: Colors.white)),
+                              style: teacherPrimaryButtonStyle().copyWith(
+                                minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
+                              ),
+                            ),
                           ],
                         ),
                       ),

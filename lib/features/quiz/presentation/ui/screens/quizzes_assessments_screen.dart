@@ -53,11 +53,11 @@ class _QuizzesAndAssessmentsScreenState extends State<QuizzesAndAssessmentsScree
                 itemCount: state.quizzes.length,
                 itemBuilder: (context, index) {
                   final quiz = state.quizzes[index];
-                  final result = state.studentResults.where((r) => r.quizId == quiz.id).toList();
+                  final results = state.studentResults.where((r) => r.quizId == quiz.id).toList();
                   QuizResult? latest;
-                  if(result.isNotEmpty) {
-                    result.sort((a, b) => b.completedAt.compareTo(a.completedAt));
-                    latest = result.first;
+                  if(results.isNotEmpty) {
+                    results.sort((a, b) => b.completedAt.compareTo(a.completedAt));
+                    latest = results.first;
                   }
 
                   return Card(
