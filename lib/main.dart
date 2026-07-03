@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learning_management_system/features/chat/presentation/state_management/cubit/chat_cubit.dart';
 
 import 'firebase_options.dart';
 import 'core/utils/service_locator.dart' as di;
+import 'core/routing/role_based_router.dart';
+
+import 'features/auth/presentation/cubit/auth_cubit.dart';
+import 'features/auth/presentation/cubit/auth_state.dart';
+import 'features/auth/presentation/ui/screens/login_screen.dart';
+import 'features/profile/presentation/cubit/profile_cubit.dart';
+import 'features/main_layout/presentation/cubit/home_cubit.dart';
+import 'features/courses_student_side/presentation/ui/screens/course_details_screen.dart';
 import 'features/quiz/presentation/routes/quiz_routes.dart';
 
 void main() async {
@@ -35,69 +44,72 @@ class MainApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Quiz Feature Standalone',
-          routes: QuizRoutes.getRoutes(),
-          home: const QuizEntryPoint(),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider<AuthCubit>(create: (context) => di.sl<AuthCubit>()),
+            BlocProvider<ChatCubit>(create: (context) => di.sl<ChatCubit>()),
+            BlocProvider<ProfileCubit>(
+              create: (context) => di.sl<ProfileCubit>(),
+            ),
+            BlocProvider<HomeCubit>(create: (context) => di.sl<HomeCubit>()),
+          ],
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Learning Management System',
+            routes: QuizRoutes.getRoutes(),
+            home: const AuthWrapper(),
+            onGenerateRoute: (settings) {
+              if (settings.name == '/course-details') {
+                return MaterialPageRoute(
+                  builder: (_) => CourseDetailsScreen(course: settings.arguments),
+                );
+              }
+              return null;
+            },
+          ),
         );
       },
     );
   }
 }
 
-class QuizEntryPoint extends StatelessWidget {
-  const QuizEntryPoint({super.key});
+class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    // Listen to auth state changes and initialize ProfileCubit
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthCubit>().stream.listen((state) {
+        if (state is AuthSuccess || state is AuthSignUpSuccess) {
+          context.read<ProfileCubit>().loadProfile();
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Quiz Feature Standalone')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Welcome to the Standalone Quiz Feature',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  '/quiz/list',
-                  arguments: 'course_123', // Default test course ID
-                );
-              },
-              child: const Text('View Quizzes (Student)'),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                final user = FirebaseAuth.instance.currentUser;
-                if (user == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please ensure you are signed in via Firebase for instructor features')),
-                  );
-                  return;
-                }
-                Navigator.pushNamed(
-                  context,
-                  '/quiz/create',
-                  arguments: {
-                    'courseId': 'course_123',
-                    'instructorId': user.uid,
-                  },
-                );
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-              child: const Text('Create New Quiz (Instructor)'),
-            ),
-          ],
-        ),
-      ),
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        if (state is AuthLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (state is AuthSuccess || state is AuthSignUpSuccess) {
+          return const RoleBasedRouter();
+        }
+
+        return const LoginScreen();
+      },
     );
   }
 }
