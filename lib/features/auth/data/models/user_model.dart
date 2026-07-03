@@ -13,6 +13,16 @@ class UserModel {
     this.createdAt,
   });
 
+  factory UserModel.empty() {
+    return UserModel(
+      uid: '',
+      fullName: '',
+      email: '',
+      role: 'Student',
+      createdAt: null,
+    );
+  }
+
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       uid: map['uid'] as String,

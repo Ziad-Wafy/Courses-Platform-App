@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
 import '../../data/models/user_model.dart';
@@ -36,5 +37,13 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<UserModel?> getUserData(String uid) async {
     return await remoteDataSource.getUserData(uid);
+  }
+
+  @override
+  UserModel? getUserDataFromSnapshot(DocumentSnapshot snapshot) {
+    if (!snapshot.exists) return null;
+    final data = snapshot.data() as Map<String, dynamic>?;
+    if (data == null) return null;
+    return UserModel.fromMap(data);
   }
 }

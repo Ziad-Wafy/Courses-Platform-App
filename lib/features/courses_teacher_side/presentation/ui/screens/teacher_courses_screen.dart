@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,6 +36,7 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
   String? _error;
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
+  StreamSubscription<QuerySnapshot>? _coursesSubscription;
 
   late final GetTeacherCoursesUseCase _getTeacherCoursesUseCase;
 
@@ -46,10 +48,52 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
     );
     final repository = TeacherCourseRepositoryImpl(remoteDataSource);
     _getTeacherCoursesUseCase = GetTeacherCoursesUseCase(repository);
-    _fetchCourses();
+    _fetchCoursesStream();
+  }
+
+  void _fetchCoursesStream() {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      setState(() {
+        _isLoading = false;
+        _courses = [];
+      });
+      return;
+    }
+
+    _coursesSubscription = FirebaseFirestore.instance
+        .collection('courses')
+        .where('teacherId', isEqualTo: uid)
+        .snapshots()
+        .listen(
+          (snapshot) {
+            final courses = snapshot.docs.map((doc) {
+              final data = doc.data();
+              return CourseModel.fromJson(data, doc.id);
+            }).toList();
+
+            setState(() {
+              _courses = courses;
+              _isLoading = false;
+              _error = null;
+            });
+          },
+          onError: (e) {
+            setState(() {
+              _error = e.toString();
+              _isLoading = false;
+            });
+          },
+        );
   }
 
   Future<void> _fetchCourses() async {
+    // Keep this for manual refresh
     setState(() {
       _isLoading = true;
       _error = null;
@@ -116,6 +160,7 @@ class _TeacherCoursesScreenState extends State<TeacherCoursesScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _coursesSubscription?.cancel();
     super.dispose();
   }
 

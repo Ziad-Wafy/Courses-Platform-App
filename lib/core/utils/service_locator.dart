@@ -78,7 +78,7 @@ Future<void> setupServiceLocator() async {
   // Profile Cubit
   // =========================
 
-  sl.registerFactory(
+  sl.registerLazySingleton(
     () => ProfileCubit(firestore: sl(), firebaseAuth: sl(), storage: sl()),
   );
 
@@ -101,10 +101,10 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(() => ChatCubit(chatRepo: sl()));
 
   // =========================
-  // Home Cubit (Factory - needs user data)
+  // Home Cubit (LazySingleton - will be updated with user data)
   // =========================
 
-  sl.registerFactoryParam<HomeCubit, UserModel, void>(
-    (userData, _) => HomeCubit(firestore: sl(), currentUser: userData),
+  sl.registerLazySingleton(
+    () => HomeCubit(firestore: sl(), currentUser: UserModel.empty()),
   );
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecases/auth_usecases.dart';
@@ -10,6 +12,7 @@ class AuthCubit extends Cubit<AuthState> {
   final ResetPasswordUseCase resetPasswordUseCase;
   final SignInWithGoogleUseCase signInWithGoogleUseCase;
   final AuthRepository authRepository;
+  StreamSubscription<DocumentSnapshot>? _userSubscription;
 
   AuthCubit({
     required this.loginUseCase,
@@ -17,7 +20,44 @@ class AuthCubit extends Cubit<AuthState> {
     required this.resetPasswordUseCase,
     required this.signInWithGoogleUseCase,
     required this.authRepository,
-  }) : super(AuthInitial());
+  }) : super(AuthInitial()) {
+    _listenToAuthChanges();
+  }
+
+  void _listenToAuthChanges() {
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        _listenToUserData(user.uid);
+      } else {
+        _userSubscription?.cancel();
+        emit(AuthUnauthenticated());
+      }
+    });
+  }
+
+  void _listenToUserData(String uid) {
+    _userSubscription?.cancel();
+    _userSubscription = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .snapshots()
+        .listen(
+          (snapshot) {
+            if (snapshot.exists && snapshot.data() != null) {
+              final userData = authRepository.getUserDataFromSnapshot(snapshot);
+              emit(
+                AuthSuccess(
+                  user: FirebaseAuth.instance.currentUser,
+                  userData: userData,
+                ),
+              );
+            }
+          },
+          onError: (e) {
+            emit(AuthError(message: e.toString()));
+          },
+        );
+  }
 
   String _handleFirebaseError(dynamic e) {
     if (e is FirebaseAuthException) {
@@ -118,5 +158,11 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
     emit(AuthUnauthenticated());
+  }
+
+  @override
+  Future<void> close() {
+    _userSubscription?.cancel();
+    return super.close();
   }
 }

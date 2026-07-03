@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../data/models/user_model.dart';
 
@@ -12,4 +13,5 @@ abstract class AuthRepository {
   Future<void> resetPassword(String email);
   Future<UserCredential> signInWithGoogle();
   Future<UserModel?> getUserData(String uid);
+  UserModel? getUserDataFromSnapshot(DocumentSnapshot snapshot);
 }

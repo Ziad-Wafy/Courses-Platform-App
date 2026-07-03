@@ -11,9 +11,6 @@ import 'package:learning_management_system/features/profile/presentation/screens
 import 'package:learning_management_system/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:learning_management_system/features/profile/presentation/cubit/profile_state.dart';
 import 'package:learning_management_system/features/profile/domain/entities/profile_entity.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class MainNavigationWrapper extends StatefulWidget {
   final UserModel userData;
@@ -92,47 +89,38 @@ class _StudentProfileWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ProfileCubit(
-        firestore: FirebaseFirestore.instance,
-        firebaseAuth: FirebaseAuth.instance,
-        storage: FirebaseStorage.instance,
-      )..loadProfile(),
-      child: BlocBuilder<ProfileCubit, ProfileState>(
-        builder: (context, state) {
-          if (state is ProfileLoading) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          if (state is ProfileLoaded) {
-            return StudentProfileScreen(profile: state.profile);
-          }
-
-          if (state is ProfileError) {
-            return Scaffold(
-              body: Center(child: Text('Error: ${state.message}')),
-            );
-          }
-
-          // Fallback with mock data
-          final profile = ProfileEntity(
-            uid: userData.uid,
-            fullName: userData.fullName,
-            email: userData.email,
-            role: userData.role,
-            studentStats: const StudentStats(
-              enrolled: 8,
-              completed: 12,
-              certificates: 5,
-              avgScore: 87.0,
-            ),
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        if (state is ProfileLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
           );
+        }
 
-          return StudentProfileScreen(profile: profile);
-        },
-      ),
+        if (state is ProfileLoaded) {
+          return StudentProfileScreen(profile: state.profile);
+        }
+
+        if (state is ProfileError) {
+          return Scaffold(body: Center(child: Text('Error: ${state.message}')));
+        }
+
+        // Fallback with mock data
+        final profile = ProfileEntity(
+          uid: userData.uid,
+          fullName: userData.fullName,
+          email: userData.email,
+          role: userData.role,
+          studentStats: const StudentStats(
+            enrolled: 8,
+            completed: 12,
+            certificates: 5,
+            avgScore: 87.0,
+          ),
+        );
+
+        return StudentProfileScreen(profile: profile);
+      },
     );
   }
 }
@@ -145,47 +133,38 @@ class _TeacherProfileWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ProfileCubit(
-        firestore: FirebaseFirestore.instance,
-        firebaseAuth: FirebaseAuth.instance,
-        storage: FirebaseStorage.instance,
-      )..loadProfile(),
-      child: BlocBuilder<ProfileCubit, ProfileState>(
-        builder: (context, state) {
-          if (state is ProfileLoading) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          if (state is ProfileLoaded) {
-            return TeacherProfileScreen(profile: state.profile);
-          }
-
-          if (state is ProfileError) {
-            return Scaffold(
-              body: Center(child: Text('Error: ${state.message}')),
-            );
-          }
-
-          // Fallback with mock data
-          final profile = ProfileEntity(
-            uid: userData.uid,
-            fullName: userData.fullName,
-            email: userData.email,
-            role: userData.role,
-            teacherStats: const TeacherStats(
-              courses: 8,
-              students: 546,
-              rating: 4.8,
-              issued: 15,
-            ),
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        if (state is ProfileLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
           );
+        }
 
-          return TeacherProfileScreen(profile: profile);
-        },
-      ),
+        if (state is ProfileLoaded) {
+          return TeacherProfileScreen(profile: state.profile);
+        }
+
+        if (state is ProfileError) {
+          return Scaffold(body: Center(child: Text('Error: ${state.message}')));
+        }
+
+        // Fallback with mock data
+        final profile = ProfileEntity(
+          uid: userData.uid,
+          fullName: userData.fullName,
+          email: userData.email,
+          role: userData.role,
+          teacherStats: const TeacherStats(
+            courses: 8,
+            students: 546,
+            rating: 4.8,
+            issued: 15,
+          ),
+        );
+
+        return TeacherProfileScreen(profile: profile);
+      },
     );
   }
 }

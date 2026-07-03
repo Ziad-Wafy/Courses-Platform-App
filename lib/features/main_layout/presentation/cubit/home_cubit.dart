@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,7 +7,9 @@ import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final FirebaseFirestore firestore;
-  final UserModel currentUser;
+  UserModel currentUser;
+  StreamSubscription? _coursesSubscription;
+  StreamSubscription? _userSubscription;
 
   HomeCubit({required this.firestore, required this.currentUser})
     : super(HomeInitial()) {
@@ -18,115 +21,154 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       // Fetch user-specific data based on role
       if (currentUser.role == 'Student') {
-        await _fetchStudentData();
+        _fetchStudentDataStream();
       } else {
-        await _fetchTeacherData();
+        _fetchTeacherDataStream();
       }
     } catch (e) {
       emit(HomeError(message: e.toString()));
     }
   }
 
-  Future<void> _fetchStudentData() async {
-    try {
-      // Fetch enrolled courses for student
-      final coursesSnapshot = await firestore
-          .collection('courses')
-          .where('enrolledStudents', arrayContains: currentUser.uid)
-          .get();
+  void _fetchStudentDataStream() {
+    // Listen to enrolled courses for student
+    _coursesSubscription = firestore
+        .collection('courses')
+        .where('enrolledStudents', arrayContains: currentUser.uid)
+        .snapshots()
+        .listen(
+          (snapshot) {
+            final courses = snapshot.docs.map((doc) {
+              final data = doc.data();
+              return CourseData(
+                id: doc.id,
+                title: data['title'] ?? '',
+                instructor: data['instructorName'] ?? '',
+                progress: _calculateProgress(data),
+                progressText: '${_calculateProgress(data) * 100}%',
+                icon: _getIconForCourse(data['category'] ?? 'general'),
+              );
+            }).toList();
 
-      final courses = coursesSnapshot.docs.map((doc) {
-        final data = doc.data();
-        return CourseData(
-          id: doc.id,
-          title: data['title'] ?? '',
-          instructor: data['instructorName'] ?? '',
-          progress: _calculateProgress(data),
-          progressText: '${_calculateProgress(data) * 100}%',
-          icon: _getIconForCourse(data['category'] ?? 'general'),
+            // Listen to user stats
+            _userSubscription = firestore
+                .collection('users')
+                .doc(currentUser.uid)
+                .snapshots()
+                .listen(
+                  (userDoc) {
+                    final userData = userDoc.data();
+
+                    final stats = UserStats(
+                      courses: courses.length,
+                      completed: userData?['completedCourses'] ?? 0,
+                      progress: userData?['averageProgress'] ?? 0.0,
+                    );
+
+                    // Get continue learning course (most recent or least completed)
+                    final continueLearningCourse = courses.isNotEmpty
+                        ? courses.reduce(
+                            (a, b) => a.progress < b.progress ? a : b,
+                          )
+                        : null;
+
+                    emit(
+                      StudentHomeLoaded(
+                        courses: courses,
+                        stats: stats,
+                        continueLearningCourse: continueLearningCourse,
+                        userName: currentUser.fullName,
+                      ),
+                    );
+                  },
+                  onError: (e) {
+                    emit(HomeError(message: e.toString()));
+                  },
+                );
+          },
+          onError: (e) {
+            emit(HomeError(message: e.toString()));
+          },
         );
-      }).toList();
-
-      // Fetch user stats
-      final userDoc = await firestore
-          .collection('users')
-          .doc(currentUser.uid)
-          .get();
-      final userData = userDoc.data();
-
-      final stats = UserStats(
-        courses: courses.length,
-        completed: userData?['completedCourses'] ?? 0,
-        progress: userData?['averageProgress'] ?? 0.0,
-      );
-
-      // Get continue learning course (most recent or least completed)
-      final continueLearningCourse = courses.isNotEmpty
-          ? courses.reduce((a, b) => a.progress < b.progress ? a : b)
-          : null;
-
-      emit(
-        StudentHomeLoaded(
-          courses: courses,
-          stats: stats,
-          continueLearningCourse: continueLearningCourse,
-          userName: currentUser.fullName,
-        ),
-      );
-    } catch (e) {
-      emit(HomeError(message: e.toString()));
-    }
   }
 
-  Future<void> _fetchTeacherData() async {
-    try {
-      // Fetch courses created by teacher
-      final coursesSnapshot = await firestore
-          .collection('courses')
-          .where('instructorId', isEqualTo: currentUser.uid)
-          .get();
+  void _fetchTeacherDataStream() {
+    // Listen to courses created by teacher
+    _coursesSubscription = firestore
+        .collection('courses')
+        .where('instructorId', isEqualTo: currentUser.uid)
+        .snapshots()
+        .listen(
+          (snapshot) {
+            final courses = snapshot.docs.map((doc) {
+              final data = doc.data();
+              return TeacherCourseData(
+                id: doc.id,
+                title: data['title'] ?? '',
+                studentCount: data['enrolledStudents']?.length ?? 0,
+                completionPercent: data['averageCompletion'] ?? 0,
+                icon: _getIconForCourse(data['category'] ?? 'general'),
+                iconColor: const Color(0xFF5B93F5),
+              );
+            }).toList();
 
-      final courses = coursesSnapshot.docs.map((doc) {
-        final data = doc.data();
-        return TeacherCourseData(
-          id: doc.id,
-          title: data['title'] ?? '',
-          studentCount: data['enrolledStudents']?.length ?? 0,
-          completionPercent: data['averageCompletion'] ?? 0,
-          icon: _getIconForCourse(data['category'] ?? 'general'),
-          iconColor: const Color(0xFF5B93F5),
+            // Listen to teacher stats
+            _userSubscription = firestore
+                .collection('users')
+                .doc(currentUser.uid)
+                .snapshots()
+                .listen(
+                  (userDoc) {
+                    final userData = userDoc.data();
+
+                    final teacherStats = TeacherStats(
+                      courseCount: courses.length,
+                      studentCount: _calculateTotalStudents(courses),
+                      rating: userData?['rating'] ?? 4.0,
+                    );
+
+                    // Fetch quick stats
+                    final quickStats = QuickStats(
+                      completionRate:
+                          '${_calculateAverageCompletion(courses)}%',
+                      newEnrollments:
+                          '${_calculateNewEnrollments(currentUser.uid)}',
+                    );
+
+                    emit(
+                      TeacherHomeLoaded(
+                        courses: courses,
+                        stats: teacherStats,
+                        quickStats: quickStats,
+                        userName: currentUser.fullName,
+                      ),
+                    );
+                  },
+                  onError: (e) {
+                    emit(HomeError(message: e.toString()));
+                  },
+                );
+          },
+          onError: (e) {
+            emit(HomeError(message: e.toString()));
+          },
         );
-      }).toList();
+  }
 
-      // Fetch teacher stats
-      final userDoc = await firestore
-          .collection('users')
-          .doc(currentUser.uid)
-          .get();
-      final userData = userDoc.data();
+  @override
+  Future<void> close() {
+    _coursesSubscription?.cancel();
+    _userSubscription?.cancel();
+    return super.close();
+  }
 
-      final teacherStats = TeacherStats(
-        courseCount: courses.length,
-        studentCount: _calculateTotalStudents(courses),
-        rating: userData?['rating'] ?? 4.0,
-      );
-
-      // Fetch quick stats
-      final quickStats = QuickStats(
-        completionRate: '${_calculateAverageCompletion(courses)}%',
-        newEnrollments: '${_calculateNewEnrollments(currentUser.uid)}',
-      );
-
-      emit(
-        TeacherHomeLoaded(
-          courses: courses,
-          stats: teacherStats,
-          quickStats: quickStats,
-          userName: currentUser.fullName,
-        ),
-      );
-    } catch (e) {
-      emit(HomeError(message: e.toString()));
+  void updateUser(UserModel newUser) {
+    if (currentUser.uid != newUser.uid) {
+      // Different user, restart streams
+      _coursesSubscription?.cancel();
+      _userSubscription?.cancel();
+      currentUser = newUser;
+      fetchHomeData();
     }
   }
 
