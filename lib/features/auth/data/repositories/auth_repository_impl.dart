@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
+import '../../data/models/user_model.dart';
 import '../../domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -14,7 +15,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserCredential> signUp(
-      String email, String password, String fullName, String role) async {
+    String email,
+    String password,
+    String fullName,
+    String role,
+  ) async {
     return await remoteDataSource.signUp(email, password, fullName, role);
   }
 
@@ -26,5 +31,10 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<UserCredential> signInWithGoogle() async {
     return await remoteDataSource.signInWithGoogle();
+  }
+
+  @override
+  Future<UserModel?> getUserData(String uid) async {
+    return await remoteDataSource.getUserData(uid);
   }
 }

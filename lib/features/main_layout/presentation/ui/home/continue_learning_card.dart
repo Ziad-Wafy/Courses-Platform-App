@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:learning_management_system/features/main_layout/presentation/cubit/home_cubit.dart';
 
 class ContinueLearningCard extends StatelessWidget {
-  const ContinueLearningCard({super.key});
+  final CourseData course;
+
+  const ContinueLearningCard({super.key, required this.course});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +33,7 @@ class ContinueLearningCard extends StatelessWidget {
                 color: const Color(0xFF5596F6),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: const Icon(Icons.language, color: Colors.white, size: 28),
+              child: Icon(course.icon, color: Colors.white, size: 28),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -42,9 +45,9 @@ class ContinueLearningCard extends StatelessWidget {
                     style: TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    'Web Development',
-                    style: TextStyle(
+                  Text(
+                    course.title,
+                    style: const TextStyle(
                       color: Colors.black87,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -56,18 +59,23 @@ class ContinueLearningCard extends StatelessWidget {
                       Expanded(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(4),
-                          child: const LinearProgressIndicator(
-                            value: 0.65,
-                            backgroundColor: Color(0xFFE5E9F0),
-                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF5596F6)),
+                          child: LinearProgressIndicator(
+                            value: course.progress,
+                            backgroundColor: const Color(0xFFE5E9F0),
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                              Color(0xFF5596F6),
+                            ),
                             minHeight: 6,
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
-                      const Text(
-                        '65%',
-                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                      Text(
+                        course.progressText,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -81,8 +89,12 @@ class ContinueLearningCard extends StatelessWidget {
                 color: Color(0xFF5596F6),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.play_arrow, color: Colors.white, size: 20),
-            )
+              child: const Icon(
+                Icons.play_arrow,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
           ],
         ),
       ),

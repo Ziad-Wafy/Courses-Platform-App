@@ -96,22 +96,81 @@ class ChatDataSourceImpl implements ChatDataSource {
 
   @override
   Future<List<CourseChatModel>> getCoursesChat() async {
-    final List<String> enrolledCoursesIDs =
-        (await firestore
-                .collection("users")
-                .doc(FirebaseAuth.instance.currentUser!.uid)
-                .collection("courses")
-                .get())
-            .docs
-            .map((doc) => doc.id)
-            .toList();
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
-    return (await firestore
+    // Get user role from users collection
+    final userDoc = await firestore
+        .collection('users')
+        .doc(currentUserId)
+        .get();
+    final role = userDoc.data()?['role'] as String? ?? 'Student';
+
+    List<CourseChatModel> courses = [];
+
+    if (role == 'Teacher') {
+      // For teachers, get courses they created (using teacherId field)
+      final coursesSnapshot = await firestore
+          .collection('courses')
+          .where('teacherId', isEqualTo: currentUserId)
+          .get();
+
+      courses = coursesSnapshot.docs.map((doc) {
+        final data = doc.data();
+        data['id'] = doc.id; // Ensure ID is included
+        return CourseChatModel.fromJson(data);
+      }).toList();
+
+      // Fallback: also check users/courses collection if teacherId query returns nothing
+      if (courses.isEmpty) {
+        final List<String> enrolledCoursesIDs =
+            (await firestore
+                    .collection("users")
+                    .doc(currentUserId)
+                    .collection("courses")
+                    .get())
+                .docs
+                .map((doc) => doc.id)
+                .toList();
+
+        if (enrolledCoursesIDs.isNotEmpty) {
+          final coursesSnapshot = await firestore
+              .collection('courses')
+              .where(FieldPath.documentId, whereIn: enrolledCoursesIDs)
+              .get();
+
+          courses = coursesSnapshot.docs.map((doc) {
+            final data = doc.data();
+            data['id'] = doc.id; // Ensure ID is included
+            return CourseChatModel.fromJson(data);
+          }).toList();
+        }
+      }
+    } else {
+      // For students, get enrolled courses
+      final List<String> enrolledCoursesIDs =
+          (await firestore
+                  .collection("users")
+                  .doc(currentUserId)
+                  .collection("courses")
+                  .get())
+              .docs
+              .map((doc) => doc.id)
+              .toList();
+
+      if (enrolledCoursesIDs.isNotEmpty) {
+        final coursesSnapshot = await firestore
             .collection('courses')
             .where(FieldPath.documentId, whereIn: enrolledCoursesIDs)
-            .get())
-        .docs
-        .map((doc) => CourseChatModel.fromJson(doc.data()))
-        .toList();
+            .get();
+
+        courses = coursesSnapshot.docs.map((doc) {
+          final data = doc.data();
+          data['id'] = doc.id; // Ensure ID is included
+          return CourseChatModel.fromJson(data);
+        }).toList();
+      }
+    }
+
+    return courses;
   }
 }

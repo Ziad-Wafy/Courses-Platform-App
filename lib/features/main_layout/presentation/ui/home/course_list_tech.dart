@@ -1,24 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:learning_management_system/features/main_layout/presentation/ui/home/course_list_item_tech.dart';
-
-class CourseData {
-  final String title;
-  final int studentCount;
-  final int completionPercent;
-  final IconData icon;
-  final Color iconColor;
-
-  const CourseData({
-    required this.title,
-    required this.studentCount,
-    required this.completionPercent,
-    required this.icon,
-    required this.iconColor,
-  });
-}
+import 'package:learning_management_system/features/main_layout/presentation/cubit/home_cubit.dart';
 
 class CourseListTech extends StatelessWidget {
-  final List<CourseData> courses;
+  final List<TeacherCourseData> courses;
   final VoidCallback? onViewAll;
 
   const CourseListTech({super.key, required this.courses, this.onViewAll});
@@ -35,10 +20,7 @@ class CourseListTech extends StatelessWidget {
               'My Courses',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            TextButton(
-              onPressed: onViewAll,
-              child: const Text('View All'),
-            ),
+            TextButton(onPressed: onViewAll, child: const Text('View All')),
           ],
         ),
         const SizedBox(height: 8),

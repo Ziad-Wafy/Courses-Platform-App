@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecases/auth_usecases.dart';
+import '../../domain/repositories/auth_repository.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -8,12 +9,14 @@ class AuthCubit extends Cubit<AuthState> {
   final SignUpUseCase signUpUseCase;
   final ResetPasswordUseCase resetPasswordUseCase;
   final SignInWithGoogleUseCase signInWithGoogleUseCase;
+  final AuthRepository authRepository;
 
   AuthCubit({
     required this.loginUseCase,
     required this.signUpUseCase,
     required this.resetPasswordUseCase,
     required this.signInWithGoogleUseCase,
+    required this.authRepository,
   }) : super(AuthInitial());
 
   String _handleFirebaseError(dynamic e) {
@@ -46,8 +49,8 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
     try {
       final credential = await loginUseCase.call(email, password);
-      // ✅ نجيب الـ user من الـ credential
-      emit(AuthSuccess(user: credential.user));
+      final userData = await authRepository.getUserData(credential.user!.uid);
+      emit(AuthSuccess(user: credential.user, userData: userData));
     } catch (e) {
       emit(AuthError(message: _handleFirebaseError(e)));
     }
@@ -67,8 +70,8 @@ class AuthCubit extends Cubit<AuthState> {
         fullName,
         role,
       );
-      // ✅ SignUp يبعت AuthSignUpSuccess مش AuthSuccess عشان نفرق بينهم
-      emit(AuthSignUpSuccess(user: credential.user));
+      final userData = await authRepository.getUserData(credential.user!.uid);
+      emit(AuthSignUpSuccess(user: credential.user, userData: userData));
     } catch (e) {
       emit(AuthError(message: _handleFirebaseError(e)));
     }
@@ -78,7 +81,24 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
     try {
       final credential = await signInWithGoogleUseCase.call();
-      emit(AuthSuccess(user: credential.user));
+      final userData = await authRepository.getUserData(credential.user!.uid);
+      emit(AuthSuccess(user: credential.user, userData: userData));
+    } catch (e) {
+      emit(AuthError(message: _handleFirebaseError(e)));
+    }
+  }
+
+  Future<void> fetchUserData(String uid) async {
+    try {
+      final userData = await authRepository.getUserData(uid);
+      if (userData != null) {
+        emit(
+          AuthSuccess(
+            user: FirebaseAuth.instance.currentUser,
+            userData: userData,
+          ),
+        );
+      }
     } catch (e) {
       emit(AuthError(message: _handleFirebaseError(e)));
     }

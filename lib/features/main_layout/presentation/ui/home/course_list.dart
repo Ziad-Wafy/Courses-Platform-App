@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:learning_management_system/features/main_layout/presentation/ui/home/course_list_item.dart';
+import 'package:learning_management_system/features/main_layout/presentation/cubit/home_cubit.dart';
 
 class CourseList extends StatelessWidget {
-  const CourseList({super.key});
+  final List<CourseData> courses;
+
+  const CourseList({super.key, required this.courses});
 
   @override
   Widget build(BuildContext context) {
@@ -22,40 +25,47 @@ class CourseList extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Row(
-                children: const [
-                  Text(
-                    'View All',
-                    style: TextStyle(color: Color(0xFF5596F6), fontSize: 14),
-                  ),
-                  Icon(Icons.chevron_right, color: Color(0xFF5596F6), size: 18),
-                ],
-              )
+              InkWell(
+                onTap: () {
+                  // Navigate to courses screen
+                  Navigator.pushNamed(context, '/courses');
+                },
+                child: const Row(
+                  children: [
+                    Text(
+                      'View All',
+                      style: TextStyle(color: Color(0xFF5596F6), fontSize: 14),
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      color: Color(0xFF5596F6),
+                      size: 18,
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),
-          const CourseListItem(
-            icon: Icons.language,
-            title: 'Web Development\nFundamentals',
-            subtitle: 'Dr. Sarah Johnson',
-            progress: 0.65,
-            progressText: '65%',
-          ),
-          const SizedBox(height: 16),
-          const CourseListItem(
-            icon: Icons.laptop_chromebook,
-            title: 'Data Structures & Algorithms',
-            subtitle: 'Prof. Michael Chen',
-            progress: 0.40,
-            progressText: '40%',
-          ),
-          const SizedBox(height: 16),
-          const CourseListItem(
-            icon: Icons.smartphone,
-            title: 'Mobile App Design',
-            subtitle: 'Dr. Emily Rodriguez',
-            progress: 0.80,
-            progressText: '80%',
+          ...courses.map(
+            (course) => Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: CourseListItem(
+                icon: course.icon,
+                title: course.title,
+                subtitle: course.instructor,
+                progress: course.progress,
+                progressText: course.progressText,
+                onTap: () {
+                  // Navigate to course details
+                  Navigator.pushNamed(
+                    context,
+                    '/course-details',
+                    arguments: course.id,
+                  );
+                },
+              ),
+            ),
           ),
           const SizedBox(height: 24),
         ],

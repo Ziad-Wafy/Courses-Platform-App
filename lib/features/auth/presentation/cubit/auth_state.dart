@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../data/models/user_model.dart';
 
 abstract class AuthState {}
 
@@ -9,13 +10,15 @@ class AuthLoading extends AuthState {}
 // ✅ حالة نجاح تسجيل الدخول - تحمل كائن الـ User وليس الـ Credential بالكامل
 class AuthSuccess extends AuthState {
   final User? user;
-  AuthSuccess({this.user});
+  final UserModel? userData;
+  AuthSuccess({this.user, this.userData});
 }
 
 // ✅ حالة نجاح إنشاء الحساب
 class AuthSignUpSuccess extends AuthState {
   final User? user;
-  AuthSignUpSuccess({this.user});
+  final UserModel? userData;
+  AuthSignUpSuccess({this.user, this.userData});
 }
 
 // ✅ حالة نجاح إرسال رابط إعادة تعيين كلمة المرور (تم دمج الحالتين)

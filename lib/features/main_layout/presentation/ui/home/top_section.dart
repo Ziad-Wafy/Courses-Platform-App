@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:learning_management_system/features/main_layout/presentation/ui/home/stat_card.dart';
+import 'package:learning_management_system/features/main_layout/presentation/cubit/home_cubit.dart';
 
 class TopSection extends StatelessWidget {
-  const TopSection({super.key});
+  final String userName;
+  final UserStats stats;
+
+  const TopSection({super.key, required this.userName, required this.stats});
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +25,17 @@ class TopSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Welcome back,',
                     style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
-                    'Alex Student',
-                    style: TextStyle(
+                    userName,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -46,18 +50,30 @@ class TopSection extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: const Text('👋', style: TextStyle(fontSize: 20)),
-              )
+              ),
             ],
           ),
           const SizedBox(height: 32),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              StatCard(icon: Icons.menu_book, value: '8', label: 'Courses'),
-              StatCard(icon: Icons.emoji_events_outlined, value: '12', label: 'Completed'),
-              StatCard(icon: Icons.trending_up, value: '85%', label: 'Progress'),
+              StatCard(
+                icon: Icons.menu_book,
+                value: '${stats.courses}',
+                label: 'Courses',
+              ),
+              StatCard(
+                icon: Icons.emoji_events_outlined,
+                value: '${stats.completed}',
+                label: 'Completed',
+              ),
+              StatCard(
+                icon: Icons.trending_up,
+                value: '${(stats.progress * 100).toInt()}%',
+                label: 'Progress',
+              ),
             ],
-          )
+          ),
         ],
       ),
     );

@@ -16,6 +16,8 @@ import '../../features/auth/domain/usecases/auth_usecases.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
 
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
+import '../../features/main_layout/presentation/cubit/home_cubit.dart';
+import '../../features/auth/data/models/user_model.dart';
 
 final sl = GetIt.instance;
 
@@ -68,6 +70,7 @@ Future<void> setupServiceLocator() async {
       signUpUseCase: sl(),
       resetPasswordUseCase: sl(),
       signInWithGoogleUseCase: sl(),
+      authRepository: sl(),
     ),
   );
 
@@ -76,35 +79,32 @@ Future<void> setupServiceLocator() async {
   // =========================
 
   sl.registerFactory(
-    () => ProfileCubit(
-      firestore: sl(),
-      firebaseAuth: sl(),
-      storage: sl(),
-    ),
+    () => ProfileCubit(firestore: sl(), firebaseAuth: sl(), storage: sl()),
   );
-
 
   // =========================
   // Chat - Data Source
   // =========================
 
-  sl.registerLazySingleton<ChatDataSource>(
-    () => ChatDataSourceImpl(sl()),
-  );
+  sl.registerLazySingleton<ChatDataSource>(() => ChatDataSourceImpl(sl()));
 
   // =========================
   // Chat - Repository
   // =========================
 
-  sl.registerLazySingleton<ChatRepo>(
-    () => ChatRepoImpl(chatDataSource: sl()),
-  );
+  sl.registerLazySingleton<ChatRepo>(() => ChatRepoImpl(chatDataSource: sl()));
 
   // =========================
   // Chat Cubit
   // =========================
 
-  sl.registerLazySingleton(
-    () => ChatCubit(chatRepo: sl()),
+  sl.registerLazySingleton(() => ChatCubit(chatRepo: sl()));
+
+  // =========================
+  // Home Cubit (Factory - needs user data)
+  // =========================
+
+  sl.registerFactoryParam<HomeCubit, UserModel, void>(
+    (userData, _) => HomeCubit(firestore: sl(), currentUser: userData),
   );
 }

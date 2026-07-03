@@ -4,10 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learning_management_system/features/chat/presentation/state_management/cubit/chat_cubit.dart';
-import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/screens/teacher_courses_screen.dart';
 
 import 'firebase_options.dart';
 import 'core/utils/service_locator.dart' as di;
+import 'core/routing/role_based_router.dart';
 
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/auth/presentation/ui/screens/login_screen.dart';
@@ -43,7 +43,7 @@ class MainApp extends StatelessWidget {
         return MultiBlocProvider(
           providers: [
             BlocProvider<AuthCubit>(create: (context) => di.sl<AuthCubit>()),
-            BlocProvider<ChatCubit>(create: (context) => di.sl<ChatCubit>())
+            BlocProvider<ChatCubit>(create: (context) => di.sl<ChatCubit>()),
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -71,10 +71,10 @@ class AuthWrapper extends StatelessWidget {
         }
 
         if (snapshot.hasData && snapshot.data != null) {
-          // TODO: استبدلها بشاشة الـ Home عند توفرها
-          return TeacherCoursesScreen();
-          // مثال:
-          // return const HomeScreen();
+          // Fetch user data and route based on role
+          final user = snapshot.data!;
+          context.read<AuthCubit>().fetchUserData(user.uid);
+          return const RoleBasedRouter();
         }
 
         return const LoginScreen();
@@ -82,4 +82,3 @@ class AuthWrapper extends StatelessWidget {
     );
   }
 }
-
