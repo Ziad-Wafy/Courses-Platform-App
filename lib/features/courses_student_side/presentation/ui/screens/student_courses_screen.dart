@@ -23,9 +23,9 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
 
   final TextEditingController searchController = TextEditingController();
 
-  late List<CourseModel> coursesEnrolled;
-  late List<CourseModel> coursesAvailable;
-  late List<CourseModel> coursesShow;
+  List<CourseModel> coursesEnrolled = [];
+  List<CourseModel> coursesAvailable = [];
+  List<CourseModel> coursesShow = [];
   bool isEnrolledSelected = false;
 
   StreamSubscription<QuerySnapshot>? _availableCoursesSubscription;
