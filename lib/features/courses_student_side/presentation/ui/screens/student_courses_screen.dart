@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:learning_management_system/features/courses_student_side/data/models/course_model.dart';
 
+import '../../../data/data_sources/courses_remote_data_source.dart';
+import '../../../data/repositories/course_repository_impl.dart';
+import '../../../domain/use_cases/get_courses_use_case.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/courses/course_card_widget.dart';
 import '../widgets/courses/course_tabs_widget.dart';
 import '../widgets/courses/courses_header_widget.dart';
@@ -28,6 +32,27 @@ class _StudentCoursesScreenState extends State<StudentCoursesScreen> {
   List<CourseModel> coursesShow = [];
   bool isEnrolledSelected = false;
 
+  late Future<void> _coursesFuture;
+
+  Future<void> getCourses() async {
+    final remoteDataSource = FirebaseCoursesRemoteDataSource(
+      FirebaseFirestore.instance,
+    );
+
+    final repository = CourseRepositoryImpl(remoteDataSource);
+
+    final getCoursesUseCase = CoursesUseCase(repository);
+
+    coursesAvailable = await getCoursesUseCase.getCourses();
+
+    if (FirebaseAuth.instance.currentUser != null) {
+      coursesEnrolled = await getCoursesUseCase.getEnrolledCourses();
+    } else {
+      coursesEnrolled = [];
+    }
+
+    coursesShow = coursesAvailable;
+  }
   StreamSubscription<QuerySnapshot>? _availableCoursesSubscription;
   StreamSubscription<QuerySnapshot>? _enrolledCoursesSubscription;
   bool _isLoading = true;

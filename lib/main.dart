@@ -6,6 +6,8 @@ import 'package:learning_management_system/features/chat/presentation/state_mana
 
 import 'firebase_options.dart';
 import 'core/utils/service_locator.dart' as di;
+import 'package:learning_management_system/features/courses_student_side/presentation/ui/screens/student_courses_screen.dart';
+import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'core/routing/role_based_router.dart';
 
 import 'features/auth/presentation/cubit/auth_cubit.dart';
@@ -106,7 +108,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
           return const RoleBasedRouter();
         }
 
-        return const LoginScreen();
+        return const StudentCoursesScreen();
       },
     );
   }

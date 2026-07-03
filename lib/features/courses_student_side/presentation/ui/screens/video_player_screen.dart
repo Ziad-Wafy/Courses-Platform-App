@@ -34,7 +34,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       ),
     );
 
-    controller.loadVideoByUrl(mediaContentUrl: widget.videoUrl);
+    final videoId = YoutubePlayerController.convertUrlToId(widget.videoUrl);
+
+    if (videoId != null) {
+      controller.loadVideoById(videoId: videoId);
+    }
   }
 
   @override
