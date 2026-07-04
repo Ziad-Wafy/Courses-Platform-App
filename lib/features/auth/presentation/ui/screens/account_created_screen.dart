@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/theme/app_color.dart';
-import 'login_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../cubit/auth_cubit.dart';
+import '../../../../../main.dart';
 
 class AccountCreatedScreen extends StatelessWidget {
   const AccountCreatedScreen({Key? key}) : super(key: key);
@@ -76,13 +78,18 @@ class AccountCreatedScreen extends StatelessWidget {
                       ),
                       elevation: 0,
                     ),
-                    // ✅ بيمسح كل الـ stack ويروح Login من غير ما يقدر يرجع
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LoginScreen()),
-                        (route) => false,
-                      );
+                    // ✅ بيمسح كل الـ stack ويروح AuthWrapper عشان يعرض شاشة الدخول
+                    onPressed: () async {
+                      await context.read<AuthCubit>().signOut();
+                      if (context.mounted) {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AuthWrapper(),
+                          ),
+                          (route) => false,
+                        );
+                      }
                     },
                     icon: Icon(
                       Icons.login_rounded,
