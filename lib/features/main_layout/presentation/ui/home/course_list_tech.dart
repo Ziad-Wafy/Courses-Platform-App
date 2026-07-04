@@ -20,18 +20,13 @@ class CourseListTech extends StatelessWidget {
               'My Courses',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            TextButton(onPressed: onViewAll, child: const Text('View All')),
           ],
         ),
         const SizedBox(height: 8),
         ...courses.map(
           (c) => InkWell(
             onTap: () {
-              Navigator.pushNamed(
-                context,
-                '/course-details',
-                arguments: c,
-              );
+              Navigator.pushNamed(context, '/course-details', arguments: c);
             },
             child: CourseListItemTech(
               title: c.title,

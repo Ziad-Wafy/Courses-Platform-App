@@ -25,25 +25,6 @@ class CourseList extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              InkWell(
-                onTap: () {
-                  // Navigate to courses screen
-                  Navigator.pushNamed(context, '/courses');
-                },
-                child: const Row(
-                  children: [
-                    Text(
-                      'View All',
-                      style: TextStyle(color: Color(0xFF5596F6), fontSize: 14),
-                    ),
-                    Icon(
-                      Icons.chevron_right,
-                      color: Color(0xFF5596F6),
-                      size: 18,
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 16),
