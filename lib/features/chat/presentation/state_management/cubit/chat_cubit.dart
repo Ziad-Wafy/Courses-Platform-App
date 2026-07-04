@@ -33,14 +33,14 @@ class ChatCubit extends Cubit<ChatState> {
     required String courseId,
     required MessageEntity message,
   }) async {
-    emit(ChatLoading());
+    // Don't emit ChatLoading here — it causes a full screen rebuild
     final result = await chatRepo.sendMessage(
       courseId: courseId,
       message: message,
     );
     result.fold(
       (failure) => emit(ChatError(errorMessage: failure.message)),
-      (r) => emit(ChatMessageSent()),
+      (r) => null, // Messages update via StreamBuilder, no state emit needed
     );
   }
 
@@ -48,14 +48,10 @@ class ChatCubit extends Cubit<ChatState> {
     required String courseId,
     required String messageId,
   }) async {
-    emit(ChatLoading());
-    final result = await chatRepo.readMessage(
+    // Fire-and-forget: no need to emit loading state for read receipts
+    await chatRepo.readMessage(
       courseId: courseId,
       messageId: messageId,
-    );
-    result.fold(
-      (failure) => emit(ChatError(errorMessage: failure.message)),
-      (r) => emit(ChatMessageRead()),
     );
   }
 

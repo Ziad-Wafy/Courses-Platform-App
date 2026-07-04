@@ -7,7 +7,20 @@ import 'package:learning_management_system/features/main_layout/presentation/cub
 import 'package:learning_management_system/features/main_layout/presentation/ui/home/course_list_tech.dart';
 import 'package:learning_management_system/features/main_layout/presentation/ui/home/quick_stats_card.dart';
 import 'package:learning_management_system/features/main_layout/presentation/ui/home/top_section_tech.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:learning_management_system/features/courses_teacher_side/presentation/ui/screens/teacher_create_course_screen.dart';
+import 'package:learning_management_system/features/courses_teacher_side/presentation/cubit/teacher_course_cubit.dart';
+import 'package:learning_management_system/features/courses_teacher_side/data/data_sources/teacher_courses_remote_data_source_impl.dart';
+import 'package:learning_management_system/features/courses_teacher_side/data/repositories/teacher_course_repository_impl.dart';
+import 'package:learning_management_system/features/courses_teacher_side/domain/use_cases/add_course_use_case.dart';
+import 'package:learning_management_system/features/courses_teacher_side/domain/use_cases/add_lesson_use_case.dart';
+import 'package:learning_management_system/features/courses_teacher_side/domain/use_cases/add_section_use_case.dart';
+import 'package:learning_management_system/features/courses_teacher_side/domain/use_cases/delete_course_use_case.dart';
+import 'package:learning_management_system/features/courses_teacher_side/domain/use_cases/delete_lesson_use_case.dart';
+import 'package:learning_management_system/features/courses_teacher_side/domain/use_cases/delete_section_use_case.dart';
+import 'package:learning_management_system/features/courses_teacher_side/domain/use_cases/update_course_use_case.dart';
+import 'package:learning_management_system/features/courses_teacher_side/domain/use_cases/update_lesson_use_case.dart';
+import 'package:learning_management_system/features/courses_teacher_side/domain/use_cases/update_section_use_case.dart';
 
 class HomeScreenTech extends StatefulWidget {
   const HomeScreenTech({super.key});
@@ -69,11 +82,35 @@ class _HomeScreenTechState extends State<HomeScreenTech> {
                         children: [
                           ElevatedButton.icon(
                             onPressed: () {
+                              final firebaseDataSource =
+                                  FirebaseTeacherCoursesRemoteDataSource(
+                                    FirebaseFirestore.instance,
+                                  );
+                              final repo = TeacherCourseRepositoryImpl(
+                                firebaseDataSource,
+                              );
+                              final cubit = TeacherCourseCubit(
+                                addCourseUseCase: AddCourseUseCase(repo),
+                                updateCourseUseCase: UpdateCourseUseCase(repo),
+                                deleteCourseUseCase: DeleteCourseUseCase(repo),
+                                addSectionUseCase: AddSectionUseCase(repo),
+                                updateSectionUseCase: UpdateSectionUseCase(
+                                  repo,
+                                ),
+                                deleteSectionUseCase: DeleteSectionUseCase(
+                                  repo,
+                                ),
+                                addLessonUseCase: AddLessonUseCase(repo),
+                                updateLessonUseCase: UpdateLessonUseCase(repo),
+                                deleteLessonUseCase: DeleteLessonUseCase(repo),
+                              );
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      const TeacherCreateCourseScreen(),
+                                  builder: (_) => BlocProvider.value(
+                                    value: cubit,
+                                    child: const TeacherCreateCourseScreen(),
+                                  ),
                                 ),
                               );
                             },
